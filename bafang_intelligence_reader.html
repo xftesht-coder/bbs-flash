@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Bafang Intelligence Report v3.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #f4f2ed;
+  --card: #ffffff;
+  --ink: #16181c;
+  --ink-dim: #5d6470;
+  --ink-faint: #9aa0a8;
+  --rule: #d8d4cb;
+  --rule-strong: #b8b2a8;
+  --red: #d92b1f;
+  --blue: #1f4fd9;
+  --green: #1f8a52;
+  --amber: #e08a00;
+  --carbon: #2a2d33;
+  --carbon-light: #3d4148;
+}
+[data-theme="dark"] {
+  --paper: #0a0e1a;
+  --card: #1a1f3a;
+  --ink: #e8ecf5;
+  --ink-dim: #8b93a7;
+  --ink-faint: #4a5268;
+  --rule: #2a3050;
+  --rule-strong: #3a4060;
+  --red: #ff3b5c;
+  --blue: #4a90e2;
+  --green: #00d9a3;
+  --amber: #ff6a13;
+  --carbon: #05070f;
+  --carbon-light: #0f1428;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+  transition: background .3s, color .3s;
+}
+
+/* HEADER */
+.site-header {
+  background: var(--carbon);
+  color: #fff;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 3px solid var(--red);
+}
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  gap: 16px;
+}
+.logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  color: var(--red);
+  background: rgba(217,43,31,.15);
+  border: 1px solid rgba(217,43,31,.4);
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+.header-nav { display: flex; gap: 4px; align-items: center; }
+.nav-link {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.55);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: color .15s, background .15s;
+}
+.nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
+.theme-btn {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff;
+  font-size: 14px;
+  width: 32px; height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+  flex-shrink: 0;
+}
+.theme-btn:hover { background: rgba(255,255,255,.2); }
+
+/* HERO */
+.hero {
+  background: var(--carbon);
+  color: #fff;
+  padding: 48px 24px 40px;
+  border-bottom: 1px solid var(--rule);
+}
+.hero-inner { max-width: 1100px; margin: 0 auto; }
+.hero-eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 10px;
+}
+.hero-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 800;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.hero-title span { color: var(--red); }
+.hero-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  letter-spacing: .06em;
+  display: flex; flex-wrap: wrap; gap: 16px;
+  margin-bottom: 24px;
+}
+.hero-meta b { color: rgba(255,255,255,.7); }
+.hero-specs {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.spec-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  color: rgba(255,255,255,.75);
+  letter-spacing: .04em;
+}
+.spec-chip.highlight { background: rgba(217,43,31,.2); border-color: rgba(217,43,31,.4); color: #ff8a80; }
+
+/* LAYOUT */
+.layout { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; display: grid; grid-template-columns: 220px 1fr; gap: 40px; }
+@media (max-width: 768px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+/* SIDEBAR */
+.sidebar { position: sticky; top: 72px; height: fit-content; }
+.toc-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule);
+}
+.toc-list { list-style: none; }
+.toc-list li { margin-bottom: 2px; }
+.toc-list a {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-dim);
+  text-decoration: none;
+  display: block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border-left: 2px solid transparent;
+  transition: all .15s;
+  line-height: 1.3;
+}
+.toc-list a:hover { color: var(--red); border-left-color: var(--red); background: rgba(217,43,31,.05); }
+.toc-list a.active { color: var(--red); border-left-color: var(--red); background: rgba(217,43,31,.07); font-weight: 600; }
+
+/* CONTENT */
+.content section { margin-bottom: 56px; scroll-margin-top: 80px; }
+
+.section-eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 8px;
+}
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 800;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 20px;
+  line-height: 1.1;
+}
+.section-title::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 3px;
+  background: var(--red);
+  margin-top: 10px;
+  border-radius: 2px;
+}
+
+/* SCOPE BADGES */
+.scope-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.scope-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  background: var(--card);
+}
+.scope-item.removed { border-color: rgba(217,43,31,.3); background: rgba(217,43,31,.04); }
+.scope-item.added { border-color: rgba(31,138,82,.3); background: rgba(31,138,82,.04); }
+.scope-item.warning { border-color: rgba(224,138,0,.3); background: rgba(224,138,0,.04); }
+.scope-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  padding: 3px 8px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.scope-badge.out { background: var(--red); color: #fff; }
+.scope-badge.in { background: var(--green); color: #fff; }
+.scope-badge.fix { background: var(--amber); color: #fff; }
+.scope-body { flex: 1; }
+.scope-body strong { font-weight: 600; color: var(--ink); display: block; margin-bottom: 3px; font-size: 13.5px; }
+.scope-body p { font-size: 13px; color: var(--ink-dim); line-height: 1.5; }
+
+/* CARDS */
+.card { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 20px 22px; margin-bottom: 16px; }
+.card-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title::before { content: ''; width: 3px; height: 16px; background: var(--red); border-radius: 2px; flex-shrink: 0; }
+
+/* PRESET CARDS */
+.preset { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; margin-bottom: 16px; }
+.preset-header { padding: 16px 20px 0; }
+.preset-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 4px;
+}
+.preset-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.preset-params { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); background: var(--paper); }
+.param-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  display: flex; align-items: center; gap: 6px;
+}
+.param-chip .pname { color: var(--ink-dim); font-size: 10px; }
+.param-chip .pval { font-weight: 700; color: var(--blue); }
+.preset-body { padding: 14px 20px 16px; font-size: 13px; color: var(--ink-dim); line-height: 1.55; }
+.preset-source { font-size: 11px; color: var(--ink-faint); font-family: 'JetBrains Mono', monospace; margin-top: 8px; }
+.preset-why { font-size: 12.5px; color: var(--ink); background: rgba(31,79,217,.06); border-left: 3px solid var(--blue); padding: 10px 12px; border-radius: 0 6px 6px 0; margin-top: 10px; line-height: 1.5; }
+
+/* WARNING BOX */
+.warn-box {
+  background: rgba(217,43,31,.06);
+  border: 1px solid rgba(217,43,31,.25);
+  border-left: 3px solid var(--red);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.5;
+  margin: 14px 0;
+}
+.warn-box .warn-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 4px;
+}
+.info-box {
+  background: rgba(31,79,217,.05);
+  border: 1px solid rgba(31,79,217,.2);
+  border-left: 3px solid var(--blue);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.5;
+  margin: 14px 0;
+}
+.ok-box {
+  background: rgba(31,138,82,.05);
+  border: 1px solid rgba(31,138,82,.2);
+  border-left: 3px solid var(--green);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.5;
+  margin: 14px 0;
+}
+
+/* TABLES */
+.tbl-wrap { overflow-x: auto; margin: 14px 0; border-radius: 8px; border: 1px solid var(--rule); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead tr { background: var(--carbon); color: #fff; }
+thead th {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  text-align: left;
+}
+tbody td { padding: 10px 14px; border-top: 1px solid var(--rule); color: var(--ink); vertical-align: top; }
+tbody tr:nth-child(even) { background: rgba(0,0,0,.02); }
+[data-theme="dark"] tbody tr:nth-child(even) { background: rgba(255,255,255,.02); }
+tbody tr:hover { background: rgba(217,43,31,.04); }
+td code, th code { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; background: rgba(0,0,0,.06); padding: 2px 5px; border-radius: 3px; }
+[data-theme="dark"] td code { background: rgba(255,255,255,.08); }
+.td-green { color: var(--green) !important; font-weight: 600; }
+.td-red { color: var(--red) !important; font-weight: 600; }
+.td-amber { color: var(--amber) !important; font-weight: 600; }
+.td-blue { color: var(--blue) !important; font-weight: 600; }
+
+/* RPM SPEED TABLE */
+.speed-row-hero { background: rgba(217,43,31,.08) !important; }
+.speed-row-hero td { font-weight: 700; color: var(--red) !important; }
+
+/* FORMULA BLOCK */
+.formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: var(--carbon);
+  color: #e8ecf5;
+  padding: 18px 20px;
+  border-radius: 8px;
+  margin: 14px 0;
+  line-height: 1.7;
+  overflow-x: auto;
+}
+.formula .comment { color: #6a7a9a; }
+.formula .val { color: #64d9a3; }
+.formula .sym { color: #f5a623; }
+
+/* REALITY CHECK LEVELS */
+.rc-levels { display: flex; flex-direction: column; gap: 12px; }
+.rc-level {
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid var(--rule);
+}
+.rc-level.hard { background: rgba(217,43,31,.06); border-color: rgba(217,43,31,.3); }
+.rc-level.soft { background: rgba(224,138,0,.05); border-color: rgba(224,138,0,.25); }
+.rc-level.thermal { background: rgba(31,79,217,.05); border-color: rgba(31,79,217,.2); }
+.rc-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.rc-level.hard .rc-num { color: var(--red); }
+.rc-level.soft .rc-num { color: var(--amber); }
+.rc-level.thermal .rc-num { color: var(--blue); }
+.rc-title { font-weight: 700; font-size: 14px; margin-bottom: 6px; color: var(--ink); }
+.rc-body { font-size: 13px; color: var(--ink-dim); line-height: 1.5; }
+.rc-quote {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(0,0,0,.06);
+  border-radius: 5px;
+  color: var(--ink);
+  line-height: 1.5;
+}
+[data-theme="dark"] .rc-quote { background: rgba(255,255,255,.06); }
+
+/* COLOR SWATCH */
+.palette { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+.swatch { border-radius: 6px; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; border: 1px solid rgba(0,0,0,.08); }
+
+/* TOOLTIP PARAM TABLE */
+.param-table-row td:nth-child(4) { color: var(--green); font-size: 12px; }
+.param-table-row td:nth-child(5) { color: var(--amber); font-size: 12px; }
+.param-table-row td:nth-child(6) { color: var(--red); font-size: 12px; font-weight: 600; }
+
+/* ERROR CODE TABLE */
+.err-code { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 15px; color: var(--red); }
+
+/* P0 BLOCKERS */
+.blocker-list { display: flex; flex-direction: column; gap: 10px; }
+.blocker {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+}
+.blocker.p0 { border-left: 4px solid var(--red); }
+.blocker.p1 { border-left: 4px solid var(--amber); }
+.blocker.p2 { border-left: 4px solid var(--green); }
+.blocker-n {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ink-faint);
+  text-align: center;
+}
+.blocker-body strong { display: block; font-size: 13.5px; margin-bottom: 3px; }
+.blocker-body span { font-size: 12px; color: var(--ink-dim); }
+.blocker-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.blocker.p0 .blocker-badge { background: var(--red); color: #fff; }
+.blocker.p1 .blocker-badge { background: var(--amber); color: #fff; }
+.blocker.p2 .blocker-badge { background: var(--green); color: #fff; }
+
+p { margin-bottom: 12px; font-size: 14px; line-height: 1.65; color: var(--ink); }
+p:last-child { margin-bottom: 0; }
+strong { font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">
+      ⚡ BBS Flash
+      <span class="logo-tag">Intelligence v3.0</span>
+    </div>
+    <nav class="header-nav">
+      <a href="#scope" class="nav-link">Скоуп</a>
+      <a href="#presets" class="nav-link">Пресеты</a>
+      <a href="#specs" class="nav-link">Спеки</a>
+      <a href="#physics" class="nav-link">Физика</a>
+      <a href="#reality" class="nav-link">Reality Check</a>
+      <a href="#ui" class="nav-link">UI</a>
+      <a href="#loc" class="nav-link">Локаль</a>
+      <a href="#proto" class="nav-link">Протокол</a>
+      <a href="#todo" class="nav-link">TODO</a>
+    </nav>
+    <button class="theme-btn" onclick="toggleTheme()" title="Сменить тему">🌓</button>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Block 1 — Opus Research · Завершён</div>
+    <h1 class="hero-title">Bafang<br><span>Intelligence</span><br>Report</h1>
+    <div class="hero-meta">
+      <span><b>Дата:</b> 2 августа 2026</span>
+      <span><b>Для:</b> BBS Flash v3.0, Блок 2 — Sonnet Dev</span>
+      <span><b>Статус:</b> Утверждён заказчиком</span>
+    </div>
+    <div class="hero-specs">
+      <span class="spec-chip highlight">Trek Roscoe 8 (2020)</span>
+      <span class="spec-chip highlight">BBS02B 48V 750W</span>
+      <span class="spec-chip">HZXT SZZ9 · FW V2.0.1.1</span>
+      <span class="spec-chip">850C · SW 3.2B-V2</span>
+      <span class="spec-chip">32T / SRAM PG-1230 11–50T</span>
+      <span class="spec-chip">27.5×2.8″</span>
+      <span class="spec-chip">95 кг райдер</span>
+      <span class="spec-chip">ODO 5 198 км</span>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="toc-title">Содержание</div>
+    <ul class="toc-list">
+      <li><a href="#scope">0. Скоуп зафиксирован</a></li>
+      <li><a href="#presets">1. Пресеты сообщества</a></li>
+      <li><a href="#specs">2. Технические спеки</a></li>
+      <li><a href="#physics">3. Физика</a></li>
+      <li><a href="#reality">4. Reality Check</a></li>
+      <li><a href="#ui">5. UI/UX спека</a></li>
+      <li><a href="#loc">6. Локализация</a></li>
+      <li><a href="#proto">7. UART протокол</a></li>
+      <li><a href="#todo">8. TODO / Верификация</a></li>
+    </ul>
+  </aside>
+
+  <main class="content">
+
+    <!-- 0 -->
+    <section id="scope">
+      <div class="section-eyebrow">§ 0</div>
+      <h2 class="section-title">Скоуп зафиксирован</h2>
+      <p>Принцип заказчика: использовать только то, что реально доступно. Если не стыкуется — исключать. Ниже — что вошло и что вычеркнуто.</p>
+      <div class="scope-grid">
+        <div class="scope-item removed">
+          <span class="scope-badge out">❌ OUT</span>
+          <div class="scope-body">
+            <strong>Температура мотора</strong>
+            <p>Датчика в BBS02 нет — подтверждено заказчиком и источниками. На 850C заказчика Battery Information показывает <code>--°C</code>. Боль «перегрев на апхилах» решается Reality Check + каденсом.</p>
+          </div>
+        </div>
+        <div class="scope-item removed">
+          <span class="scope-badge out">❌ OUT</span>
+          <div class="scope-body">
+            <strong>Live-телеметрия 10 Гц (дорожная)</strong>
+            <p>Два физических блокера: разъём один (либо ноутбук, либо дисплей), протокол конфигурации ≠ протокол дисплея. Оставить только «стендовый режим» в гараже.</p>
+          </div>
+        </div>
+        <div class="scope-item removed">
+          <span class="scope-badge out">❌ OUT</span>
+          <div class="scope-body">
+            <strong>AI Tuning + WebXR/AR</strong>
+            <p>AI: датасета не существует — обучать не на чем. WebXR: максимальная стоимость, минимальная польза.</p>
+          </div>
+        </div>
+        <div class="scope-item added">
+          <span class="scope-badge in">✅ IN</span>
+          <div class="scope-body">
+            <strong>Каденс — только расчётный</strong>
+            <p>Контроллер меряет каденс внутри, но наружу не отдаёт. Тахометр в UI — только из симулятора, не телеметрия. Никогда не рисовать как живые данные.</p>
+          </div>
+        </div>
+        <div class="scope-item warning">
+          <span class="scope-badge fix">🎨 UI</span>
+          <div class="scope-body">
+            <strong>Обе темы через переключатель</strong>
+            <p>Мастер-гайд требовал тёмный неон. Заказчик в /grill-me выбрал светлый rally/F1. Решение: обе палитры на одних CSS-переменных, светлая — по умолчанию. IndexedDB, не localStorage.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section id="presets">
+      <div class="section-eyebrow">§ 1</div>
+      <h2 class="section-title">Пресеты сообщества</h2>
+      <div class="warn-box">
+        <div class="warn-label">⚠️ Главная находка</div>
+        Ни один авторитетный источник не рекомендует «больше ампер» как решение для апхила. Консенсус обратный: каденс 70–100 об/мин + передачи + мягкие рампы тока.
+      </div>
+      <div class="info-box">
+        <strong>Мета-правило (Карл Гесслейн):</strong> Установка лимита тока в 25А производит существенно больше тепла, особенно на низких скоростях. Система PAS ассистирует тем больше, чем меньше вы крутите — т.е. для большей мощности на подъёме нужна передача ВЫШЕ, а не ниже.
+      </div>
+
+      <div class="preset">
+        <div class="preset-header">
+          <div class="preset-num">Пресет 01</div>
+          <div class="preset-name">Smooth Climber</div>
+          <p style="font-size:13px;color:var(--ink-dim);padding:0 0 12px">Наиболее задокументированный реальный тест. Источник: forums.electricbikereview.com</p>
+        </div>
+        <div class="preset-params">
+          <div class="param-chip"><span class="pname">Start Current</span><span class="pval">9%</span></div>
+          <div class="param-chip"><span class="pname">Slow Start</span><span class="pval">4</span></div>
+          <div class="param-chip"><span class="pname">Stop Decay</span><span class="pval">95 ×10ms</span></div>
+          <div class="param-chip"><span class="pname">Keep Current</span><span class="pval">90%</span></div>
+        </div>
+        <div class="preset-body">
+          <strong>Результат теста:</strong> 22.8 миль, 904 фута набора, уклон до 18%, общий вес 300 фунтов. Расход 14.29 Вт·ч/мил вместо ожидаемых 15–16. Разброс мощности меньше, пиковый ток ниже, скорость стабильнее, разница в разгоне не замечена.
+          <div class="preset-why">Снижение Start Current убирает пиковый бросок тока → меньше нагрев и удар по цепи. Высокий Stop Decay + Keep Current сглаживают провалы — мотор работает в узком холодном диапазоне при том же среднем результате.</div>
+          <div class="preset-source">⚠️ Тест на BBSHD 52V. На BBS02B правдоподобно, но REQUIRES_VERIFICATION.</div>
+        </div>
+      </div>
+
+      <div class="preset">
+        <div class="preset-header">
+          <div class="preset-num">Пресет 02</div>
+          <div class="preset-name">Tamed PAS</div>
+          <p style="font-size:13px;color:var(--ink-dim);padding:0 0 12px">Для технических медленных участков. Источник: ebikesforum.com — Taming the BBS02 Beast</p>
+        </div>
+        <div class="preset-params">
+          <div class="param-chip"><span class="pname">Current Decay</span><span class="pval">6</span></div>
+        </div>
+        <div class="preset-body">
+          Промежуточный Current Decay 6 вместо обычного 2 вернул пиковую мощность PAS к ~650 Вт на уровне 9 и ~50 Вт на уровне 1. Хороший рабочий диапазон.
+          <div class="preset-why">Золотое правило из того же треда: всегда сохраняй копию конфигурации ДО любых изменений — должно быть в UI как обязательное действие.</div>
+        </div>
+      </div>
+
+      <div class="preset">
+        <div class="preset-header">
+          <div class="preset-num">Пресет 03</div>
+          <div class="preset-name">Gear-First</div>
+          <p style="font-size:13px;color:var(--ink-dim);padding:0 0 12px">Техника вместо настроек. Источник: Endless Sphere — bbs02 steep hill best practices</p>
+        </div>
+        <div class="preset-params">
+          <div class="param-chip"><span class="pname">PAS на подъёме</span><span class="pval">3–5</span></div>
+          <div class="param-chip"><span class="pname">+ газ</span><span class="pval">✓</span></div>
+          <div class="param-chip"><span class="pname">передачи</span><span class="pval">приоритет</span></div>
+        </div>
+        <div class="preset-body">
+          «Много езжу по холмам, в основном лес. На супер-крутых — PAS 5 + газ + педалирование. Обычно PAS 3 на плохом покрытии. Ни разу не перегрелся, даже когда мотор нельзя было трогать. Самое важное — правильно использовать передачи.»
+          <div class="preset-why">Reality Check в приложении должен толкать к передачам и каденсу, а не к росту тока. Это единственная стратегия, подтверждённая всеми источниками.</div>
+        </div>
+      </div>
+
+      <div class="warn-box">
+        <div class="warn-label">🔴 Анти-паттерн</div>
+        Найден источник с советом «включить Overheat Protection 85°C и Max Continuous Power 400W» — таких параметров в конфиг-туле BBS02 не существует. Это AI-генерированный текст на блоге AliExpress. В приложение не переносить.
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section id="specs">
+      <div class="section-eyebrow">§ 2</div>
+      <h2 class="section-title">Технические спеки</h2>
+
+      <div class="card">
+        <div class="card-title">Max RPM (каденс на кривошипе)</div>
+        <div class="info-box" style="margin-top:0">RPM здесь — обороты кривошипа после редуктора. Сам мотор крутится 2–4 тыс. об/мин и редуцируется под каденс.</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Модель</th><th>Max RPM</th><th>Уверенность</th><th>Источник</th></tr></thead>
+            <tbody>
+              <tr><td><strong>BBS01</strong></td><td class="td-amber">~78–100 (разброс)</td><td class="td-amber">🟡 Низкая</td><td>Pedelecs forum — разброс «78–140» между версиями</td></tr>
+              <tr class="speed-row-hero"><td><strong>BBS02 750W</strong></td><td>~120</td><td class="td-green">🟢 Высокая</td><td>Electricbike.com review + ES: «заводской максимум 120»</td></tr>
+              <tr><td>BBS02 (иная версия)</td><td class="td-amber">~113</td><td class="td-amber">🟡 Средняя</td><td>Pedelecs forum</td></tr>
+              <tr><td><strong>BBSHD</strong></td><td class="td-green">130–150 @48V</td><td class="td-green">🟢 Высокая</td><td>Electricbike.com: «150 RPM на 48V, 130 на 36V»</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="warn-box">
+          <div class="warn-label">❌ Ошибка в MASTER_GUIDE</div>
+          «Max RPM 130 ±5 одинаково для всех трёх» — ОШИБОЧНО. Ни один источник не подтверждает. Также BBS01B существует в 48V.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Физический предел скорости — 32T × 27.5″×2.8″</div>
+        <p style="margin-bottom:12px">Обод 584 мм (ISO) + покрышка 71.1 мм → диаметр <strong>726 мм</strong>, окружность <strong>2.282 м</strong>. Передача 32T/11T = <strong>2.909</strong>.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Каденс</th><th>Скорость</th><th>Статус</th></tr></thead>
+            <tbody>
+              <tr><td>80 об/мин</td><td>31.9 км/ч</td><td></td></tr>
+              <tr><td>100 об/мин</td><td>39.8 км/ч</td><td></td></tr>
+              <tr><td><strong>110 об/мин</strong></td><td class="td-amber"><strong>43.8 км/ч</strong></td><td>Нижняя граница</td></tr>
+              <tr class="speed-row-hero"><td><strong>120 об/мин (лимит BBS02)</strong></td><td><strong>47.8 км/ч</strong></td><td>Верхняя граница ← основа Reality Check</td></tr>
+              <tr><td>56.1 км/ч (макс на дисплее)</td><td>~150+ об/мин</td><td class="td-amber">Только накат/спуск</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="ok-box">
+          <strong>Кросс-валидация:</strong> Max Speed 56.1 км/ч на дисплее заказчика — выше моторного предела. Значит, достигнуто накатом, мотор не тянул. Модель сходится.
+        </div>
+        <div class="warn-box" style="margin-bottom:0">
+          <div class="warn-label">⚠️ P0-блокер</div>
+          Точный max RPM контроллера HZXT SZZ9 FW V2.0.1.1 не верифицирован. Проверить: вывесить заднее колесо, полный газ на высшей передаче, снять каденс с дисплея.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Тепловой контроль без датчика</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Температура</th><th>Действие</th></tr></thead>
+            <tbody>
+              <tr><td class="td-red"><strong>&gt;60°C (140°F)</strong></td><td class="td-red">Остановиться немедленно, дать остыть</td></tr>
+              <tr><td class="td-amber">&gt;54°C (130°F)</td><td>Только полгаза</td></tr>
+              <tr><td class="td-amber">&gt;49°C (120°F)</td><td>Ехать спокойно</td></tr>
+              <tr><td class="td-green">≤43°C (110°F)</td><td class="td-green">Полная нагрузка допустима</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:10px;font-size:13px;color:var(--ink-dim)">Полевой тест: если нельзя удержать руку на корпусе 10 секунд — слишком горячо. Тепловое повреждение накопительно.</p>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section id="physics">
+      <div class="section-eyebrow">§ 3</div>
+      <h2 class="section-title">Физика симулятора</h2>
+      <div class="formula">
+P_total = P_drag + P_rolling + P_grade<br><br>
+<span class="sym">P_drag</span>    = <span class="val">0.5</span> × ρ × CdA × v³<br>
+<span class="sym">P_rolling</span> = Crr × m × g × cos(θ) × v<br>
+<span class="sym">P_grade</span>   = m × g × sin(θ) × v<br><br>
+<span class="comment">θ = atan(grade% / 100)&nbsp;&nbsp;ρ = 1.225 кг/м³&nbsp;&nbsp;g = 9.81 м/с²</span><br><br>
+<span class="comment">v_max решается итеративно (бисекция, 60 итераций):</span><br>
+P_motor × η = P_total(v)
+      </div>
+
+      <div class="card">
+        <div class="card-title">Константы MTB-профиля</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Параметр</th><th>Значение</th><th>Покрытие</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Crr</strong></td><td class="td-blue">0.012</td><td>Грунт/лес (ТЗ). Асфальт 0.004, гравий 0.008, грязь 0.018</td></tr>
+              <tr><td><strong>CdA</strong></td><td class="td-blue">0.65</td><td>MTB-aggressive (ТЗ). Road 0.40, upright 0.55</td></tr>
+              <tr><td><strong>η</strong></td><td class="td-amber">0.85</td><td>REQUIRES_VERIFICATION для BBS02 + цепь</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="warn-box" style="margin-bottom:0">
+          Смена Crr/CdA с дорожных на MTB меняет цифры: при 1080 Вт было 48.6 км/ч на плоскости → станет <strong>44.5 км/ч</strong>. На 8%: было 28.2 → станет <strong>26.4 км/ч</strong>. Crr/CdA должны быть переключаемыми пресетами покрытия, не константами.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Референсная таблица (115 кг, Crr=0.012, CdA=0.65, η=0.85)</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Мощность</th><th>Плоско</th><th>5%</th><th>8%</th><th>12%</th><th>15%</th></tr></thead>
+            <tbody>
+              <tr><td>200 Вт</td><td>21.8</td><td>8.5</td><td>5.9</td><td>4.1</td><td>3.4</td></tr>
+              <tr><td>400 Вт</td><td>29.9</td><td>15.8</td><td>11.4</td><td>8.2</td><td>6.7</td></tr>
+              <tr><td>600 Вт</td><td>35.4</td><td>21.8</td><td>16.4</td><td>12.1</td><td>10.0</td></tr>
+              <tr><td>750 Вт</td><td>38.6</td><td>25.5</td><td>19.9</td><td>14.8</td><td>12.4</td></tr>
+              <tr class="speed-row-hero"><td><strong>1080 Вт</strong> (24A×45V)</td><td><strong>44.5</strong></td><td><strong>32.4</strong></td><td><strong>26.4</strong></td><td><strong>20.5</strong></td><td><strong>17.4</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12px;color:var(--ink-faint);margin-top:8px">км/ч · до ограничения по каденсу · только полезная мощность на валу</p>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section id="reality">
+      <div class="section-eyebrow">§ 4</div>
+      <h2 class="section-title">Reality Check Logic</h2>
+      <p>Главная ценность приложения — то, чего нет в оригинале Пенова. Три уровня, иерархически.</p>
+      <div class="rc-levels">
+        <div class="rc-level hard">
+          <div class="rc-num">01</div>
+          <div class="rc-title">🔴 Жёсткий предел по передаче (детерминированный)</div>
+          <div class="rc-body">
+            <code>v_gear_limit = max_rpm × (chainring/cog) × circumference × 60 / 1000</code><br><br>
+            Для 32T/11T/27.5×2.8 → <strong>47.8 км/ч</strong> при 120 об/мин.<br>
+            Если цель выше — показать сообщение с конкретным советом:
+            <div class="rc-quote">«С 32T спереди, 11T сзади и колесом 27.5×2.8 мотор упирается в предел каденса при ~47.8 км/ч. Чтобы ехать быстрее — нужна бо́льшая передняя звезда, не другие настройки контроллера.»</div>
+          </div>
+        </div>
+        <div class="rc-level soft">
+          <div class="rc-num">02</div>
+          <div class="rc-title">🟡 Мягкий предел по мощности (предупреждение, не блокировка)</div>
+          <div class="rc-body">
+            Цель ниже передаточного предела, но выше доступной мощности:
+            <div class="rc-quote">«При 20A на 48В (~900 Вт) на 8% уклоне модель даёт ~23 км/ч. Цель 30 км/ч потребует ~1400 Вт — выше возможностей BBS02.»</div>
+          </div>
+        </div>
+        <div class="rc-level thermal">
+          <div class="rc-num">03</div>
+          <div class="rc-title">🔵 Тепловая эвристика (только комбинация)</div>
+          <div class="rc-body">
+            <code>IF (ток ≥ 22A) AND (расчётный каденс &lt; 60 об/мин) → 🔴 «Зона перегрева»</code><br><br>
+            Одним параметром не триггерить — только сочетание. Объяснение — цитата Карла о 25А + каденс &lt;60 об/мин как главный фактор риска.
+          </div>
+        </div>
+      </div>
+      <div class="ok-box" style="margin-top:16px">
+        <strong>Правило подачи:</strong> Reality Check предупреждает, но не запрещает. Блокировать только реальные аппаратные пределы (ток выше потолка контроллера). Заказчик — опытный пользователь с 5000 км.
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section id="ui">
+      <div class="section-eyebrow">§ 5</div>
+      <h2 class="section-title">UI/UX Спека</h2>
+
+      <div class="card">
+        <div class="card-title">Палитра — Day Stage (светлая, по умолчанию)</div>
+        <div class="palette">
+          <div class="swatch" style="background:#f4f2ed;color:#16181c;border-color:#d8d4cb">--paper<br>#f4f2ed</div>
+          <div class="swatch" style="background:#ffffff;color:#16181c;border-color:#d8d4cb">--card<br>#ffffff</div>
+          <div class="swatch" style="background:#16181c;color:#f4f2ed">--ink<br>#16181c</div>
+          <div class="swatch" style="background:#d92b1f;color:#fff">--red<br>#d92b1f</div>
+          <div class="swatch" style="background:#1f4fd9;color:#fff">--blue<br>#1f4fd9</div>
+          <div class="swatch" style="background:#1f8a52;color:#fff">--green<br>#1f8a52</div>
+          <div class="swatch" style="background:#e08a00;color:#fff">--amber<br>#e08a00</div>
+          <div class="swatch" style="background:#2a2d33;color:#fff">--carbon<br>#2a2d33</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Палитра — Night Stage (тёмная, по переключателю)</div>
+        <div class="palette">
+          <div class="swatch" style="background:#0a0e1a;color:#e8ecf5;border-color:#2a3050">--paper<br>#0a0e1a</div>
+          <div class="swatch" style="background:#1a1f3a;color:#e8ecf5;border-color:#2a3050">--card<br>#1a1f3a</div>
+          <div class="swatch" style="background:#e8ecf5;color:#0a0e1a">--ink<br>#e8ecf5</div>
+          <div class="swatch" style="background:#ff3b5c;color:#fff">--red<br>#ff3b5c</div>
+          <div class="swatch" style="background:#4a90e2;color:#fff">--blue<br>#4a90e2</div>
+          <div class="swatch" style="background:#00d9a3;color:#0a0e1a">--green<br>#00d9a3</div>
+          <div class="swatch" style="background:#ff6a13;color:#fff">--amber<br>#ff6a13</div>
+          <div class="swatch" style="background:#05070f;color:#e8ecf5;border-color:#2a3050">--carbon<br>#05070f</div>
+        </div>
+        <div class="info-box" style="margin-bottom:0">Обе палитры на одном наборе CSS-переменных. Переключение = <code>data-theme</code> на <code>&lt;html&gt;</code>. Выбор — в IndexedDB, не localStorage.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Приборы (SVG, не canvas)</div>
+        <div class="scope-grid" style="margin-bottom:0">
+          <div class="scope-item added"><span class="scope-badge in">1</span><div class="scope-body"><strong>Спидометр стрелочный</strong><p>Красная зона начинается на v_gear_limit — динамически из передач. Это визуально показывает Reality Check без единого слова.</p></div></div>
+          <div class="scope-item added"><span class="scope-badge in">2</span><div class="scope-body"><strong>Шкала тока — горизонтальная линейная (как boost на ралли-каре)</strong><p>Зелёная ≤18A · Жёлтая 18–22A · Красная >22A. Подписи зон прямо на шкале.</p></div></div>
+          <div class="scope-item added"><span class="scope-badge in">3</span><div class="scope-body"><strong>Тахометр каденса — главный обучающий элемент</strong><p>Зелёная зона 70–100 об/мин. Красная <60 об/мин («зона перегрева»). Педали на анимации байка меняют цвет синхронно.</p></div></div>
+          <div class="scope-item added"><span class="scope-badge in">4</span><div class="scope-body"><strong>Мощность (Вт) — цифровая, крупная, tabular-nums</strong></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Comparative Bars A/B — инверсия цвета критична</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Метрика</th><th>Хорошо = рост?</th><th>Цвет роста</th></tr></thead>
+            <tbody>
+              <tr><td>Разгон / launch feel</td><td class="td-green">Да</td><td class="td-green">Зелёный</td></tr>
+              <tr><td>Скорость на уклоне X%</td><td class="td-green">Да</td><td class="td-green">Зелёный</td></tr>
+              <tr><td>Расчётный запас хода</td><td class="td-green">Да</td><td class="td-green">Зелёный</td></tr>
+              <tr><td><strong>Пиковый ток</strong></td><td class="td-red"><strong>Нет!</strong></td><td class="td-red"><strong>Красный</strong></td></tr>
+              <tr><td><strong>Тепловая нагрузка</strong></td><td class="td-red"><strong>Нет!</strong></td><td class="td-red"><strong>Красный</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="warn-box" style="margin-bottom:0">Без инверсии UI будет подталкивать к перегреву. Это критичная ошибка дизайна.</div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section id="loc">
+      <div class="section-eyebrow">§ 6</div>
+      <h2 class="section-title">Русская локализация</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Параметр EN</th><th>Название RU</th><th>Что делает</th><th>↑ Рост</th><th>↓ Снижение</th><th>⚠️ Риск</th></tr></thead>
+          <tbody class="param-table-row">
+            <tr><td>Low Battery Protection</td><td>Защита от разряда</td><td>Напряжение отсечки мотора</td><td>Батарея дольше живёт</td><td>Больше пробег</td><td>Слишком низко = деградация ячеек</td></tr>
+            <tr><td><strong>Current Limit</strong></td><td><strong>Лимит тока</strong></td><td>Потолок мощности</td><td>Больше тяги</td><td>Меньше нагрев</td><td class="td-red">>22A = существенно больше тепла на низких скоростях</td></tr>
+            <tr><td><strong>Start Current</strong></td><td><strong>Стартовый ток</strong></td><td>Ток при старте с места</td><td>Резче рывок</td><td>Мягче к цепи</td><td class="td-red">Высокий + >95кг + старт в гору = риск для цепи и шестерни</td></tr>
+            <tr><td>Slow-start Mode</td><td>Плавность старта</td><td>Скорость нарастания мощности (1–8)</td><td>Агрессивнее подхват</td><td>Плавнее</td><td>8 + высокий Start Current = удар по трансмиссии</td></tr>
+            <tr><td>Start Degree</td><td>Угол включения</td><td>Импульсов педалей до включения</td><td>Мотор включается позже</td><td>Подхватывает раньше</td><td>Слишком мало = дёргает при парковке</td></tr>
+            <tr><td>Work Mode</td><td>Режим работы</td><td>Режим каденса</td><td>—</td><td>—</td><td>На BBS02 эффект незначителен</td></tr>
+            <tr><td><strong>Time of Stop</strong></td><td><strong>Задержка отключения</strong></td><td>Когда мотор гасит тягу после педалей</td><td>Мотор «догоняет» дольше</td><td class="td-green">Мгновенное снятие = защита цепи при переключении</td><td>На BBS02B значения &lt;20 часто не принимаются</td></tr>
+            <tr><td>Current Decay</td><td>Спад тока</td><td>Скорость падения тока при росте каденса</td><td>Резче спад</td><td>Мощность держится дольше</td><td>Значение 6 — проверенный компромисс</td></tr>
+            <tr><td>Stop Decay</td><td>Плавность отпускания</td><td>Как плавно гаснет тяга</td><td>Мягче отпускание</td><td>Резче обрыв</td><td>—</td></tr>
+            <tr><td>Keep Current</td><td>Удерживаемый ток</td><td>Доля тока на высоком каденсе</td><td>Меньше провал при разгоне</td><td>Сильнее спад</td><td>—</td></tr>
+            <tr><td>Wheel Diameter</td><td>Диаметр колеса</td><td>Калибровка спидометра и лимитов</td><td>Спидометр занижает</td><td>Спидометр завышает</td><td class="td-red">Неверное значение ломает все скоростные лимиты</td></tr>
+            <tr><td>Throttle Mode</td><td>Режим газа</td><td>Speed или Current</td><td>—</td><td>—</td><td>Current даёт линейный отклик</td></tr>
+            <tr><td>Throttle Start Current</td><td>Стартовый ток газа</td><td>Резкость отклика газа с нуля</td><td>Резче подхват</td><td>Точнее на скользком</td><td>Высокий = срыв колеса на грунте</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section id="proto">
+      <div class="section-eyebrow">§ 7</div>
+      <h2 class="section-title">UART Протокол</h2>
+
+      <div class="card">
+        <div class="card-title">Конфигурационный протокол ✅ Верифицирован</div>
+        <p>Разобран из исходников Пенова (Delphi), реализован и работает в v2.0. 1200 бод, 8N1.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Блок</th><th>ID</th><th>Read</th><th>Write</th><th>Payload</th></tr></thead>
+            <tbody>
+              <tr><td>General</td><td><code>0x51</code></td><td><code>11 51 04 B0 &lt;chk&gt;</code></td><td>—</td><td>16 байт (модель, HW, FW, V, maxA)</td></tr>
+              <tr><td>Basic</td><td><code>0x52</code></td><td><code>11 52</code></td><td><code>16 52 18 &lt;24б&gt; &lt;chk&gt;</code></td><td>24 байта</td></tr>
+              <tr><td>Pedal Assist</td><td><code>0x53</code></td><td><code>11 53</code></td><td><code>16 53 0B &lt;11б&gt; &lt;chk&gt;</code></td><td>11 байт</td></tr>
+              <tr><td>Throttle</td><td><code>0x54</code></td><td><code>11 54</code></td><td><code>16 54 06 &lt;6б&gt; &lt;chk&gt;</code></td><td>6 байт</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="ok-box">
+          Контроллер валидирует ДО записи. Некорректное значение отвергается — конфигурация не меняется. <strong>Именно поэтому «окирпичить» контроллер этим протоколом невозможно.</strong>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Коды ошибок</div>
+        <div class="warn-box" style="margin-bottom:14px">Коды Bafang не универсально согласованы между всеми дисплеями и моторами. Показывать как «вероятное значение».</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Код</th><th>Значение</th><th>Практика</th></tr></thead>
+            <tbody>
+              <tr><td><span class="err-code">02</span></td><td>Ошибка газа (залип)</td><td>Сигнальная линия газа замкнута/залипла при старте</td></tr>
+              <tr><td><span class="err-code">04</span></td><td>Датчик Холла мотора</td><td>Проверить кабель мотора</td></tr>
+              <tr><td><span class="err-code">07/08</span></td><td>Контроллер/мотор</td><td class="td-red">Если 08 без газа и дисплея — контроллер мёртв. Не ездить: риск возгорания</td></tr>
+              <tr><td><span class="err-code">09</span></td><td>Нет связи с BMS</td><td>Bafang использует Tx/Rx с BMS; данные не приходят</td></tr>
+              <tr><td><span class="err-code">10</span></td><td>Перегрев</td><td>Высокая нагрузка + плохая линия цепи</td></tr>
+              <tr><td><span class="err-code">21</span></td><td class="td-amber"><strong>Датчик скорости</strong></td><td class="td-amber">Не «overcurrent»! Часто — сместился магнит на спице на 2 мм. Чинится бесплатно.</td></tr>
+              <tr><td><span class="err-code">25</span></td><td>Тормоз</td><td>Проверить датчики тормозных ручек</td></tr>
+              <tr><td><span class="err-code">30</span></td><td>Ошибка связи</td><td>Самая частая. Серия отказов дисплеев C965 — обрыв внутреннего кабеля имитирует проблему контроллера. Bypass test: отключить тормоза и газ.</td></tr>
+              <tr><td><span class="err-code">42</span></td><td>Низкое напряжение</td><td>Батарея разряжена ниже LBP</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="info-box" style="margin-bottom:0">
+          <strong>Универсальный первый шаг:</strong> выключить и включить батарею, переподключить кабель дисплея — устраняет ~50% всех кодов с первой попытки.
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section id="todo">
+      <div class="section-eyebrow">§ 8</div>
+      <h2 class="section-title">TODO / Верификация</h2>
+      <div class="blocker-list">
+        <div class="blocker p0">
+          <div class="blocker-n">1</div>
+          <div class="blocker-body">
+            <strong>Max RPM контроллера HZXT SZZ9 FW V2.0.1.1</strong>
+            <span>Вывесить заднее колесо, полный газ на высшей передаче, снять каденс с дисплея. Блокирует весь Reality Check.</span>
+          </div>
+          <span class="blocker-badge">🔴 P0</span>
+        </div>
+        <div class="blocker p0">
+          <div class="blocker-n">2</div>
+          <div class="blocker-body">
+            <strong>Минимальное принимаемое Time of Stop</strong>
+            <span>Записать 10 → прочитать. Отвергнуто → 15 → 20. Блокирует совет по защите цепи.</span>
+          </div>
+          <span class="blocker-badge">🔴 P0</span>
+        </div>
+        <div class="blocker p1">
+          <div class="blocker-n">3</div>
+          <div class="blocker-body">
+            <strong>BMS-лимит пакета Chamrider</strong>
+            <span>Наклейка на корпусе батареи. Вероятно 30A или 40A.</span>
+          </div>
+          <span class="blocker-badge">🟡 P1</span>
+        </div>
+        <div class="blocker p1">
+          <div class="blocker-n">4</div>
+          <div class="blocker-body">
+            <strong>Работает ли газ во время педалирования (баг BBS02B)</strong>
+            <span>Проверить в PAS 0 и PAS 3. Известный баг прошивки v2.</span>
+          </div>
+          <span class="blocker-badge">🟡 P1</span>
+        </div>
+        <div class="blocker p2">
+          <div class="blocker-n">5</div>
+          <div class="blocker-body">
+            <strong>Реальный КПД трансмиссии η</strong>
+            <span>Сравнить расчёт с GPS-скоростью при известной мощности. Сейчас используется η=0.85.</span>
+          </div>
+          <span class="blocker-badge">🟢 P2</span>
+        </div>
+        <div class="blocker p2">
+          <div class="blocker-n">6</div>
+          <div class="blocker-body">
+            <strong>Структура телеметрических фреймов</strong>
+            <span>Только если решим делать стендовый режим. Логический анализатор на линии дисплея.</span>
+          </div>
+          <span class="blocker-badge">🟢 P3</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+function toggleTheme(){
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme')==='light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  try { const db=indexedDB.open('bbsflash',1); db.onsuccess=e=>{const t=e.target.result; try{const s=t.transaction('settings','readwrite').objectStore('settings'); s.put({key:'theme',value:next});}catch(_){}}} catch(_){}
+}
+
+// Intersection observer for TOC highlight
+const sections = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('.toc-list a');
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const l=document.querySelector(`.toc-list a[href="#${e.target.id}"]`);
+      if(l) l.classList.add('active');
+    }
+  });
+},{rootMargin:'-20% 0px -70% 0px'});
+sections.forEach(s=>obs.observe(s));
+
+// Load theme from IndexedDB
+try {
+  const req = indexedDB.open('bbsflash',1);
+  req.onupgradeneeded = e => e.target.result.createObjectStore('settings',{keyPath:'key'});
+  req.onsuccess = e => {
+    try {
+      const t=e.target.result.transaction('settings','readonly').objectStore('settings').get('theme');
+      t.onsuccess=r=>{ if(r.result) document.documentElement.setAttribute('data-theme',r.result.value); };
+    } catch(_){}
+  };
+} catch(_){}
+</script>
+</body>
+</html>
