@@ -222,6 +222,34 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 .diff-item .arrow-vals b{color:var(--copper-bright);}
 .diff-item .impact{color:var(--text-faint);font-size:11.5px;font-style:italic;}
 
+/* ---------- v3.0: delta polarity ----------
+   A rise in peak current or thermal load is NOT an improvement, even though
+   it is a "bigger number". Colour follows consequence, not direction. */
+.diff-item.worse{border-left:3px solid var(--red);}
+.diff-item.better{border-left:3px solid #1c8a3e;}
+.diff-item.worse .arrow-vals b{color:var(--red);}
+.diff-item.better .arrow-vals b{color:#1c8a3e;}
+.diff-item .polarity{font-family:var(--mono);font-size:10px;letter-spacing:.06em;padding:1px 6px;border-radius:3px;text-transform:uppercase;}
+.diff-item.worse .polarity{background:#fdeaec;color:var(--red);}
+.diff-item.better .polarity{background:#e7f5ec;color:#1c8a3e;}
+
+/* ---------- v3.0: Reality Check ---------- */
+.rc-box{border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-top:12px;background:var(--panel-2);}
+.rc-box.rc-warn{border-color:var(--amber);background:#fdf5e6;}
+.rc-box.rc-danger{border-color:var(--red);background:#fdeaec;}
+.rc-box .rc-head{font-weight:700;font-size:12.5px;margin-bottom:6px;letter-spacing:.02em;}
+.rc-box.rc-warn .rc-head{color:#8a5400;}
+.rc-box.rc-danger .rc-head{color:var(--red);}
+.rc-box .rc-body{font-size:12px;color:var(--text-dim);line-height:1.55;}
+.rc-box .rc-num{font-family:var(--mono);font-weight:700;color:var(--text);}
+.rc-detect{font-family:var(--mono);font-size:11px;color:var(--text-dim);}
+
+/* ---------- v3.0: honour prefers-reduced-motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+  #raceTrackWrap{transform:none !important;}
+}
+
 .sim-caveat{font-size:11.5px;color:var(--text-faint);line-height:1.55;margin-top:4px;}
 
 .warn-banner{
@@ -580,7 +608,60 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
               <input type="range" id="simEta" min="70" max="95" value="85" step="1"/>
             </div>
           </div>
-          <p class="sim-caveat">Defaults assume ~95kg rider + ~20kg converted hardtail, moderate MTB tire rolling resistance (Crr 0.006), upright riding position (CdA 0.55). Wheel size and current-limit ceiling are read from the profile itself.</p>
+          <div class="sim-grid">
+            <div class="field">
+              <label>Surface (rolling resistance Crr)</label>
+              <select id="simSurface">
+                <option value="0.004">Asphalt — smooth (0.004)</option>
+                <option value="0.008">Gravel / hardpack (0.008)</option>
+                <option value="0.012" selected>Forest trail / dirt (0.012)</option>
+                <option value="0.018">Mud / soft sand (0.018)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Riding position (CdA, m²)</label>
+              <select id="simCda">
+                <option value="0.45">Tucked / drops (0.45)</option>
+                <option value="0.55" selected>Upright MTB (0.55)</option>
+                <option value="0.68">Very upright, loose jacket (0.68)</option>
+              </select>
+            </div>
+          </div>
+          <p class="sim-caveat">Defaults assume ~95kg rider + ~20kg converted hardtail. Crr and CdA are selectable above because forest and asphalt are not the same ride — the old build froze them at 0.006 / 0.55 for every surface. Current-limit ceiling comes from the connected controller when one is attached, otherwise from the profile.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Reality Check — drivetrain ceiling</div>
+          <div class="panel-desc" style="margin-bottom:10px;">Top speed is not set by watts, it is set by how fast the crank can spin and what gear that crank drives. Below the motor's RPM ceiling nothing else matters — more current only makes heat.</div>
+          <div class="sim-grid">
+            <div class="field">
+              <label>Chainring (front), teeth</label>
+              <input type="number" id="rcChainring" min="30" max="60" step="1" value="32"/>
+            </div>
+            <div class="field">
+              <label>Smallest cog (fastest gear), teeth</label>
+              <input type="number" id="rcCogMin" min="9" max="24" step="1" value="11"/>
+            </div>
+            <div class="field">
+              <label>Largest cog (easiest gear), teeth</label>
+              <input type="number" id="rcCogMax" min="24" max="60" step="1" value="50"/>
+            </div>
+            <div class="field">
+              <label>Cog you actually climb in, teeth</label>
+              <input type="number" id="rcCogRide" min="9" max="60" step="1" value="32"/>
+              <small>Overheating is a gear choice, not a wattage number. Set this to the gear you honestly stay in on a long forest climb.</small>
+            </div>
+            <div class="field">
+              <label>Tire width, inches</label>
+              <input type="number" id="rcTire" min="1.0" max="5.0" step="0.1" value="2.8"/>
+            </div>
+            <div class="field">
+              <label>Max crank RPM of the motor <span id="rcRpmSrc" class="rc-detect"></span></label>
+              <input type="number" id="rcMaxRpm" min="60" max="200" step="1" value="120"/>
+            </div>
+          </div>
+          <div class="rc-box" id="rcResult"></div>
+          <p class="sim-caveat">Crank RPM ceiling is a family estimate — BBS01 ≈78–100, BBS02 ≈120, BBSHD ≈130–150 — not a value the controller reports. Measure yours on a stand (rear wheel off the ground, full throttle in the highest gear, read cadence off the 850C) and put the real number in here. Until then every speed on this page carries that uncertainty.</p>
         </div>
 
         <div class="card">
@@ -653,7 +734,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
             <thead><tr><th>PAS level</th><th>Current A</th><th>Power W</th><th>Flat speed</th><th>Climb speed</th></tr></thead>
             <tbody></tbody>
           </table>
-          <p class="sim-caveat">Flat/climb speed capped by each level's Speed Limit % against an assumed ~45km/h reference ceiling — the firmware's exact speed-cap formula isn't publicly documented, so treat the cap as illustrative.</p>
+          <p class="sim-caveat">Flat/climb speed is capped by each level's Speed Limit % applied to your <b>actual drivetrain ceiling</b> (computed in Reality Check above), not to a fixed 45 km/h. Change the cog, the chainring or the tire and every number in this table moves. The firmware's exact internal speed-cap formula isn't publicly documented, so the percentage mapping itself remains illustrative.</p>
         </div>
 
         <div class="card">
@@ -676,7 +757,14 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </div>
         <div class="card">
           <div class="log" id="logBox"></div>
-          <div class="actions-row"><button class="btn small ghost" id="btnClearLog">Clear log</button></div>
+          <div class="actions-row">
+            <button class="btn small ghost" id="btnClearLog">Clear log</button>
+            <label style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-dim);cursor:pointer;">
+              <input type="checkbox" id="chkStrictChecksum"/>
+              Strict checksum — discard frames whose checksum does not verify
+            </label>
+          </div>
+          <p class="sim-caveat">Leave strict mode off for the first “Read all”: the log will print which checksum span your controller uses. Once you have seen it match cleanly, turn it on and leave it on — that is what stops a corrupted read from quietly becoming your next write.</p>
         </div>
       </section>
 
@@ -981,8 +1069,41 @@ function elToState(text){
    ========================================================================= */
 let port=null, reader=null, writer=null, readableClosed=null;
 let rxBuffer = [];
-let pending = null; // {type:'GEN'|'BAS'|'PAS'|'THR', mode:'read'|'write', chain:bool, resolve, reject}
+let pending = null; // {type:'GEN'|'BAS'|'PAS'|'THR', mode:'read'|'write', chain:bool}
+let pendingTimer = null;
 let lastKnownGood = null; // deep copy of state after the last full "Read all", used as an auto-backup / rollback reference
+
+/* -------------------------------------------------------------------------
+   ACK WATCHDOG
+   The controller answers every request. If it does not — cable pulled, motor
+   powered down mid-write, garbage on the line — the old build waited forever
+   with a frozen UI and no error, which is the worst possible state to be in
+   halfway through writing a settings block. Every request now carries a
+   deadline and fails loudly.
+   ------------------------------------------------------------------------- */
+const ACK_TIMEOUT_MS = 2500;
+
+function clearPending(){
+  if(pendingTimer){ clearTimeout(pendingTimer); pendingTimer = null; }
+  pending = null;
+}
+
+function setPending(p){
+  if(pendingTimer) clearTimeout(pendingTimer);
+  pending = p;
+  pendingTimer = setTimeout(()=>{
+    const what = (p.type==='GEN') ? 'controller handshake' : (BLOCK_NAME[p.type]||'block')+' '+p.mode;
+    pending = null; pendingTimer = null;
+    rxBuffer = []; // whatever is on the wire now is out of sync — drop it
+    logLine(`TIMEOUT after ${ACK_TIMEOUT_MS}ms waiting for ${what}. No reply from the controller.`,'l-err');
+    if(p.mode === 'write'){
+      logLine('A write was in flight when the link went quiet. Read all to see what the controller actually holds now, then compare against your backup .el before writing again.','l-err');
+      toast('Write timed out — Read all to verify the controller state','err');
+    } else {
+      toast('No reply from controller — check the cable and that the motor is powered','err');
+    }
+  }, ACK_TIMEOUT_MS);
+}
 
 function downloadElText(text, filename){
   const blob = new Blob([text], {type:'text/plain'});
@@ -1072,6 +1193,46 @@ function handleIncoming(chunk){
   tryParseFrame();
 }
 
+/* -------------------------------------------------------------------------
+   RX CHECKSUM VERIFICATION
+   The previous build carried the comment "checksum ignored/not required to
+   proceed" and applied whatever arrived. A single corrupted byte on a 1200-baud
+   line therefore became your new settings, silently.
+
+   TODO: REQUIRES_VERIFICATION — the checksum span for RESPONSE frames is not
+   documented anywhere public. Outgoing frames sum bytes [1..n-2]. For incoming
+   frames both [0..n-2] and [1..n-2] are plausible. Rather than guess and hard
+   fail on real hardware, this computes both, logs what matched, and only
+   rejects the frame when strict mode is on. One "Read all" against your SZZ9
+   tells you which convention it uses — then leave strict mode on permanently.
+   ------------------------------------------------------------------------- */
+let strictChecksum = false;
+
+function verifyRxChecksum(block, frame){
+  const n = frame.length;
+  const got = frame[n-1];
+  const sumFrom0 = frame.slice(0, n-1).reduce((s,b)=>s+b,0) % 256;
+  const sumFrom1 = frame.slice(1, n-1).reduce((s,b)=>s+b,0) % 256;
+  const ok = (got === sumFrom0) || (got === sumFrom1);
+  const which = (got === sumFrom0) ? '[0..n-2]' : (got === sumFrom1) ? '[1..n-2]' : 'none';
+
+  if(ok){
+    logLine(`checksum OK on ${BLOCK_NAME[block]||'block'} read — 0x${got.toString(16).padStart(2,'0')} matches span ${which}`,'l-sys');
+    return true;
+  }
+
+  logLine(`CHECKSUM MISMATCH on ${BLOCK_NAME[block]||'block'} read — received 0x${got.toString(16).padStart(2,'0')}, computed 0x${sumFrom0.toString(16).padStart(2,'0')} ([0..n-2]) / 0x${sumFrom1.toString(16).padStart(2,'0')} ([1..n-2]).`,'l-err');
+  if(strictChecksum){
+    logLine('Strict mode: frame discarded, values NOT applied. Read again.','l-err');
+    toast('Corrupt frame rejected — read again','err');
+    clearPending();
+    return false;
+  }
+  logLine('Strict mode is off, so the frame was applied anyway. Do not write these values back until you have re-read cleanly.','l-err');
+  toast('Checksum mismatch — verify before writing','err');
+  return true;
+}
+
 function tryParseFrame(){
   if(rxBuffer.length===0) return;
   const b0 = rxBuffer[0];
@@ -1102,6 +1263,7 @@ function tryParseFrame(){
     const total = 2+payloadLen+1; // block+len+payload+checksum
     if(rxBuffer.length < total) return;
     const frame = rxBuffer.splice(0,total);
+    if(!verifyRxChecksum(b0, frame)) return tryParseFrame();
     onReadFrame(b0, frame);
   } else {
     // write ack: block + status byte (+ maybe nothing else)
@@ -1118,14 +1280,14 @@ async function sendFrame(bytes){
 }
 
 async function sendGenPing(){
-  pending = {type:'GEN', mode:'read'};
+  setPending({type:'GEN', mode:'read'});
   const f = [0x11,0x51,0x04,0xB0,0];
   f[4] = checksum(f,1,3);
   await new Promise(r=>setTimeout(r,80));
   await sendFrame(f);
 }
 async function readBlock(block, chainNext){
-  pending = {type:block, mode:'read', chain:chainNext};
+  setPending({type:block, mode:'read', chain:chainNext});
   await new Promise(r=>setTimeout(r,50));
   await sendFrame([0x11, block]);
 }
@@ -1165,12 +1327,108 @@ function buildThrWriteFrame(){
   f[9]=checksum(f,1,8);
   return f;
 }
+/* -------------------------------------------------------------------------
+   SAFETY GATE
+   Rule from the project brief: a backup exists BEFORE anything is written, and
+   the rider sees exactly which values change before the frame leaves. The old
+   build enforced this on "Write all" only — the three per-tab Write buttons
+   went straight to the wire with no confirm and no backup check, which is the
+   same hole the gate was built to close.
+   ------------------------------------------------------------------------- */
+
+const FIELD_LABELS = {
+  bas: { LBP:'Low Battery Protection (V)', LC:'Current Limit (A)', WD:'Wheel diameter',
+         SMType:'Speed-meter type', SMSig:'Speed-meter signals' },
+  pas: { PT:'Pedal sensor type', DA:'Designated assist', SL:'Speed limit', SC:'Start current (%)',
+         SSM:'Slow-start mode', SDN:'Start degree', WM:'Work mode', TS:'Time of stop',
+         CD:'Current decay', SD:'Stop decay', KC:'Keep current (%)' },
+  thr: { SV:'Start voltage', EV:'End voltage', MODE:'Throttle mode', DA:'Designated assist',
+         SL:'Speed limit', SC:'Start current (%)' }
+};
+const SECTION_LABEL = { bas:'Basic', pas:'Pedal Assist', thr:'Throttle' };
+
+/* Human-readable list of what this write actually changes vs the last read. */
+function computeDelta(section){
+  if(!lastKnownGood) return null;
+  const oldS = lastKnownGood[section], newS = state[section];
+  const out = [];
+  Object.keys(newS).forEach(k=>{
+    const a = oldS ? oldS[k] : undefined, b = newS[k];
+    if(Array.isArray(b)){
+      b.forEach((v,i)=>{
+        const prev = (a && a[i] !== undefined) ? a[i] : null;
+        if(prev !== v){
+          const name = (k==='ALC') ? `Assist ${i} current %` : `Assist ${i} speed %`;
+          out.push(`  ${name}: ${prev} → ${v}`);
+        }
+      });
+    } else if(a !== b){
+      const label = (FIELD_LABELS[section] && FIELD_LABELS[section][k]) || k;
+      out.push(`  ${label}: ${a} → ${b}`);
+    }
+  });
+  return out;
+}
+
+/* Returns true if the write may proceed. Blocks when no backup exists, shows
+   the delta, and refuses any Current Limit above the detected family ceiling. */
+function safetyGate(sections){
+  if(!lastKnownGood){
+    toast('Read all first — no backup on file yet','err');
+    logLine('Write blocked: no prior Read all, so no backup exists','l-err');
+    return false;
+  }
+
+  const ceiling = controllerCeilingA();
+  if(sections.includes('bas')){
+    pullStateFromUI('bas');
+    if(state.bas.LC > ceiling){
+      const fam = state.family ? state.family.label : 'this controller';
+      toast(`Current Limit ${state.bas.LC}A exceeds the ${ceiling}A ceiling for ${fam}`,'err');
+      logLine(`Write blocked: Current Limit ${state.bas.LC}A > ${ceiling}A ceiling (${fam}).`,'l-err');
+      return false;
+    }
+  }
+
+  const lines = [];
+  sections.forEach(sec=>{
+    pullStateFromUI(sec);
+    const d = computeDelta(sec);
+    if(d && d.length) lines.push(SECTION_LABEL[sec]+':', ...d);
+  });
+
+  const header = sections.length > 1
+    ? 'Write all — Basic → Pedal Assist → Throttle'
+    : 'Write '+SECTION_LABEL[sections[0]]+' block';
+
+  const body = lines.length
+    ? 'These values change vs the last read:\n\n' + lines.join('\n')
+    : 'Nothing differs from the last read. Writing will send identical values.';
+
+  const ok = confirm(
+    header + '\n\n' + body + '\n\n' +
+    'A backup of the last read is already saved to your Downloads folder as backup_<timestamp>.el.\n\n' +
+    'This rewrites the settings block only — not firmware. Out-of-range values are rejected by the controller and nothing changes. To undo, load the backup .el and write again.\n\n' +
+    'Proceed?'
+  );
+  if(!ok){ toast('Write cancelled'); logLine('Write cancelled by user','l-sys'); return false; }
+  logLine('Write approved. Delta: '+(lines.length? lines.length+' field(s)':'none'),'l-sys');
+  return true;
+}
+
 async function writeBlock(block, chainNext){
   pullStateFromUI(block===BLK.BAS?'bas':block===BLK.PAS?'pas':'thr');
   const frame = block===BLK.BAS?buildBasWriteFrame(): block===BLK.PAS?buildPasWriteFrame(): buildThrWriteFrame();
-  pending = {type:block, mode:'write', chain:chainNext};
+  setPending({type:block, mode:'write', chain:chainNext});
   await new Promise(r=>setTimeout(r,50));
   await sendFrame(frame);
+}
+
+/* Single-block write, gated. This is what the per-tab buttons call. */
+async function guardedWriteBlock(block){
+  const sec = block===BLK.BAS?'bas':block===BLK.PAS?'pas':'thr';
+  if(!safetyGate([sec])) return;
+  await writeBlock(block, false);
 }
 
 function onGenFrame(frame){
@@ -1183,18 +1441,56 @@ function onGenFrame(frame){
   const voltLabel = ['24V','36V','48V','60V','24-48V','24-60V'][nomCode] || '—';
 
   state.nominalCode = nomCode;
-  state.maxCurrent = maxCurr;
+
+  // ---------------------------------------------------------------------
+  // AutoDetect — the GEN block reports a max current byte but never says
+  // which motor family this is. Infer the family from that ceiling and clamp
+  // to the documented per-family limit, so an 18A BBS01 can never be handed
+  // a 25A table just because a preset was written for a BBS02.
+  //   BBS01 18A · BBS02 25A · BBSHD 30A
+  // This is an INFERENCE, not a value read off the controller — the UI says so.
+  // ---------------------------------------------------------------------
+  const family = detectFamily(maxCurr, nomCode);
+  const effectiveCeiling = Math.min(maxCurr, family.maxA);
+  state.maxCurrent = effectiveCeiling;
+  state.family = family;
+
   el('roModel').textContent = (manuf+' '+model).trim()||'—';
   el('roVolt').textContent = voltLabel;
-  el('roMaxCurr').textContent = maxCurr+'A';
+  el('roMaxCurr').textContent = effectiveCeiling+'A';
   el('roFw').textContent = fw+' / HW '+hw;
   buildLowBatOptions();
-  el('basLC').max = maxCurr;
-  el('basLCHint').textContent = `Controller ceiling: ${maxCurr}A`;
+  el('basLC').max = effectiveCeiling;
+  if(parseInt(el('basLC').value,10) > effectiveCeiling){
+    el('basLC').value = effectiveCeiling;
+    state.bas.LC = effectiveCeiling;
+    logLine(`Current Limit trimmed to the ${effectiveCeiling}A ceiling for ${family.label}`,'l-err');
+  }
+  el('basLCHint').textContent =
+    `Ceiling ${effectiveCeiling}A · controller reports ${maxCurr}A · assumed family ${family.label} (${family.maxA}A, ~${family.rpm} crank rpm — inferred, verify on a stand)`;
 
-  logLine(`Controller identified: ${manuf} ${model}, ${voltLabel}, ${maxCurr}A max, FW ${fw}`,'l-sys');
-  toast('Connected: '+manuf+' '+model,'ok');
-  pending=null;
+  // Feed the simulator's RPM ceiling with the family estimate, once, unless
+  // the rider has already typed a measured value.
+  const rpmField = el('rcMaxRpm');
+  if(rpmField && !rpmField.dataset.userSet){
+    rpmField.value = family.rpm;
+    el('rcRpmSrc').textContent = '· auto: '+family.label;
+    if(typeof renderSim === 'function') renderSim();
+  }
+
+  logLine(`Controller identified: ${manuf} ${model}, ${voltLabel}, ${maxCurr}A reported, FW ${fw} → treating as ${family.label}, ceiling ${effectiveCeiling}A`,'l-sys');
+  toast('Connected: '+manuf+' '+model+' ('+family.label+')','ok');
+  clearPending();
+}
+
+/* AutoDetect: map the reported current ceiling to a motor family.
+   Source for the limits: project CLAUDE.md (BBS01 18A / BBS02 25A / BBSHD 30A,
+   crank RPM BBS01 ~78-100, BBS02 ~120, BBSHD 130-150). The controller does not
+   transmit a family identifier, so this is a bounded guess, never a fact. */
+function detectFamily(reportedMaxA, nomCode){
+  if(reportedMaxA <= 18) return { key:'BBS01', label:'BBS01-class', maxA:18, rpm:90  };
+  if(reportedMaxA <= 25) return { key:'BBS02', label:'BBS02-class', maxA:25, rpm:120 };
+  return                        { key:'BBSHD', label:'BBSHD-class', maxA:30, rpm:140 };
 }
 
 function onReadFrame(block, frame){
@@ -1235,7 +1531,7 @@ function onReadFrame(block, frame){
     logLine('Throttle block read OK','l-sys');
   }
   const wasChain = pending && pending.chain;
-  pending = null;
+  clearPending();
   if(wasChain){
     if(block===BLK.BAS) return readBlock(BLK.PAS, true);
     if(block===BLK.PAS) return readBlock(BLK.THR, true);
@@ -1266,7 +1562,7 @@ function onWriteAck(block, frame){
   if(code === OK_CODE[block]){
     logLine(name+' write OK','l-sys');
     toast(name+' settings written','ok');
-    pending = null;
+    clearPending();
     if(wasChain){
       if(block===BLK.BAS) return writeBlock(BLK.PAS, true);
       if(block===BLK.PAS) return writeBlock(BLK.THR, true);
@@ -1276,7 +1572,7 @@ function onWriteAck(block, frame){
     const field = (ERR_TABLES[block]||[])[code] || ('code '+code);
     logLine(name+' write REJECTED — '+field+' out of range','l-err');
     toast(name+': "'+field+'" out of range — value rejected by controller','err');
-    pending = null;
+    clearPending();
   }
 }
 
@@ -1285,21 +1581,86 @@ function onWriteAck(block, frame){
    dyno-calibrated prediction). Two profiles picked from presets or the
    live/current tab state are compared side by side.
    ========================================================================= */
-const G = 9.81, RHO = 1.225, CRR = 0.006, CDA = 0.55, REF_MAX_KMH = 45, CONTROLLER_MAX_A = 25;
+const G = 9.81, RHO = 1.225;
 
-function wheelDiameterMeters(wdIndex){
+/* -------------------------------------------------------------------------
+   REALITY CHECK — the drivetrain, not the battery, sets your top speed.
+   v_gear = maxCrankRpm * (chainring / cog) * wheelCircumference * 60 / 1000
+   Reference rig 32T / 11T / 27.5x2.8 at 120 rpm -> 47.8 km/h, inside the
+   44-48 km/h band the project treats as ground truth.
+   ------------------------------------------------------------------------- */
+
+// ETRTO bead-seat diameter (mm) per nominal wheel label. Rolling diameter is
+// bead-seat + 2 x tire height, which is why a 27.5x2.8 rolls closer to a 29er.
+const RIM_ETRTO = { 16:305, 17:335, 18:355, 19:387, 20:406, 21:428, 22:457, 23:483,
+                    24:507, 25:520, 26:559, 27:584, '700C':622, 28:622, 29:622, 30:635 };
+
+function rimEtrtoMm(wdIndex){
   const w = WHEEL_LIST[wdIndex];
-  const inches = (w==='700C') ? 28 : parseInt(w,10);
-  return inches * 0.0254;
+  return RIM_ETRTO[w] || RIM_ETRTO[parseInt(w,10)] || 584;
+}
+
+// Outer rolling diameter in metres, from the profile's wheel setting + tire width.
+function wheelDiameterMeters(wdIndex, tireInches){
+  const tire = (typeof tireInches === 'number' && tireInches > 0) ? tireInches : 2.8;
+  const mm = rimEtrtoMm(wdIndex) + 2 * (tire * 25.4);
+  return mm / 1000;
+}
+
+function wheelCircumferenceM(wdIndex, tireInches){
+  return Math.PI * wheelDiameterMeters(wdIndex, tireInches);
+}
+
+// Hard ceiling in km/h imposed by gearing + motor RPM. Nothing electrical beats it.
+function gearLimitKmh(rc, wdIndex){
+  const circ = wheelCircumferenceM(wdIndex, rc.tire);
+  const wheelRpm = rc.maxRpm * (rc.chainring / rc.cogMin);
+  return wheelRpm * circ * 60 / 1000;
+}
+
+// Crank cadence you would hold at a given road speed in a given cog.
+function cadenceAt(speedKmh, cogTeeth, rc, wdIndex){
+  const circ = wheelCircumferenceM(wdIndex, rc.tire);
+  if(circ <= 0 || speedKmh <= 0) return 0;
+  const wheelRpm = (speedKmh * 1000 / 60) / circ;
+  return wheelRpm * (cogTeeth / rc.chainring);
+}
+
+// Controller current ceiling: what the hardware actually told us, when it told us.
+function controllerCeilingA(){
+  return (state && state.maxCurrent) ? state.maxCurrent : 25;
+}
+
+function rcParams(){
+  const num = (id, dflt) => { const v = parseFloat(el(id).value); return isFinite(v) && v > 0 ? v : dflt; };
+  return {
+    chainring: num('rcChainring', 32),
+    cogMin:    num('rcCogMin', 11),
+    cogMax:    num('rcCogMax', 50),
+    cogRide:   num('rcCogRide', 32),
+    tire:      num('rcTire', 2.8),
+    maxRpm:    num('rcMaxRpm', 120)
+  };
+}
+
+/* Smallest cog (tallest gear) that still holds `targetRpm` at this road speed.
+   This is the number that actually saves a BBS02: it says "shift to at least
+   this cog", instead of pretending a temperature sensor exists. */
+function minCogForCadence(speedKmh, targetRpm, rc, wdIndex){
+  const circ = wheelCircumferenceM(wdIndex, rc.tire);
+  if(speedKmh <= 0 || circ <= 0) return rc.cogMax;
+  const wheelRpm = (speedKmh * 1000 / 60) / circ;
+  const needed = targetRpm * rc.chainring / wheelRpm;
+  return Math.ceil(needed);
 }
 
 // Solve P_mech = (m*g*(Crr*cos(theta)+sin(theta)) + 0.5*rho*CdA*v^2) * v  for v, via bisection.
-function solveSpeed(pMech, mass, gradeFrac){
+function solveSpeed(pMech, mass, gradeFrac, crr, cda){
   if(pMech<=0) return 0;
   const theta = Math.atan(gradeFrac);
   const cosT = Math.cos(theta), sinT = Math.sin(theta);
-  const rollGrade = mass*G*(CRR*cosT + sinT);
-  function powerAt(v){ return (rollGrade + 0.5*RHO*CDA*v*v) * v; }
+  const rollGrade = mass*G*(crr*cosT + sinT);
+  function powerAt(v){ return (rollGrade + 0.5*RHO*cda*v*v) * v; }
   let lo=0, hi=40;
   for(let i=0;i<60;i++){
     const mid=(lo+hi)/2;
@@ -1309,17 +1670,33 @@ function solveSpeed(pMech, mass, gradeFrac){
 }
 
 function computeProfileRows(profile, p){
+  const rc = p.rc;
+  const ceilingA = Math.min(controllerCeilingA(), profile.bas.LC);
+  const vGear = gearLimitKmh(rc, profile.bas.WD);   // hard drivetrain ceiling
   const rows = [];
   for(let lvl=0; lvl<=9; lvl++){
-    const currentA = Math.min(profile.bas.LC * profile.bas.ALC[lvl]/100, CONTROLLER_MAX_A, profile.bas.LC);
+    const currentA = Math.min(profile.bas.LC * profile.bas.ALC[lvl]/100, ceilingA);
     const powerW = p.volt * currentA;
     const mechW = powerW * (p.eta/100);
-    const flatV = solveSpeed(mechW, p.mass, 0);
-    const climbV = solveSpeed(mechW, p.mass, p.grade/100);
-    const speedCapKmh = (profile.bas.ALBP[lvl]/100) * REF_MAX_KMH;
-    const flatKmh = Math.min(flatV*3.6, speedCapKmh);
-    const climbKmh = Math.min(climbV*3.6, speedCapKmh);
-    rows.push({lvl, currentA, powerW, flatKmh, climbKmh});
+    const flatV  = solveSpeed(mechW, p.mass, 0,            p.crr, p.cda);
+    const climbV = solveSpeed(mechW, p.mass, p.grade/100,  p.crr, p.cda);
+    // Level speed cap = this level's Speed Limit % of the REAL drivetrain
+    // ceiling, not of an invented 45 km/h reference.
+    const speedCapKmh = (profile.bas.ALBP[lvl]/100) * vGear;
+    const flatKmh  = Math.min(flatV*3.6,  speedCapKmh, vGear);
+    const climbKmh = Math.min(climbV*3.6, speedCapKmh, vGear);
+
+    // Thermal heuristic (ROADMAP §5): current >= 22A AND computed cadence < 60 rpm.
+    // Cadence is computed in the gear the rider says they actually climb in —
+    // because on a BBS02 overheating is a gear choice, not a wattage number. The
+    // motor has no temperature sensor, so this arithmetic is the only warning
+    // that exists.
+    const rideCadence = cadenceAt(climbKmh, rc.cogRide, rc, profile.bas.WD);
+    const thermalRisk = (currentA >= 22) && (rideCadence < 60);
+    // What the rider should shift to in order to clear 60 rpm at this speed.
+    const cogFor60 = minCogForCadence(climbKmh, 60, rc, profile.bas.WD);
+
+    rows.push({lvl, currentA, powerW, flatKmh, climbKmh, rideCadence, cogFor60, thermalRisk, vGear});
   }
   return rows;
 }
@@ -1356,8 +1733,51 @@ function simParams(){
     mass: parseFloat(el('simMass').value),
     grade: parseFloat(el('simGrade').value),
     volt: parseFloat(el('simVolt').value),
-    eta: parseFloat(el('simEta').value)
+    eta: parseFloat(el('simEta').value),
+    crr: parseFloat(el('simSurface').value),
+    cda: parseFloat(el('simCda').value),
+    rc: rcParams()
   };
+}
+
+/* Renders the Reality Check verdict box: gear ceiling, thermal margin,
+   and the honest caveat about where the RPM number came from. */
+function renderRealityCheck(p, profA, profB, rowsA, rowsB){
+  const box = el('rcResult');
+  const rc = p.rc;
+  const wd = profA.bas.WD;
+  const circ = wheelCircumferenceM(wd, rc.tire);
+  const vGear = gearLimitKmh(rc, wd);
+  const ceilingA = controllerCeilingA();
+
+  const riskA = rowsA.filter(r=>r.thermalRisk);
+  const riskB = rowsB.filter(r=>r.thermalRisk);
+  const overCeiling = [profA, profB].filter(pr => pr.bas.LC > ceilingA);
+
+  let cls = '', head = 'Drivetrain ceiling', notes = [];
+
+  notes.push(`Wheel ${WHEEL_LIST[wd]}" rim + ${rc.tire}" tire → rolling circumference <span class="rc-num">${Math.round(circ*1000)} mm</span>.`);
+  notes.push(`${rc.chainring}T front / ${rc.cogMin}T smallest cog at <span class="rc-num">${rc.maxRpm} crank rpm</span> → hard limit <span class="rc-num">${fmt1(vGear)} km/h</span>. No current setting exceeds this.`);
+
+  if(overCeiling.length){
+    cls = 'rc-danger';
+    head = 'Current limit above the controller ceiling';
+    notes.push(`A selected profile asks for <span class="rc-num">${Math.max(...overCeiling.map(x=>x.bas.LC))}A</span> but the ceiling in force is <span class="rc-num">${ceilingA}A</span>. The controller will reject the value — or, on a smaller motor, accept it and cook.`);
+  } else if(riskA.length || riskB.length){
+    cls = 'rc-warn';
+    head = 'Thermal risk on the climb';
+    const worst = [...riskA, ...riskB].sort((x,y)=>x.rideCadence-y.rideCadence)[0];
+    const need = Math.min(worst.cogFor60, rc.cogMax);
+    notes.push(`At PAS ${worst.lvl} on a ${p.grade}% grade the motor pulls <span class="rc-num">${worst.currentA.toFixed(1)}A</span> while your chosen ${rc.cogRide}T cog turns the crank at only <span class="rc-num">${Math.round(worst.rideCadence)} rpm</span>. High current at low RPM is heat with nowhere to go, and the BBS02 has no temperature sensor to tell you it is happening.`);
+    notes.push(worst.cogFor60 > rc.cogMax
+      ? `Even your easiest ${rc.cogMax}T cog cannot hold 60 rpm at this speed. Reduce the current on this level, or accept walking the steepest sections.`
+      : `Shift to at least <span class="rc-num">${need}T</span> to clear 60 rpm — that alone does more for motor life than any parameter on this page.`);
+  } else {
+    notes.push(`In a ${rc.cogRide}T cog, no level in either profile combines ≥22A with a sub-60 rpm crank at this grade. Thermal margin looks acceptable.`);
+  }
+
+  box.className = 'rc-box ' + cls;
+  box.innerHTML = `<div class="rc-head">${head}</div><div class="rc-body">${notes.join('<br>')}</div>`;
 }
 
 function fmt1(n){ return (Math.round(n*10)/10).toFixed(1); }
@@ -1376,18 +1796,19 @@ function renderSim(){
 
   const tbody = document.querySelector('#simTable tbody');
   tbody.innerHTML = '';
+  const heat = r => r.thermalRisk ? ' <span title="≥22A at sub-60rpm crank — heat risk" style="color:var(--red);font-weight:700;">▲</span>' : '';
   for(let i=0;i<=9;i++){
     const a=rowsA[i], b=rowsB[i];
     const tr=document.createElement('tr');
     tr.innerHTML = `<td>PAS ${i}</td>
-      <td class="hl-a">${a.currentA.toFixed(1)}</td>
+      <td class="hl-a">${a.currentA.toFixed(1)}${heat(a)}</td>
       <td class="hl-a">${Math.round(a.powerW)}</td>
       <td class="hl-a">${fmt1(a.flatKmh)}</td>
       <td class="hl-a">${fmt1(a.climbKmh)}</td>`;
     tbody.appendChild(tr);
     const tr2=document.createElement('tr');
     tr2.innerHTML = `<td style="color:var(--text-faint);padding-left:16px;">↳ B</td>
-      <td class="hl-b">${b.currentA.toFixed(1)}</td>
+      <td class="hl-b">${b.currentA.toFixed(1)}${heat(b)}</td>
       <td class="hl-b">${Math.round(b.powerW)}</td>
       <td class="hl-b">${fmt1(b.flatKmh)}</td>
       <td class="hl-b">${fmt1(b.climbKmh)}</td>`;
@@ -1401,11 +1822,11 @@ function renderSim(){
     <div class="bar-row"><div class="lbl">Profile B launch feel</div><div class="bar-track"><div class="bar-fill b" style="width:${scoreB}%"></div></div><div class="bar-val">${scoreB}</div></div>
   `;
 
+  renderRealityCheck(p, profA, profB, rowsA, rowsB);
   renderDiff(profA, profB, rowsA, rowsB, scoreA, scoreB);
   renderGaugesAndRace(rowsA, rowsB, p);
 }
 
-const MAX_GAUGE_SPEED = 50, MAX_GAUGE_AMPS = 25;
 function needleAngle(val, max){ // -90deg (min) .. +90deg (max) sweep over a semicircle
   const frac = Math.max(0, Math.min(1, val/max));
   return -90 + frac*180;
@@ -1419,10 +1840,14 @@ function renderGaugesAndRace(rowsA, rowsB, p){
   const speedA = metric==='climb'? a.climbKmh : a.flatKmh;
   const speedB = metric==='climb'? b.climbKmh : b.flatKmh;
 
-  el('needleSpeedA').style.transform = `rotate(${needleAngle(speedA, MAX_GAUGE_SPEED)}deg)`;
-  el('needleSpeedB').style.transform = `rotate(${needleAngle(speedB, MAX_GAUGE_SPEED)}deg)`;
-  el('needleCurrA').style.transform = `rotate(${needleAngle(a.currentA, MAX_GAUGE_AMPS)}deg)`;
-  el('needleCurrB').style.transform = `rotate(${needleAngle(b.currentA, MAX_GAUGE_AMPS)}deg)`;
+  // Gauge full-scale follows the real hardware, not a fixed 50 km/h / 25A face.
+  const gaugeMaxSpeed = Math.max(10, Math.ceil((a.vGear || 50) * 1.1 / 5) * 5);
+  const gaugeMaxAmps  = Math.max(10, controllerCeilingA());
+
+  el('needleSpeedA').style.transform = `rotate(${needleAngle(speedA, gaugeMaxSpeed)}deg)`;
+  el('needleSpeedB').style.transform = `rotate(${needleAngle(speedB, gaugeMaxSpeed)}deg)`;
+  el('needleCurrA').style.transform = `rotate(${needleAngle(a.currentA, gaugeMaxAmps)}deg)`;
+  el('needleCurrB').style.transform = `rotate(${needleAngle(b.currentA, gaugeMaxAmps)}deg)`;
   el('gaugeSpeedTxt').textContent = `${fmt1(speedA)} / ${fmt1(speedB)} km/h`;
   el('gaugeCurrTxt').textContent = `${a.currentA.toFixed(1)} / ${b.currentA.toFixed(1)} A`;
 
@@ -1432,6 +1857,14 @@ function renderGaugesAndRace(rowsA, rowsB, p){
 
   // (re)start the drag-race animation loop for these two speeds
   if(raceRaf) cancelAnimationFrame(raceRaf);
+  // Respect the OS "reduce motion" setting: park both bikes at a static
+  // position proportional to their speeds instead of looping an animation.
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    const mv = Math.max(speedA, speedB, 1);
+    el('raceBikeA').setAttribute('transform', `translate(${Math.round(580*(speedA/mv))},70)`);
+    el('raceBikeB').setAttribute('transform', `translate(${Math.round(580*(speedB/mv))},70)`);
+    return;
+  }
   raceStart = performance.now();
   const trackPx = 580, durationMs = 6000;
   const maxV = Math.max(speedA, speedB, 1);
@@ -1448,17 +1881,43 @@ function renderGaugesAndRace(rowsA, rowsB, p){
 
 function renderDiff(a, b, rowsA, rowsB, scoreA, scoreB){
   const items = [];
-  function push(name, va, vb, impact){
+  // polarity: 'heat' means a RISE is bad (more current / more thermal load) and
+  // must never be painted green. 'feel' means the change is a preference, not a
+  // safety direction. Painting every rise the same colour is what nudges riders
+  // into overheating a motor that has no temperature sensor to complain.
+  function push(name, va, vb, impact, polarity, rose){
     if(va===vb) return;
-    items.push({name, va, vb, impact});
+    let cls = '', tag = '';
+    if(polarity === 'heat'){
+      cls = rose ? 'worse' : 'better';
+      tag = rose ? 'more heat' : 'less heat';
+    }
+    items.push({name, va, vb, impact, cls, tag});
   }
-  push('Current Limit', a.bas.LC+'A', b.bas.LC+'A', b.bas.LC>a.bas.LC?'more overall power available, less thermal margin':'lower ceiling, more thermal margin on long climbs');
-  push('Assist 1 current%', a.bas.ALC[1]+'%', b.bas.ALC[1]+'%', 'changes torque available right off the line in your everyday PAS level');
+  push('Current Limit', a.bas.LC+'A', b.bas.LC+'A',
+    b.bas.LC>a.bas.LC?'more overall power available, less thermal margin':'lower ceiling, more thermal margin on long climbs',
+    'heat', b.bas.LC>a.bas.LC);
+  push('Assist 1 current%', a.bas.ALC[1]+'%', b.bas.ALC[1]+'%',
+    'changes torque available right off the line in your everyday PAS level',
+    'heat', b.bas.ALC[1]>a.bas.ALC[1]);
+  push('Peak current at PAS 9', rowsA[9].currentA.toFixed(1)+'A', rowsB[9].currentA.toFixed(1)+'A',
+    'the actual draw the controller reaches at full assist',
+    'heat', rowsB[9].currentA>rowsA[9].currentA);
   push('PAS Start Current', a.pas.SC+'%', b.pas.SC+'%', 'higher = stronger initial kick from standstill');
   push('Slow-start Mode', a.pas.SSM, b.pas.SSM, 'higher = faster power ramp-up (more aggressive launch feel)');
   push('Start Degree', a.pas.SDN, b.pas.SDN, 'lower = motor engages sooner after you start pedaling');
-  push('Keep Current', a.pas.KC+'%', b.pas.KC+'%', 'higher = power stays stronger as cadence rises, less “fade”');
+  push('Keep Current', a.pas.KC+'%', b.pas.KC+'%',
+    'higher = power stays stronger as cadence rises, less “fade” — and more sustained heat',
+    'heat', b.pas.KC>a.pas.KC);
   push('Throttle Start Current', a.thr.SC+'%', b.thr.SC+'%', 'higher = punchier throttle tip-in from a stop');
+
+  const heatLevelsA = rowsA.filter(r=>r.thermalRisk).length;
+  const heatLevelsB = rowsB.filter(r=>r.thermalRisk).length;
+  if(heatLevelsA !== heatLevelsB){
+    push('PAS levels flagged for heat', heatLevelsA, heatLevelsB,
+      '≥22A while your chosen climbing cog holds the crank under 60 rpm',
+      'heat', heatLevelsB>heatLevelsA);
+  }
 
   const climbDelta = rowsB[5].climbKmh - rowsA[5].climbKmh;
   const flatDelta = rowsB[9].flatKmh - rowsA[9].flatKmh;
@@ -1470,12 +1929,15 @@ function renderDiff(a, b, rowsA, rowsB, scoreA, scoreB){
     return;
   }
   items.forEach(it=>{
-    const d = document.createElement('div'); d.className='diff-item';
-    d.innerHTML = `<span class="field-name">${it.name}</span><span class="arrow-vals">${it.va} → <b>${it.vb}</b></span><span class="impact">${it.impact}</span>`;
+    const d = document.createElement('div'); d.className='diff-item'+(it.cls?' '+it.cls:'');
+    const tag = it.tag ? `<span class="polarity">${it.tag}</span>` : '';
+    d.innerHTML = `<span class="field-name">${it.name}</span><span class="arrow-vals">${it.va} → <b>${it.vb}</b></span>${tag}<span class="impact">${it.impact}</span>`;
     box.appendChild(d);
   });
   const summary = document.createElement('div'); summary.className='diff-item';
-  summary.style.borderLeft = '3px solid var(--copper)';
+  // Neutral, not copper — red now means "worse for the motor" in this list and
+  // the summary row is not a verdict.
+  summary.style.borderLeft = '3px solid var(--line-bright)';
   summary.innerHTML = `<span class="field-name">Net effect (estimate)</span><span class="arrow-vals">Launch feel ${scoreA}→<b>${scoreB}</b> · PAS5 climb ${fmt1(rowsA[5].climbKmh)}→<b>${fmt1(rowsB[5].climbKmh)}km/h</b> · PAS9 flat top ${fmt1(rowsA[9].flatKmh)}→<b>${fmt1(rowsB[9].flatKmh)}km/h</b></span><span class="impact">estimate only</span>`;
   box.appendChild(summary);
 }
@@ -1486,8 +1948,10 @@ function initSim(){
   el('simProfB').innerHTML = optHtml;
   el('simProfA').value = PRESETS.yourCurrent ? 'yourCurrent' : '__live';
   el('simProfB').value = PRESETS.peppy ? 'peppy' : '__live';
-  ['simMass','simGrade','simVolt','simEta','simProfA','simProfB','simLevel','simMetric'].forEach(id=>{
+  ['simMass','simGrade','simVolt','simEta','simProfA','simProfB','simLevel','simMetric',
+   'simSurface','simCda','rcChainring','rcCogMin','rcCogMax','rcTire','rcMaxRpm'].forEach(id=>{
     el(id).addEventListener('input', renderSim);
+    el(id).addEventListener('change', renderSim);
   });
   renderSim();
 }
@@ -1509,27 +1973,24 @@ el('btnConnect').onclick = connectSerial;
 el('btnDisconnect').onclick = disconnectSerial;
 el('btnReadAll').onclick = ()=> readBlock(BLK.BAS, true);
 el('btnWriteAll').onclick = async ()=>{
-  if(!lastKnownGood){
-    toast('Read all first — no backup on file yet','err');
-    logLine('Write all blocked: no prior Read all, so no backup exists','l-err');
-    return;
-  }
-  const ok = confirm(
-    'Write all will send Basic → Pedal Assist → Throttle to the controller.\n\n'+
-    'A backup of what was last read is already saved to your Downloads folder as backup_<timestamp>.el.\n\n'+
-    'Nothing here can corrupt the controller\'s firmware — this only rewrites its settings block, and it validates each value before accepting it. Worst case, a bad value gets rejected with an error and nothing changes. If you want to undo after writing, just load the backup .el file and Write all again.\n\n'+
-    'Proceed?'
-  );
-  if(!ok){ toast('Write all cancelled'); return; }
+  if(!safetyGate(['bas','pas','thr'])) return;
   await writeBlock(BLK.BAS, true);
 };
 el('basRead').onclick = ()=> readBlock(BLK.BAS, false);
 el('pasRead').onclick = ()=> readBlock(BLK.PAS, false);
 el('thrRead').onclick = ()=> readBlock(BLK.THR, false);
-el('basWrite').onclick = ()=> writeBlock(BLK.BAS, false);
-el('pasWrite').onclick = ()=> writeBlock(BLK.PAS, false);
-el('thrWrite').onclick = ()=> writeBlock(BLK.THR, false);
+el('basWrite').onclick = ()=> guardedWriteBlock(BLK.BAS);
+el('pasWrite').onclick = ()=> guardedWriteBlock(BLK.PAS);
+el('thrWrite').onclick = ()=> guardedWriteBlock(BLK.THR);
 el('btnClearLog').onclick = ()=>{ el('logBox').innerHTML=''; };
+el('chkStrictChecksum').addEventListener('change', (e)=>{
+  strictChecksum = e.target.checked;
+  logLine('Strict checksum verification '+(strictChecksum?'ENABLED — bad frames will be discarded':'disabled — bad frames will be applied with a warning'),'l-sys');
+});
+el('rcMaxRpm').addEventListener('input', (e)=>{
+  e.target.dataset.userSet = '1';
+  el('rcRpmSrc').textContent = '· measured/manual';
+});
 
 el('fileInput').addEventListener('change', (ev)=>{
   const f = ev.target.files[0]; if(!f) return;
@@ -1553,15 +2014,19 @@ el('btnExport').onclick = ()=>{
   toast('Exported MyProfile.el','ok');
 };
 
-/* gate */
+/* gate — in-memory only.
+   Web Storage is banned by the project rules (it does not work in artifact
+   environments) and a risk acknowledgement that survives reloads is the wrong
+   default anyway: this screen is cheap to re-read and expensive to skip. */
+let gateAcknowledged = false;
 (function(){
   const gate = document.getElementById('gate');
   const check = document.getElementById('gateCheck');
   const enter = document.getElementById('gateEnter');
-  if(sessionStorage.getItem('bbsflash_gate_ok')==='1'){ gate.classList.add('hidden'); return; }
+  if(gateAcknowledged){ gate.classList.add('hidden'); return; }
   check.addEventListener('change', ()=>{ enter.disabled = !check.checked; });
   enter.addEventListener('click', ()=>{
-    sessionStorage.setItem('bbsflash_gate_ok','1');
+    gateAcknowledged = true;
     gate.classList.add('hidden');
   });
 })();
