@@ -8,28 +8,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --graphite:#f3f1ec;
-  --panel:#ffffff;
-  --panel-2:#f0f1f3;
-  --line:#dfe2e6;
-  --line-bright:#c3c9cf;
-  --copper:#d81e2c;
-  --copper-bright:#f0323f;
-  --teal:#1c5fd1;
-  --amber:#e08a12;
-  --red:#d81e2c;
-  --text:#14171a;
-  --text-dim:#565e66;
-  --text-faint:#8a929a;
+  --graphite:#14171a;
+  --panel:#1b1f24;
+  --panel-2:#20252b;
+  --line:#2b3138;
+  --line-bright:#3a4149;
+  --copper:#c9722f;
+  --copper-bright:#e08c47;
+  --teal:#49d9b8;
+  --amber:#e8a33d;
+  --red:#e2604f;
+  --text:#e7e4dd;
+  --text-dim:#9aa1a8;
+  --text-faint:#5b6268;
   --mono:'JetBrains Mono', ui-monospace, monospace;
   --sans:'Inter', ui-sans-serif, system-ui, sans-serif;
   --disp:'Space Grotesk', var(--sans);
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;background:var(--graphite);color:var(--text);font-family:var(--sans);}
-body{min-height:100vh;background-image:radial-gradient(circle at 1px 1px, #00000008 1px, transparent 0);background-size:22px 22px;}
-::selection{background:var(--copper);color:#fff;}
-.card, .rail, .topbar{box-shadow:0 1px 2px rgba(20,23,26,.04);}
+body{min-height:100vh;}
+::selection{background:var(--copper);color:#14171a;}
 
 /* ---------- layout shell ---------- */
 .app{display:flex;min-height:100vh;}
@@ -58,7 +57,7 @@ body{min-height:100vh;background-image:radial-gradient(circle at 1px 1px, #00000
 
 .rail-foot{margin-top:auto;padding:14px 20px 0 20px;border-top:1px solid var(--line);}
 .led-row{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--text-faint);}
-.led{width:7px;height:7px;border-radius:50%;background:#c3c9cf;flex:none;}
+.led{width:7px;height:7px;border-radius:50%;background:#3a4149;flex:none;}
 .led.on{background:var(--teal);box-shadow:0 0 8px var(--teal);animation:pulse 2s ease-in-out infinite;}
 .led.warn{background:var(--amber);box-shadow:0 0 8px var(--amber);}
 .led.err{background:var(--red);box-shadow:0 0 8px var(--red);}
@@ -68,7 +67,7 @@ body{min-height:100vh;background-image:radial-gradient(circle at 1px 1px, #00000
 .main{flex:1;min-width:0;display:flex;flex-direction:column;}
 .topbar{
   display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:16px 28px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#ffffff,#f6f4ef);
+  padding:16px 28px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#171a1e,#14171a);
 }
 .conn-block{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
 .port-select{
@@ -81,7 +80,7 @@ body{min-height:100vh;background-image:radial-gradient(circle at 1px 1px, #00000
 }
 .btn:hover{border-color:var(--copper);}
 .btn:disabled{opacity:.35;cursor:not-allowed;}
-.btn.primary{background:var(--copper);border-color:var(--copper);color:#fff;}
+.btn.primary{background:var(--copper);border-color:var(--copper);color:#181109;}
 .btn.primary:hover{background:var(--copper-bright);}
 .btn.ghost{background:transparent;}
 .btn.danger{border-color:var(--red);color:var(--red);background:transparent;}
@@ -130,13 +129,13 @@ body{min-height:100vh;background-image:radial-gradient(circle at 1px 1px, #00000
   text-align:left;padding:6px 10px;color:var(--text-faint);font-weight:500;
   border-bottom:1px solid var(--line);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;
 }
-.pas-table td{padding:5px 10px;border-bottom:1px solid #eceef0;}
+.pas-table td{padding:5px 10px;border-bottom:1px solid #1f2429;}
 .pas-table input{
   width:64px;background:var(--panel-2);border:1px solid var(--line);color:var(--text);
   font-family:var(--mono);font-size:12.5px;padding:6px 8px;border-radius:5px;text-align:right;
 }
 .pas-table input:focus{outline:none;border-color:var(--copper);}
-.pas-table tr:hover td{background:#f7f4e9;}
+.pas-table tr:hover td{background:#1f242a;}
 .pas-lvl{color:var(--copper-bright);font-weight:700;width:34px;}
 
 .actions-row{display:flex;gap:10px;margin-top:6px;}
@@ -152,7 +151,7 @@ body{min-height:100vh;background-image:radial-gradient(circle at 1px 1px, #00000
 .preset-desc{font-size:11.5px;color:var(--text-dim);margin-top:4px;line-height:1.4;}
 .preset-tag{
   display:inline-block;margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--copper);
-  border:1px solid #f3c6c9;background:#fdecec;padding:2px 7px;border-radius:20px;
+  border:1px solid #4a3320;background:#241a10;padding:2px 7px;border-radius:20px;
 }
 
 .file-row{display:flex;gap:10px;align-items:center;}
@@ -160,7 +159,7 @@ input[type=file]{display:none;}
 
 /* log */
 .log{
-  background:#fbfaf7;border:1px solid var(--line);border-radius:8px;
+  background:#101316;border:1px solid var(--line);border-radius:8px;
   font-family:var(--mono);font-size:11px;color:var(--text-dim);
   height:170px;overflow-y:auto;padding:10px 12px;line-height:1.65;
 }
@@ -180,81 +179,10 @@ input[type=file]{display:none;}
 .toast.err{border-left-color:var(--red);}
 @keyframes slidein{from{opacity:0;transform:translateX(16px);}to{opacity:1;transform:none;}}
 
-.sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-@media (max-width:980px){.sim-grid{grid-template-columns:1fr;}}
-.slider-field{display:flex;flex-direction:column;gap:6px;}
-.slider-field .row{display:flex;justify-content:space-between;align-items:baseline;}
-.slider-field .row label{font-size:12px;color:var(--text-dim);font-weight:500;}
-.slider-field .row b{font-family:var(--mono);color:var(--copper-bright);font-size:13px;}
-input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--line-bright);outline:none;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--copper);cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px var(--line-bright);}
-input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--copper);cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px var(--line-bright);}
-
-.ab-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;}
-.ab-col{flex:1;min-width:200px;}
-.ab-col label{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px;}
-.ab-col.a select{border-left:3px solid var(--copper);}
-.ab-col.b select{border-left:3px solid var(--teal);}
-
-.sim-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
-.sim-table th{text-align:right;padding:7px 9px;color:var(--text-faint);font-weight:500;border-bottom:1px solid var(--line);font-size:10px;text-transform:uppercase;letter-spacing:.04em;}
-.sim-table th:first-child, .sim-table td:first-child{text-align:left;}
-.sim-table td{text-align:right;padding:6px 9px;border-bottom:1px solid #eceef0;}
-.sim-table td.hl-a{color:var(--copper-bright);}
-.sim-table td.hl-b{color:var(--teal);}
-.sim-table tr.top-row td{color:var(--text-faint);}
-
-.bar-row{display:grid;grid-template-columns:150px 1fr 40px;align-items:center;gap:10px;margin-bottom:10px;}
-.bar-row .lbl{font-size:12px;color:var(--text-dim);}
-.bar-track{height:9px;border-radius:5px;background:var(--panel-2);border:1px solid var(--line);overflow:hidden;position:relative;}
-.bar-fill{height:100%;border-radius:5px 0 0 5px;transition:width .3s ease;}
-.bar-fill.a{background:var(--copper);}
-.bar-fill.b{background:var(--teal);}
-.bar-val{font-family:var(--mono);font-size:11px;color:var(--text-dim);text-align:right;}
-
-.diff-list{display:flex;flex-direction:column;gap:8px;}
-.diff-item{
-  display:flex;align-items:center;gap:10px;font-size:12.5px;padding:9px 12px;
-  background:var(--panel-2);border-radius:7px;border:1px solid var(--line);
-}
-.diff-item .field-name{color:var(--text);font-weight:600;min-width:150px;}
-.diff-item .arrow-vals{font-family:var(--mono);color:var(--text-dim);flex:1;}
-.diff-item .arrow-vals b{color:var(--copper-bright);}
-.diff-item .impact{color:var(--text-faint);font-size:11.5px;font-style:italic;}
-
-.sim-caveat{font-size:11.5px;color:var(--text-faint);line-height:1.55;margin-top:4px;}
-
 .warn-banner{
-  background:#fff6e9;border:1px solid #f0d29a;color:#8a5a00;
+  background:#241a10;border:1px solid #4a3320;color:var(--amber);
   padding:11px 16px;border-radius:8px;font-size:12.5px;margin-bottom:18px;line-height:1.5;
 }
-
-.gate{
-  position:fixed;inset:0;z-index:100;background:#f3f1ec;
-  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;padding:20px;
-}
-.gate.hidden{display:none;}
-.gate-card{max-width:460px;text-align:center;}
-.gate-flag{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--copper);text-transform:uppercase;margin-bottom:10px;}
-.gate-title{font-family:var(--disp);font-size:26px;font-weight:700;margin-bottom:10px;}
-.gate-desc{font-size:13.5px;color:var(--text-dim);line-height:1.6;margin-bottom:20px;}
-.gate-check{display:flex;align-items:center;gap:8px;justify-content:center;font-size:12.5px;color:var(--text-dim);margin-bottom:16px;}
-
-.rc-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px;}
-.rc-stat{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;}
-.rc-stat .lbl{font-family:var(--mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
-.rc-stat .val{font-family:var(--disp);font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;}
-.rc-stat .sub{font-size:11px;color:var(--text-dim);margin-top:4px;}
-.rc-alert{border-radius:8px;padding:14px 16px;margin-bottom:12px;font-size:13px;line-height:1.55;border-left:4px solid;}
-.rc-alert.danger{background:#fdecea;border-color:var(--red);color:#5c1515;}
-.rc-alert.warn{background:#fff6e6;border-color:var(--amber);color:#5c3d00;}
-.rc-alert.ok{background:#eaf6ee;border-color:#1f8a52;color:#134526;}
-.rc-alert b{display:block;font-size:14px;margin-bottom:4px;}
-.rc-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
-.rc-table th{text-align:left;padding:8px 10px;color:var(--text-faint);font-weight:500;border-bottom:1px solid var(--line);font-size:10px;text-transform:uppercase;}
-.rc-table td{padding:7px 10px;border-bottom:1px solid #eceef0;}
-.rc-table tr.bad td{background:#fdecea;}
-.rc-table tr.warn td{background:#fff6e6;}
 
 @media (max-width:820px){
   .rail{position:fixed;left:-220px;transition:.2s;z-index:40;height:100vh;}
@@ -266,24 +194,14 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 </head>
 <body>
 
-<div class="gate" id="gate">
-  <div class="gate-card">
-    <div class="gate-flag">◆ ◆ ◆ Restricted paddock ◆ ◆ ◆</div>
-    <div class="gate-title">BBS FLASH</div>
-    <div class="gate-desc">This tool talks directly to a Bafang BBS02/BBS02B controller over UART. It is built for that exact platform — settings and safety ranges will not make sense on other motors. If that's not your hardware, please don't write settings from here.</div>
-    <label class="gate-check"><input type="checkbox" id="gateCheck"/> I ride a Bafang BBS02 / BBS02B and understand this tool writes to my controller</label><br/>
-    <button class="btn primary" id="gateEnter" disabled>Enter the paddock</button>
-  </div>
-</div>
-
 <div class="app">
   <aside class="rail" id="rail">
     <div class="brand">
       <div class="brand-mark">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#d81e2c" stroke-width="2"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke="#d81e2c" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#c9722f" stroke-width="2"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke="#c9722f" stroke-width="2" stroke-linecap="round"/></svg>
         BBS FLASH
       </div>
-      <div class="brand-sub">UART Configurator · v3</div>
+      <div class="brand-sub">UART Configurator · v2</div>
     </div>
     <nav class="nav">
       <button class="nav-btn active" data-tab="connect"><span class="idx">01</span>Connection</button>
@@ -291,9 +209,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <button class="nav-btn" data-tab="pas"><span class="idx">03</span>Pedal Assist</button>
       <button class="nav-btn" data-tab="thr"><span class="idx">04</span>Throttle</button>
       <button class="nav-btn" data-tab="profiles"><span class="idx">05</span>Profiles</button>
-      <button class="nav-btn" data-tab="sim"><span class="idx">06</span>Ride Simulator</button>
-      <button class="nav-btn" data-tab="reality"><span class="idx">07</span>Reality Check</button>
-      <button class="nav-btn" data-tab="log"><span class="idx">08</span>Wire Log</button>
+      <button class="nav-btn" data-tab="log"><span class="idx">06</span>Wire Log</button>
     </nav>
     <div class="rail-foot">
       <div class="led-row"><span class="led" id="railLed"></span><span id="railStatus">DISCONNECTED</span></div>
@@ -305,7 +221,6 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <div class="conn-block">
         <button class="btn primary" id="btnConnect">Connect</button>
         <button class="btn" id="btnReadAll" disabled>Read all</button>
-        <button class="btn primary" id="btnWriteAll" disabled>Write all</button>
         <button class="btn danger ghost" id="btnDisconnect" disabled>Disconnect</button>
       </div>
       <div class="dev-readout" id="devReadout">
@@ -346,19 +261,6 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
           <div class="panel-title">Power, protection &amp; assist table</div>
           <div class="panel-desc">Low battery cutoff, overall current ceiling, the 0–9 assist-level current/speed table, wheel size and speed-meter calibration.</div>
         </div>
-
-        <details class="card"><summary class="card-title" style="cursor:pointer;">What each setting does — tap to expand</summary>
-          <table class="pas-table" style="margin-top:10px;">
-            <thead><tr><th>Setting</th><th style="text-align:left;">Increasing it →</th></tr></thead>
-            <tbody>
-              <tr><td style="color:var(--text)">Low Battery Protection</td><td style="text-align:left;">Cuts off sooner on a discharging pack — safer for the battery, less usable range per charge.</td></tr>
-              <tr><td style="color:var(--text)">Current Limit</td><td style="text-align:left;">Raises the ceiling every PAS level can draw from — more overall power, more heat, less thermal margin on long climbs.</td></tr>
-              <tr><td style="color:var(--text)">Assist N Current %</td><td style="text-align:left;">More torque at that specific PAS level — stronger pull, but also more strain if used at low cadence on a climb.</td></tr>
-              <tr><td style="color:var(--text)">Assist N Speed %</td><td style="text-align:left;">Raises the speed cap that level lets you reach before the motor backs off.</td></tr>
-              <tr><td style="color:var(--text)">Wheel Diameter</td><td style="text-align:left;">Recalibrates the speedometer and every speed-based cutoff — wrong value skews all of the above.</td></tr>
-            </tbody>
-          </table>
-        </details>
 
         <div class="card">
           <div class="card-title">Power limits</div>
@@ -414,20 +316,6 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
           <div class="panel-title">Cadence response tuning</div>
           <div class="panel-desc">How the motor reacts to pedaling: sensor type, start behaviour, and how quickly it lets go when you stop — the parameter that protects your drivetrain during shifts.</div>
         </div>
-
-        <details class="card"><summary class="card-title" style="cursor:pointer;">What each setting does — tap to expand</summary>
-          <table class="pas-table" style="margin-top:10px;">
-            <thead><tr><th>Setting</th><th style="text-align:left;">Increasing it →</th></tr></thead>
-            <tbody>
-              <tr><td style="color:var(--text)">Start Current</td><td style="text-align:left;">Stronger kick from a standstill — the main lever for a punchier launch. Also stresses the controller/gear more at 0 cadence.</td></tr>
-              <tr><td style="color:var(--text)">Slow-start Mode</td><td style="text-align:left;">Faster power ramp-up when you start pedaling — snappier, but rougher on the drivetrain.</td></tr>
-              <tr><td style="color:var(--text)">Startup Degree</td><td style="text-align:left;">More pedal-signal pulses required before assist kicks in — <i>higher = slower to respond</i>, lower = snappier engagement.</td></tr>
-              <tr><td style="color:var(--text)">Time of Stop</td><td style="text-align:left;">Longer delay before the motor lets go once you stop pedaling — worse for shift protection, but smoother PAS on rough trail.</td></tr>
-              <tr><td style="color:var(--text)">Current Decay</td><td style="text-align:left;">Slower/gentler fall-off in power as your effort drops.</td></tr>
-              <tr><td style="color:var(--text)">Keep Current</td><td style="text-align:left;">Power stays stronger as cadence rises — less "fade" mid-pedal-stroke, more sustained pull.</td></tr>
-            </tbody>
-          </table>
-        </details>
 
         <div class="card">
           <div class="grid">
@@ -499,17 +387,6 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
           <div class="panel-desc">Voltage window, Speed vs Current mode, and its own independent assist/speed ceiling.</div>
         </div>
 
-        <details class="card"><summary class="card-title" style="cursor:pointer;">What each setting does — tap to expand</summary>
-          <table class="pas-table" style="margin-top:10px;">
-            <thead><tr><th>Setting</th><th style="text-align:left;">Increasing it →</th></tr></thead>
-            <tbody>
-              <tr><td style="color:var(--text)">Start Current</td><td style="text-align:left;">Punchier throttle tip-in right from a stop — the main lever for a snappier throttle launch.</td></tr>
-              <tr><td style="color:var(--text)">End Voltage</td><td style="text-align:left;">Widens the usable throttle travel before hitting full power — finer control near the top of the twist.</td></tr>
-              <tr><td style="color:var(--text)">Mode: Current vs Speed</td><td style="text-align:left;">Current mode = smoother, controller manages power directly. Speed mode = punchier but jerkier, throttle position ≈ target speed.</td></tr>
-            </tbody>
-          </table>
-        </details>
-
         <div class="card">
           <div class="grid">
             <div class="field">
@@ -569,174 +446,10 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </div>
       </section>
 
-      <!-- ===================== SIMULATOR ===================== -->
-      <section class="tab-panel" data-panel="sim">
-        <div class="panel-header">
-          <div class="panel-eyebrow">06 · Physics estimate</div>
-          <div class="panel-title">Ride simulator — compare two profiles</div>
-          <div class="panel-desc">Estimates top speed, hill-climb speed and launch feel from your settings using power-balance physics (P = drag + rolling resistance + grade force, at your controller's current draw). This is a comparison tool, not a dyno-calibrated prediction — treat the numbers as relative, not gospel.</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Rider &amp; bike parameters</div>
-          <div class="sim-grid">
-            <div class="slider-field">
-              <div class="row"><label>Total mass (rider + bike + gear)</label><b id="simMassVal">115 kg</b></div>
-              <input type="range" id="simMass" min="70" max="160" value="115" step="1"/>
-            </div>
-            <div class="slider-field">
-              <div class="row"><label>Climb grade for hill test</label><b id="simGradeVal">8%</b></div>
-              <input type="range" id="simGrade" min="0" max="20" value="8" step="1"/>
-            </div>
-            <div class="slider-field">
-              <div class="row"><label>Effective pack voltage under load</label><b id="simVoltVal">45 V</b></div>
-              <input type="range" id="simVolt" min="38" max="54" value="45" step="0.5"/>
-            </div>
-            <div class="slider-field">
-              <div class="row"><label>Drivetrain efficiency</label><b id="simEtaVal">85%</b></div>
-              <input type="range" id="simEta" min="70" max="95" value="85" step="1"/>
-            </div>
-          </div>
-          <p class="sim-caveat">Defaults assume ~95kg rider + ~20kg converted hardtail, moderate MTB tire rolling resistance (Crr 0.006), upright riding position (CdA 0.55). Wheel size and current-limit ceiling are read from the profile itself.</p>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Choose two profiles to compare</div>
-          <div class="ab-row">
-            <div class="ab-col a"><label>Profile A</label><select id="simProfA"></select></div>
-            <div class="ab-col b"><label>Profile B</label><select id="simProfB"></select></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Live gauges &amp; drag race</div>
-          <div class="grid" style="margin-bottom:14px;">
-            <div class="field">
-              <label>PAS level to display</label>
-              <input type="range" id="simLevel" min="0" max="9" value="5"/>
-              <small id="simLevelVal">Level 5</small>
-            </div>
-            <div class="field">
-              <label>Metric</label>
-              <select id="simMetric"><option value="flat">Flat ground</option><option value="climb">Climbing at set grade</option></select>
-            </div>
-          </div>
-
-          <svg viewBox="0 0 620 190" style="width:100%;max-width:640px;display:block;margin:0 auto;">
-            <!-- speed gauge -->
-            <g transform="translate(150,95)">
-              <path d="M -90 10 A 90 90 0 1 1 90 10" fill="none" stroke="var(--line-bright)" stroke-width="10"/>
-              <path d="M -90 10 A 90 90 0 0 1 -35 -83" fill="none" stroke="var(--copper)" stroke-width="10" opacity=".35"/>
-              <text x="0" y="45" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--text-faint)">KM/H</text>
-              <line id="needleSpeedA" x1="0" y1="0" x2="0" y2="-78" stroke="var(--copper)" stroke-width="4" stroke-linecap="round" style="transform-origin:0px 0px;transform:rotate(-90deg);transition:transform .25s cubic-bezier(.2,.8,.2,1);"/>
-              <line id="needleSpeedB" x1="0" y1="0" x2="0" y2="-66" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" style="transform-origin:0px 0px;transform:rotate(-90deg);transition:transform .25s cubic-bezier(.2,.8,.2,1);"/>
-              <circle cx="0" cy="0" r="5" fill="var(--text)"/>
-              <text id="gaugeSpeedTxt" x="0" y="70" text-anchor="middle" font-family="var(--mono)" font-weight="700" font-size="15" fill="var(--text)">0 / 0</text>
-            </g>
-            <!-- current gauge -->
-            <g transform="translate(470,95)">
-              <path d="M -90 10 A 90 90 0 1 1 90 10" fill="none" stroke="var(--line-bright)" stroke-width="10"/>
-              <text x="0" y="45" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--text-faint)">AMPS</text>
-              <line id="needleCurrA" x1="0" y1="0" x2="0" y2="-78" stroke="var(--copper)" stroke-width="4" stroke-linecap="round" style="transform-origin:0px 0px;transform:rotate(-90deg);transition:transform .25s cubic-bezier(.2,.8,.2,1);"/>
-              <line id="needleCurrB" x1="0" y1="0" x2="0" y2="-66" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" style="transform-origin:0px 0px;transform:rotate(-90deg);transition:transform .25s cubic-bezier(.2,.8,.2,1);"/>
-              <circle cx="0" cy="0" r="5" fill="var(--text)"/>
-              <text id="gaugeCurrTxt" x="0" y="70" text-anchor="middle" font-family="var(--mono)" font-weight="700" font-size="15" fill="var(--text)">0 / 0</text>
-            </g>
-          </svg>
-
-          <div id="raceTrackWrap" style="margin-top:10px;transform-origin:left center;">
-            <svg viewBox="0 0 640 90" style="width:100%;display:block;">
-              <line x1="0" y1="70" x2="640" y2="70" stroke="var(--line-bright)" stroke-width="2" stroke-dasharray="6 6"/>
-              <line x1="600" y1="10" x2="600" y2="70" stroke="var(--text)" stroke-width="3"/>
-              <text x="605" y="20" font-family="var(--mono)" font-size="10" fill="var(--text-faint)">FINISH</text>
-              <g id="raceBikeA" transform="translate(0,70)">
-                <circle cx="0" cy="0" r="9" fill="none" stroke="var(--copper)" stroke-width="3"/>
-                <circle cx="26" cy="0" r="9" fill="none" stroke="var(--copper)" stroke-width="3"/>
-                <path d="M0 0 L13 -22 L26 0 M13 -22 L13 -30 M6 -30 L20 -30" stroke="var(--copper)" stroke-width="3" fill="none" stroke-linecap="round"/>
-              </g>
-              <g id="raceBikeB" transform="translate(0,70)">
-                <circle cx="0" cy="0" r="9" fill="none" stroke="var(--teal)" stroke-width="3"/>
-                <circle cx="26" cy="0" r="9" fill="none" stroke="var(--teal)" stroke-width="3"/>
-                <path d="M0 0 L13 -22 L26 0 M13 -22 L13 -30 M6 -30 L20 -30" stroke="var(--teal)" stroke-width="3" fill="none" stroke-linecap="round"/>
-              </g>
-            </svg>
-          </div>
-          <p class="sim-caveat">The road tilts with your grade slider; both bikes launch together and the gap that opens is proportional to the speed difference at the chosen PAS level. Red = Profile A, blue = Profile B.</p>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Per-level output: power, current, top speed, climb speed</div>
-          <table class="sim-table" id="simTable">
-            <thead><tr><th>PAS level</th><th>Current A</th><th>Power W</th><th>Flat speed</th><th>Climb speed</th></tr></thead>
-            <tbody></tbody>
-          </table>
-          <p class="sim-caveat">Flat/climb speed capped by each level's Speed Limit % against an assumed ~45km/h reference ceiling — the firmware's exact speed-cap formula isn't publicly documented, so treat the cap as illustrative.</p>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Launch response index <span style="font-weight:400;color:var(--text-faint);font-size:11px;">(relative feel score, not measured seconds)</span></div>
-          <div id="punchBars"></div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">What changes going from A → B</div>
-          <div class="diff-list" id="diffList"></div>
-        </div>
-      </section>
-
-      <!-- ===================== REALITY CHECK ===================== -->
-      <section class="tab-panel" data-panel="reality">
-        <div class="panel-header">
-          <div class="panel-eyebrow">07 · Reality Check</div>
-          <div class="panel-title">Честные пределы вашей трансмиссии</div>
-          <div class="panel-desc">Главная фича v3.0: показывает, что реально достижимо на ваших звёздах и колесе — до записи настроек в контроллер. Предупреждает, но не блокирует (кроме аппаратных лимитов тока).</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Трансмиссия и сценарий</div>
-          <div class="grid">
-            <div class="field">
-              <label>Передняя звезда <span class="unit">T</span></label>
-              <input type="number" id="rcChainring" min="22" max="52" value="32"/>
-            </div>
-            <div class="field">
-              <label>Мелкая кассета <span class="unit">T</span></label>
-              <input type="number" id="rcCog" min="9" max="14" value="11"/>
-            </div>
-            <div class="field">
-              <label>Уклон для проверки <span class="unit">%</span></label>
-              <input type="number" id="rcGrade" min="0" max="20" step="0.5" value="8"/>
-              <small id="rcGradeVal">8%</small>
-            </div>
-            <div class="field">
-              <label>Целевая скорость <span class="unit">km/h (опц.)</span></label>
-              <input type="number" id="rcTarget" min="0" max="60" step="1" value="0" placeholder="0 = не задана"/>
-              <small>0 = только расчёт предела по передаче</small>
-            </div>
-          </div>
-        </div>
-
-        <div id="rcAlerts"></div>
-
-        <div class="card">
-          <div class="card-title">Ключевые цифры</div>
-          <div class="rc-hero" id="rcHero"></div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Проверка по уровням PAS</div>
-          <table class="rc-table" id="rcPasTable">
-            <thead><tr><th>PAS</th><th>Ток A</th><th>Скорость на уклоне</th><th>Каденс (расч.)</th><th>Speed Limit %</th><th>Статус</th></tr></thead>
-            <tbody></tbody>
-          </table>
-          <p class="sim-caveat" style="margin-top:12px;">Каденс — только расчётный (датчика наружу нет). Красная зона перегрева: ток ≥22 A и каденс &lt;60 об/мин на заданном уклоне.</p>
-        </div>
-      </section>
-
       <!-- ===================== LOG ===================== -->
       <section class="tab-panel" data-panel="log">
         <div class="panel-header">
-          <div class="panel-eyebrow">08 · Wire log</div>
+          <div class="panel-eyebrow">06 · Wire log</div>
           <div class="panel-title">Raw frame trace</div>
           <div class="panel-desc">Every byte sent/received, for debugging a stubborn connection or verifying nothing unexpected is being written.</div>
         </div>
@@ -799,7 +512,6 @@ function checksum(bytes, from, to){ // sum bytes[from..to] inclusive, mod 256
 const state = {
   nominalCode: 2, // default 48V until GEN read
   maxCurrent: 25,
-  modelStr: '',
   bas: { LBP:41, LC:20, ALC:[1,50,58,64,70,76,82,88,94,100], ALBP:[1,38,44,52,60,68,76,84,92,100], WD:11, SMType:0, SMSig:1 },
   pas: { PT:3, DA:255, SL:255, SC:10, SSM:1, SDN:4, WM:null, TS:10, CD:8, SD:0, KC:80 },
   thr: { SV:11, EV:35, MODE:1, DA:255, SL:255, SC:10 }
@@ -844,24 +556,6 @@ const PRESETS = {
     bas:{LBP:41,LC:20,ALC:[1,10,15,25,35,45,55,70,85,100],ALBP:[1,100,100,100,100,100,100,100,100,100],WD:11,SMType:0,SMSig:1},
     pas:{PT:3,DA:255,SL:255,SC:10,SSM:4,SDN:4,WM:null,TS:10,CD:8,SD:0,KC:80},
     thr:{SV:11,EV:42,MODE:1,DA:255,SL:255,SC:8}
-  },
-  yourCurrent: { name:"Your current settings", tag:"Read from controller 01.08",
-    desc:"Exactly what's on your HZXT SZZ9 right now — LC 24A (near the 25A ceiling), Assist1 at 15% current, PAS Start Current 15%, Slow-start 4, Throttle Start Current 10%.",
-    bas:{LBP:40,LC:24,ALC:[0,15,20,30,45,55,60,70,80,100],ALBP:[0,100,100,100,100,100,100,100,100,100],WD:11,SMType:0,SMSig:1},
-    pas:{PT:3,DA:255,SL:255,SC:15,SSM:4,SDN:4,WM:null,TS:20,CD:8,SD:0,KC:60},
-    thr:{SV:11,EV:36,MODE:1,DA:255,SL:40,SC:10}
-  },
-  peppy: { name:"Peppier start (LC unchanged)", tag:"Recommended — punchier launch",
-    desc:"Keeps your 24A ceiling. Raises PAS Start Current to max (20%), more aggressive Slow-start (7), faster engagement (Start Degree 2), stronger Assist1 (25%) and Keep Current (75%), punchier throttle tip-in (16%).",
-    bas:{LBP:40,LC:24,ALC:[0,25,30,40,50,58,65,75,88,100],ALBP:[0,100,100,100,100,100,100,100,100,100],WD:11,SMType:0,SMSig:1},
-    pas:{PT:3,DA:255,SL:255,SC:20,SSM:7,SDN:2,WM:null,TS:20,CD:8,SD:0,KC:75},
-    thr:{SV:11,EV:36,MODE:1,DA:255,SL:40,SC:16}
-  },
-  peppySafe: { name:"Peppier start + thermal margin", tag:"Recommended — safer ceiling",
-    desc:"Same launch tuning as \u201cPeppier start\u201d, but trims Current Limit to 20A — the community's most-cited safe number for the BBS02B 750W — so the extra punch doesn't come with less thermal headroom on long forest climbs.",
-    bas:{LBP:40,LC:20,ALC:[0,25,30,40,50,58,65,75,88,100],ALBP:[0,100,100,100,100,100,100,100,100,100],WD:11,SMType:0,SMSig:1},
-    pas:{PT:3,DA:255,SL:255,SC:20,SSM:7,SDN:2,WM:null,TS:20,CD:8,SD:0,KC:75},
-    thr:{SV:11,EV:36,MODE:1,DA:255,SL:40,SC:16}
   }
 };
 
@@ -951,7 +645,6 @@ function pushUIFromState(){
   el('thrAssist').value = state.thr.DA;
   el('thrSpdLim').value = state.thr.SL;
   el('thrStartCurr').value = state.thr.SC;
-  if(typeof renderRealityCheck==='function') renderRealityCheck();
 }
 function pullStateFromUI(section){
   if(section==='bas'||section==='all'){
@@ -1050,16 +743,6 @@ function elToState(text){
 let port=null, reader=null, writer=null, readableClosed=null;
 let rxBuffer = [];
 let pending = null; // {type:'GEN'|'BAS'|'PAS'|'THR', mode:'read'|'write', chain:bool, resolve, reject}
-let lastKnownGood = null; // deep copy of state after the last full "Read all", used as an auto-backup / rollback reference
-
-function downloadElText(text, filename){
-  const blob = new Blob([text], {type:'text/plain'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-}
 
 function logLine(msg, cls){
   const box = el('logBox');
@@ -1087,7 +770,6 @@ function setConnectedUI(connected){
   el('btnConnect').disabled = connected;
   el('btnDisconnect').disabled = !connected;
   el('btnReadAll').disabled = !connected;
-  el('btnWriteAll').disabled = !connected;
   ['basRead','basWrite','pasRead','pasWrite','thrRead','thrWrite'].forEach(id=> el(id).disabled = !connected);
 }
 
@@ -1235,12 +917,6 @@ function buildThrWriteFrame(){
 }
 async function writeBlock(block, chainNext){
   pullStateFromUI(block===BLK.BAS?'bas':block===BLK.PAS?'pas':'thr');
-  const spec = detectMotorSpec(state.modelStr);
-  if(state.bas.LC > spec.maxAmps){
-    toast(`Current Limit ${state.bas.LC}A exceeds ${spec.label} ceiling (${spec.maxAmps}A)`, 'err');
-    logLine(`Write blocked: LC ${state.bas.LC}A > ${spec.maxAmps}A for ${spec.label}`, 'l-err');
-    return;
-  }
   const frame = block===BLK.BAS?buildBasWriteFrame(): block===BLK.PAS?buildPasWriteFrame(): buildThrWriteFrame();
   pending = {type:block, mode:'write', chain:chainNext};
   await new Promise(r=>setTimeout(r,50));
@@ -1258,8 +934,7 @@ function onGenFrame(frame){
 
   state.nominalCode = nomCode;
   state.maxCurrent = maxCurr;
-  state.modelStr = (manuf+' '+model).trim();
-  el('roModel').textContent = state.modelStr||'—';
+  el('roModel').textContent = (manuf+' '+model).trim()||'—';
   el('roVolt').textContent = voltLabel;
   el('roMaxCurr').textContent = maxCurr+'A';
   el('roFw').textContent = fw+' / HW '+hw;
@@ -1267,10 +942,9 @@ function onGenFrame(frame){
   el('basLC').max = maxCurr;
   el('basLCHint').textContent = `Controller ceiling: ${maxCurr}A`;
 
-  logLine(`Controller identified: ${state.modelStr}, ${voltLabel}, ${maxCurr}A max, FW ${fw}`,'l-sys');
-  toast('Connected: '+state.modelStr,'ok');
+  logLine(`Controller identified: ${manuf} ${model}, ${voltLabel}, ${maxCurr}A max, FW ${fw}`,'l-sys');
+  toast('Connected: '+manuf+' '+model,'ok');
   pending=null;
-  if(typeof renderRealityCheck==='function') renderRealityCheck();
 }
 
 function onReadFrame(block, frame){
@@ -1315,13 +989,7 @@ function onReadFrame(block, frame){
   if(wasChain){
     if(block===BLK.BAS) return readBlock(BLK.PAS, true);
     if(block===BLK.PAS) return readBlock(BLK.THR, true);
-    if(block===BLK.THR){
-      lastKnownGood = JSON.parse(JSON.stringify(state));
-      const ts = new Date().toISOString().replace(/[:.]/g,'-');
-      downloadElText(stateToEl(), `backup_${ts}.el`);
-      logLine('Full read complete — auto-backup saved as backup_'+ts+'.el','l-sys');
-      toast('Read all: complete. Backup .el downloaded automatically.','ok');
-    }
+    if(block===BLK.THR){ toast('Read all: complete','ok'); }
   } else {
     toast('Read successful','ok');
   }
@@ -1357,356 +1025,6 @@ function onWriteAck(block, frame){
 }
 
 /* =========================================================================
-   RIDE SIMULATOR — power-balance physics estimate (comparison tool, not a
-   dyno-calibrated prediction). Two profiles picked from presets or the
-   live/current tab state are compared side by side.
-   ========================================================================= */
-const G = 9.81, RHO = 1.225, CRR = 0.006, CDA = 0.55, REF_MAX_KMH = 45, CONTROLLER_MAX_A = 25;
-
-function wheelDiameterMeters(wdIndex){
-  const w = WHEEL_LIST[wdIndex];
-  const inches = (w==='700C') ? 28 : parseInt(w,10);
-  return inches * 0.0254;
-}
-
-// Solve P_mech = (m*g*(Crr*cos(theta)+sin(theta)) + 0.5*rho*CdA*v^2) * v  for v, via bisection.
-function solveSpeed(pMech, mass, gradeFrac){
-  if(pMech<=0) return 0;
-  const theta = Math.atan(gradeFrac);
-  const cosT = Math.cos(theta), sinT = Math.sin(theta);
-  const rollGrade = mass*G*(CRR*cosT + sinT);
-  function powerAt(v){ return (rollGrade + 0.5*RHO*CDA*v*v) * v; }
-  let lo=0, hi=40;
-  for(let i=0;i<60;i++){
-    const mid=(lo+hi)/2;
-    if(powerAt(mid) < pMech) lo=mid; else hi=mid;
-  }
-  return (lo+hi)/2; // m/s
-}
-
-function computeProfileRows(profile, p){
-  const rows = [];
-  for(let lvl=0; lvl<=9; lvl++){
-    const currentA = Math.min(profile.bas.LC * profile.bas.ALC[lvl]/100, CONTROLLER_MAX_A, profile.bas.LC);
-    const powerW = p.volt * currentA;
-    const mechW = powerW * (p.eta/100);
-    const flatV = solveSpeed(mechW, p.mass, 0);
-    const climbV = solveSpeed(mechW, p.mass, p.grade/100);
-    const speedCapKmh = (profile.bas.ALBP[lvl]/100) * REF_MAX_KMH;
-    const flatKmh = Math.min(flatV*3.6, speedCapKmh);
-    const climbKmh = Math.min(climbV*3.6, speedCapKmh);
-    rows.push({lvl, currentA, powerW, flatKmh, climbKmh});
-  }
-  return rows;
-}
-
-// Relative "launch response" score (0-100) — NOT a physical time estimate.
-// Weights: PAS start current + slow-start aggressiveness + start degree responsiveness
-// + throttle start current + keep current (sustain).
-function punchScore(profile){
-  const p = profile.pas, t = profile.thr;
-  const scPas = p.SC/20;                     // 1-20 -> 0..1
-  const ssm  = (p.SSM-1)/7;                  // 1-8 -> 0..1 (8 = most aggressive)
-  const sdn  = 1 - Math.min(p.SDN,20)/20;    // lower SDN = snappier -> higher score
-  const scThr= t.SC/100;
-  const kc   = p.KC/100;
-  const score = (scPas*0.30 + ssm*0.25 + sdn*0.20 + scThr*0.15 + kc*0.10) * 100;
-  return Math.round(Math.max(0,Math.min(100,score)));
-}
-
-function allProfileOptions(){
-  const opts = [{key:'__live', label:'Current form values (live)'}];
-  Object.entries(PRESETS).forEach(([k,v])=> opts.push({key:k, label:v.name}));
-  return opts;
-}
-function resolveProfile(key){
-  if(key==='__live'){
-    pullStateFromUI('all');
-    return JSON.parse(JSON.stringify(state));
-  }
-  return PRESETS[key];
-}
-
-function simParams(){
-  return {
-    mass: parseFloat(el('simMass').value),
-    grade: parseFloat(el('simGrade').value),
-    volt: parseFloat(el('simVolt').value),
-    eta: parseFloat(el('simEta').value)
-  };
-}
-
-function fmt1(n){ return (Math.round(n*10)/10).toFixed(1); }
-
-function renderSim(){
-  const p = simParams();
-  el('simMassVal').textContent = p.mass+' kg';
-  el('simGradeVal').textContent = p.grade+'%';
-  el('simVoltVal').textContent = p.volt+' V';
-  el('simEtaVal').textContent = p.eta+'%';
-
-  const profA = resolveProfile(el('simProfA').value);
-  const profB = resolveProfile(el('simProfB').value);
-  const rowsA = computeProfileRows(profA, p);
-  const rowsB = computeProfileRows(profB, p);
-
-  const tbody = document.querySelector('#simTable tbody');
-  tbody.innerHTML = '';
-  for(let i=0;i<=9;i++){
-    const a=rowsA[i], b=rowsB[i];
-    const tr=document.createElement('tr');
-    tr.innerHTML = `<td>PAS ${i}</td>
-      <td class="hl-a">${a.currentA.toFixed(1)}</td>
-      <td class="hl-a">${Math.round(a.powerW)}</td>
-      <td class="hl-a">${fmt1(a.flatKmh)}</td>
-      <td class="hl-a">${fmt1(a.climbKmh)}</td>`;
-    tbody.appendChild(tr);
-    const tr2=document.createElement('tr');
-    tr2.innerHTML = `<td style="color:var(--text-faint);padding-left:16px;">↳ B</td>
-      <td class="hl-b">${b.currentA.toFixed(1)}</td>
-      <td class="hl-b">${Math.round(b.powerW)}</td>
-      <td class="hl-b">${fmt1(b.flatKmh)}</td>
-      <td class="hl-b">${fmt1(b.climbKmh)}</td>`;
-    tbody.appendChild(tr2);
-  }
-
-  const scoreA = punchScore(profA), scoreB = punchScore(profB);
-  const punchBox = el('punchBars');
-  punchBox.innerHTML = `
-    <div class="bar-row"><div class="lbl">Profile A launch feel</div><div class="bar-track"><div class="bar-fill a" style="width:${scoreA}%"></div></div><div class="bar-val">${scoreA}</div></div>
-    <div class="bar-row"><div class="lbl">Profile B launch feel</div><div class="bar-track"><div class="bar-fill b" style="width:${scoreB}%"></div></div><div class="bar-val">${scoreB}</div></div>
-  `;
-
-  renderDiff(profA, profB, rowsA, rowsB, scoreA, scoreB);
-  renderGaugesAndRace(rowsA, rowsB, p);
-}
-
-const MAX_GAUGE_SPEED = 50, MAX_GAUGE_AMPS = 25;
-function needleAngle(val, max){ // -90deg (min) .. +90deg (max) sweep over a semicircle
-  const frac = Math.max(0, Math.min(1, val/max));
-  return -90 + frac*180;
-}
-let raceStart = null, raceRaf = null;
-function renderGaugesAndRace(rowsA, rowsB, p){
-  const lvl = parseInt(el('simLevel').value,10);
-  el('simLevelVal').textContent = 'Level '+lvl;
-  const metric = el('simMetric').value;
-  const a = rowsA[lvl], b = rowsB[lvl];
-  const speedA = metric==='climb'? a.climbKmh : a.flatKmh;
-  const speedB = metric==='climb'? b.climbKmh : b.flatKmh;
-
-  el('needleSpeedA').style.transform = `rotate(${needleAngle(speedA, MAX_GAUGE_SPEED)}deg)`;
-  el('needleSpeedB').style.transform = `rotate(${needleAngle(speedB, MAX_GAUGE_SPEED)}deg)`;
-  el('needleCurrA').style.transform = `rotate(${needleAngle(a.currentA, MAX_GAUGE_AMPS)}deg)`;
-  el('needleCurrB').style.transform = `rotate(${needleAngle(b.currentA, MAX_GAUGE_AMPS)}deg)`;
-  el('gaugeSpeedTxt').textContent = `${fmt1(speedA)} / ${fmt1(speedB)} km/h`;
-  el('gaugeCurrTxt').textContent = `${a.currentA.toFixed(1)} / ${b.currentA.toFixed(1)} A`;
-
-  // tilt the road by the grade angle (visual only, capped for readability)
-  const tiltDeg = Math.max(-14, Math.min(14, -Math.atan(p.grade/100)*180/Math.PI));
-  el('raceTrackWrap').style.transform = `rotate(${tiltDeg}deg)`;
-
-  // (re)start the drag-race animation loop for these two speeds
-  if(raceRaf) cancelAnimationFrame(raceRaf);
-  raceStart = performance.now();
-  const trackPx = 580, durationMs = 6000;
-  const maxV = Math.max(speedA, speedB, 1);
-  function step(now){
-    const t = ((now - raceStart) % durationMs) / durationMs;
-    const xA = Math.min(trackPx, t*durationMs/1000 * (speedA/maxV) * (trackPx/ (durationMs/1000)) );
-    const xB = Math.min(trackPx, t*durationMs/1000 * (speedB/maxV) * (trackPx/ (durationMs/1000)) );
-    el('raceBikeA').setAttribute('transform', `translate(${Math.min(trackPx, t*trackPx*(speedA/maxV))},70)`);
-    el('raceBikeB').setAttribute('transform', `translate(${Math.min(trackPx, t*trackPx*(speedB/maxV))},70)`);
-    raceRaf = requestAnimationFrame(step);
-  }
-  raceRaf = requestAnimationFrame(step);
-}
-
-function renderDiff(a, b, rowsA, rowsB, scoreA, scoreB){
-  const items = [];
-  function push(name, va, vb, impact){
-    if(va===vb) return;
-    items.push({name, va, vb, impact});
-  }
-  push('Current Limit', a.bas.LC+'A', b.bas.LC+'A', b.bas.LC>a.bas.LC?'more overall power available, less thermal margin':'lower ceiling, more thermal margin on long climbs');
-  push('Assist 1 current%', a.bas.ALC[1]+'%', b.bas.ALC[1]+'%', 'changes torque available right off the line in your everyday PAS level');
-  push('PAS Start Current', a.pas.SC+'%', b.pas.SC+'%', 'higher = stronger initial kick from standstill');
-  push('Slow-start Mode', a.pas.SSM, b.pas.SSM, 'higher = faster power ramp-up (more aggressive launch feel)');
-  push('Start Degree', a.pas.SDN, b.pas.SDN, 'lower = motor engages sooner after you start pedaling');
-  push('Keep Current', a.pas.KC+'%', b.pas.KC+'%', 'higher = power stays stronger as cadence rises, less “fade”');
-  push('Throttle Start Current', a.thr.SC+'%', b.thr.SC+'%', 'higher = punchier throttle tip-in from a stop');
-
-  const climbDelta = rowsB[5].climbKmh - rowsA[5].climbKmh;
-  const flatDelta = rowsB[9].flatKmh - rowsA[9].flatKmh;
-
-  const box = el('diffList');
-  box.innerHTML = '';
-  if(items.length===0){
-    box.innerHTML = '<div class="diff-item">Profiles A and B are identical — pick two different profiles above to see a diff.</div>';
-    return;
-  }
-  items.forEach(it=>{
-    const d = document.createElement('div'); d.className='diff-item';
-    d.innerHTML = `<span class="field-name">${it.name}</span><span class="arrow-vals">${it.va} → <b>${it.vb}</b></span><span class="impact">${it.impact}</span>`;
-    box.appendChild(d);
-  });
-  const summary = document.createElement('div'); summary.className='diff-item';
-  summary.style.borderLeft = '3px solid var(--copper)';
-  summary.innerHTML = `<span class="field-name">Net effect (estimate)</span><span class="arrow-vals">Launch feel ${scoreA}→<b>${scoreB}</b> · PAS5 climb ${fmt1(rowsA[5].climbKmh)}→<b>${fmt1(rowsB[5].climbKmh)}km/h</b> · PAS9 flat top ${fmt1(rowsA[9].flatKmh)}→<b>${fmt1(rowsB[9].flatKmh)}km/h</b></span><span class="impact">estimate only</span>`;
-  box.appendChild(summary);
-}
-
-function initSim(){
-  const optHtml = allProfileOptions().map(o=>`<option value="${o.key}">${o.label}</option>`).join('');
-  el('simProfA').innerHTML = optHtml;
-  el('simProfB').innerHTML = optHtml;
-  el('simProfA').value = PRESETS.yourCurrent ? 'yourCurrent' : '__live';
-  el('simProfB').value = PRESETS.peppy ? 'peppy' : '__live';
-  ['simMass','simGrade','simVolt','simEta','simProfA','simProfB','simLevel','simMetric'].forEach(id=>{
-    el(id).addEventListener('input', renderSim);
-  });
-  renderSim();
-}
-
-/* =========================================================================
-   REALITY CHECK — gear limit, power ceiling, thermal heuristic (Sprint S2)
-   ========================================================================= */
-const MOTOR_SPECS = {
-  BBS01: { maxRpm: 90, maxAmps: 18, label: 'BBS01' },
-  BBS02: { maxRpm: 120, maxAmps: 25, label: 'BBS02 / BBS02B' },
-  BBSHD: { maxRpm: 140, maxAmps: 30, label: 'BBSHD' },
-  DEFAULT: { maxRpm: 120, maxAmps: 25, label: 'BBS02 (по умолчанию)' }
-};
-
-function detectMotorSpec(modelStr){
-  const m = (modelStr || '').toUpperCase();
-  if (m.includes('BBSHD') || /\bHD\b/.test(m)) return MOTOR_SPECS.BBSHD;
-  if (m.includes('BBS01')) return MOTOR_SPECS.BBS01;
-  if (m.includes('BBS02')) return MOTOR_SPECS.BBS02;
-  return MOTOR_SPECS.DEFAULT;
-}
-
-function wheelCircumferenceM(wdIndex){
-  return Math.PI * wheelDiameterMeters(wdIndex);
-}
-
-function calcGearLimitKmh(chainring, cog, maxRpm, wdIndex){
-  const circ = wheelCircumferenceM(wdIndex);
-  const ratio = chainring / cog;
-  const vKmh = maxRpm * ratio * circ * 60 / 1000;
-  return { vKmh, ratio, circ };
-}
-
-function cadenceAtSpeedKmh(speedKmh, chainring, cog, wdIndex){
-  if (speedKmh <= 0) return 0;
-  const circ = wheelCircumferenceM(wdIndex);
-  const ratio = chainring / cog;
-  return (speedKmh / 3.6) / (ratio * circ) * 60;
-}
-
-function requiredChainringForTarget(targetKmh, cog, maxRpm, wdIndex){
-  const circ = wheelCircumferenceM(wdIndex);
-  return Math.ceil(targetKmh * 1000 / (60 * maxRpm * circ) * cog);
-}
-
-function rcParams(){
-  pullStateFromUI('all');
-  return {
-    chainring: parseInt(el('rcChainring').value, 10) || 32,
-    cog: parseInt(el('rcCog').value, 10) || 11,
-    grade: parseFloat(el('rcGrade').value) || 0,
-    target: parseFloat(el('rcTarget').value) || 0,
-    spec: detectMotorSpec(state.modelStr),
-    wd: state.bas.WD
-  };
-}
-
-function renderRealityCheck(){
-  const p = rcParams();
-  el('rcGradeVal').textContent = p.grade + '%';
-
-  const gear = calcGearLimitKmh(p.chainring, p.cog, p.spec.maxRpm, p.wd);
-  const vLow = Math.round(gear.vKmh * 0.92);
-  const vHigh = Math.round(gear.vKmh * 1.02);
-
-  el('rcHero').innerHTML = `
-    <div class="rc-stat"><div class="lbl">Предел по передаче</div><div class="val">${vLow}–${vHigh}</div><div class="sub">km/h @ ${p.spec.maxRpm} об/мин</div></div>
-    <div class="rc-stat"><div class="lbl">Мотор</div><div class="val" style="font-size:18px">${p.spec.label}</div><div class="sub">макс. ${p.spec.maxAmps} A</div></div>
-    <div class="rc-stat"><div class="lbl">Current Limit</div><div class="val">${state.bas.LC}</div><div class="sub">A в настройках</div></div>
-    <div class="rc-stat"><div class="lbl">Передача</div><div class="val" style="font-size:22px">${p.chainring}/${p.cog}</div><div class="sub">× ${(gear.ratio).toFixed(2)}</div></div>
-  `;
-
-  const alerts = [];
-  if (state.bas.LC > p.spec.maxAmps){
-    alerts.push({ kind:'danger', title:'Превышен аппаратный лимит тока',
-      text:`Current Limit ${state.bas.LC} A выше потолка ${p.spec.label} (${p.spec.maxAmps} A). Контроллер может отвергнуть запись или работать нестабильно.` });
-  } else if (state.bas.LC >= 22){
-    alerts.push({ kind:'warn', title:'Высокий потолок тока',
-      text:`${state.bas.LC} A — верхняя зона для BBS02. На подъёмах при низком каденсе контроллер греется сильнее. Сообщество часто рекомендует 18–20 A для длинных лесных подъёмов.` });
-  }
-
-  if (p.target > 0){
-    if (p.target > vHigh){
-      const needRing = requiredChainringForTarget(p.target, p.cog, p.spec.maxRpm, p.wd);
-      alerts.push({ kind:'danger', title:'Недостижимо на вашей трансмиссии',
-        text:`С ${p.chainring}T/${p.cog}T и колесом из Basic мотор упирается в предел каденса при ~${Math.round(gear.vKmh)} km/h (${p.spec.maxRpm} об/мин). Цель ${p.target} km/h выше этого. Чтобы реально ехать быстрее — нужна большая передняя звезда (ориентир ≥${needRing}T), а не настройки контроллера.` });
-    } else {
-      const simP = { mass:95, grade:p.grade, volt:45, eta:85 };
-      const rows = computeProfileRows({ bas:state.bas, pas:state.pas, thr:state.thr }, simP);
-      const maxClimb = Math.max(...rows.map(r=>r.climbKmh));
-      if (p.target > maxClimb + 2){
-        alerts.push({ kind:'warn', title:'Цель выше расчётной мощности',
-          text:`При ${state.bas.LC} A на ${p.grade}% уклоне модель даёт ~${fmt1(maxClimb)} km/h. Цель ${p.target} km/h потребует больше мощности, чем даёт текущий Current Limit.` });
-      }
-    }
-  }
-
-  const tbody = document.querySelector('#rcPasTable tbody');
-  tbody.innerHTML = '';
-  const simP = { mass:95, grade:p.grade, volt:45, eta:85 };
-  const rows = computeProfileRows({ bas:state.bas, pas:state.pas, thr:state.thr }, simP);
-  let thermalHits = 0;
-
-  for (let i=0; i<=9; i++){
-    const r = rows[i];
-    const cad = cadenceAtSpeedKmh(r.climbKmh, p.chainring, p.cog, p.wd);
-    const spdLimPct = state.bas.ALBP[i];
-    const impliedKmh = (spdLimPct/100) * REF_MAX_KMH;
-    let status = 'OK', cls = '';
-    if (state.bas.LC >= 22 && cad > 0 && cad < 60){ status = '🔴 Перегрев'; cls = 'bad'; thermalHits++; }
-    else if (impliedKmh > vHigh && spdLimPct < 100){ status = '⚠️ Speed % выше передачи'; cls = 'warn'; }
-    else if (cad >= 70 && cad <= 100){ status = '🟢 Каденс OK'; }
-    else if (cad > 0 && cad < 70){ status = '🟡 Низкий каденс'; cls = 'warn'; }
-
-    const tr = document.createElement('tr');
-    if (cls) tr.className = cls;
-    tr.innerHTML = `<td>PAS ${i}</td><td>${r.currentA.toFixed(1)}</td><td>${fmt1(r.climbKmh)} km/h</td><td>${Math.round(cad)} об/мин</td><td>${spdLimPct}%</td><td>${status}</td>`;
-    tbody.appendChild(tr);
-  }
-
-  if (thermalHits > 0){
-    alerts.unshift({ kind:'danger', title:'Зона перегрева на подъёме',
-      text:`На ${p.grade}% при Current Limit ≥22 A расчётный каденс падает ниже 60 об/мин на ${thermalHits} уровнях PAS. Переключитесь на более лёгкую передачу или снизьте ток — иначе контроллер греется сильнее.` });
-  }
-
-  if (alerts.length === 0){
-    alerts.push({ kind:'ok', title:'В пределах физики',
-      text:`С ${p.chainring}T/${p.cog}T верхняя скорость моторной тяги ~${vLow}–${vHigh} km/h. Текущие настройки не выходят за жёсткие аппаратные лимиты.` });
-  }
-
-  el('rcAlerts').innerHTML = alerts.map(a =>
-    `<div class="rc-alert ${a.kind}"><b>${a.title}</b>${a.text}</div>`
-  ).join('');
-}
-
-function initRealityCheck(){
-  ['rcChainring','rcCog','rcGrade','rcTarget'].forEach(id=>{
-    el(id).addEventListener('input', renderRealityCheck);
-  });
-  renderRealityCheck();
-}
-
-/* =========================================================================
    WIRING UP UI
    ========================================================================= */
 document.querySelectorAll('.nav-btn').forEach(btn=>{
@@ -1715,29 +1033,12 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
     document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
     document.querySelector(`.tab-panel[data-panel="${btn.dataset.tab}"]`).classList.add('active');
-    if(btn.dataset.tab==='sim' && typeof renderSim==='function') renderSim();
-    if(btn.dataset.tab==='reality' && typeof renderRealityCheck==='function') renderRealityCheck();
   });
 });
 
 el('btnConnect').onclick = connectSerial;
 el('btnDisconnect').onclick = disconnectSerial;
 el('btnReadAll').onclick = ()=> readBlock(BLK.BAS, true);
-el('btnWriteAll').onclick = async ()=>{
-  if(!lastKnownGood){
-    toast('Read all first — no backup on file yet','err');
-    logLine('Write all blocked: no prior Read all, so no backup exists','l-err');
-    return;
-  }
-  const ok = confirm(
-    'Write all will send Basic → Pedal Assist → Throttle to the controller.\n\n'+
-    'A backup of what was last read is already saved to your Downloads folder as backup_<timestamp>.el.\n\n'+
-    'Nothing here can corrupt the controller\'s firmware — this only rewrites its settings block, and it validates each value before accepting it. Worst case, a bad value gets rejected with an error and nothing changes. If you want to undo after writing, just load the backup .el file and Write all again.\n\n'+
-    'Proceed?'
-  );
-  if(!ok){ toast('Write all cancelled'); return; }
-  await writeBlock(BLK.BAS, true);
-};
 el('basRead').onclick = ()=> readBlock(BLK.BAS, false);
 el('pasRead').onclick = ()=> readBlock(BLK.PAS, false);
 el('thrRead').onclick = ()=> readBlock(BLK.THR, false);
@@ -1768,19 +1069,6 @@ el('btnExport').onclick = ()=>{
   toast('Exported MyProfile.el','ok');
 };
 
-/* gate */
-(function(){
-  const gate = document.getElementById('gate');
-  const check = document.getElementById('gateCheck');
-  const enter = document.getElementById('gateEnter');
-  if(sessionStorage.getItem('bbsflash_gate_ok')==='1'){ gate.classList.add('hidden'); return; }
-  check.addEventListener('change', ()=>{ enter.disabled = !check.checked; });
-  enter.addEventListener('click', ()=>{
-    sessionStorage.setItem('bbsflash_gate_ok','1');
-    gate.classList.add('hidden');
-  });
-})();
-
 /* init */
 buildAssistLevelOptions(el('pasDesigAssist'));
 buildSpeedLimOptions(el('pasSpdLim'));
@@ -1792,8 +1080,6 @@ buildAssistTable();
 buildLowBatOptions();
 renderPresets();
 pushUIFromState();
-initSim();
-initRealityCheck();
 if(!('serial' in navigator)) el('serialWarning').style.display='block';
 setConnectedUI(false);
 logLine('BBS FLASH ready. Load a preset or connect hardware to begin.','l-sys');

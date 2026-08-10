@@ -240,22 +240,6 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 .gate-desc{font-size:13.5px;color:var(--text-dim);line-height:1.6;margin-bottom:20px;}
 .gate-check{display:flex;align-items:center;gap:8px;justify-content:center;font-size:12.5px;color:var(--text-dim);margin-bottom:16px;}
 
-.rc-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px;}
-.rc-stat{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;}
-.rc-stat .lbl{font-family:var(--mono);font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
-.rc-stat .val{font-family:var(--disp);font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;}
-.rc-stat .sub{font-size:11px;color:var(--text-dim);margin-top:4px;}
-.rc-alert{border-radius:8px;padding:14px 16px;margin-bottom:12px;font-size:13px;line-height:1.55;border-left:4px solid;}
-.rc-alert.danger{background:#fdecea;border-color:var(--red);color:#5c1515;}
-.rc-alert.warn{background:#fff6e6;border-color:var(--amber);color:#5c3d00;}
-.rc-alert.ok{background:#eaf6ee;border-color:#1f8a52;color:#134526;}
-.rc-alert b{display:block;font-size:14px;margin-bottom:4px;}
-.rc-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
-.rc-table th{text-align:left;padding:8px 10px;color:var(--text-faint);font-weight:500;border-bottom:1px solid var(--line);font-size:10px;text-transform:uppercase;}
-.rc-table td{padding:7px 10px;border-bottom:1px solid #eceef0;}
-.rc-table tr.bad td{background:#fdecea;}
-.rc-table tr.warn td{background:#fff6e6;}
-
 @media (max-width:820px){
   .rail{position:fixed;left:-220px;transition:.2s;z-index:40;height:100vh;}
   .rail.open{left:0;}
@@ -283,7 +267,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#d81e2c" stroke-width="2"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke="#d81e2c" stroke-width="2" stroke-linecap="round"/></svg>
         BBS FLASH
       </div>
-      <div class="brand-sub">UART Configurator · v3</div>
+      <div class="brand-sub">UART Configurator · v2</div>
     </div>
     <nav class="nav">
       <button class="nav-btn active" data-tab="connect"><span class="idx">01</span>Connection</button>
@@ -292,8 +276,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <button class="nav-btn" data-tab="thr"><span class="idx">04</span>Throttle</button>
       <button class="nav-btn" data-tab="profiles"><span class="idx">05</span>Profiles</button>
       <button class="nav-btn" data-tab="sim"><span class="idx">06</span>Ride Simulator</button>
-      <button class="nav-btn" data-tab="reality"><span class="idx">07</span>Reality Check</button>
-      <button class="nav-btn" data-tab="log"><span class="idx">08</span>Wire Log</button>
+      <button class="nav-btn" data-tab="log"><span class="idx">07</span>Wire Log</button>
     </nav>
     <div class="rail-foot">
       <div class="led-row"><span class="led" id="railLed"></span><span id="railStatus">DISCONNECTED</span></div>
@@ -684,59 +667,10 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </div>
       </section>
 
-      <!-- ===================== REALITY CHECK ===================== -->
-      <section class="tab-panel" data-panel="reality">
-        <div class="panel-header">
-          <div class="panel-eyebrow">07 · Reality Check</div>
-          <div class="panel-title">Честные пределы вашей трансмиссии</div>
-          <div class="panel-desc">Главная фича v3.0: показывает, что реально достижимо на ваших звёздах и колесе — до записи настроек в контроллер. Предупреждает, но не блокирует (кроме аппаратных лимитов тока).</div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Трансмиссия и сценарий</div>
-          <div class="grid">
-            <div class="field">
-              <label>Передняя звезда <span class="unit">T</span></label>
-              <input type="number" id="rcChainring" min="22" max="52" value="32"/>
-            </div>
-            <div class="field">
-              <label>Мелкая кассета <span class="unit">T</span></label>
-              <input type="number" id="rcCog" min="9" max="14" value="11"/>
-            </div>
-            <div class="field">
-              <label>Уклон для проверки <span class="unit">%</span></label>
-              <input type="number" id="rcGrade" min="0" max="20" step="0.5" value="8"/>
-              <small id="rcGradeVal">8%</small>
-            </div>
-            <div class="field">
-              <label>Целевая скорость <span class="unit">km/h (опц.)</span></label>
-              <input type="number" id="rcTarget" min="0" max="60" step="1" value="0" placeholder="0 = не задана"/>
-              <small>0 = только расчёт предела по передаче</small>
-            </div>
-          </div>
-        </div>
-
-        <div id="rcAlerts"></div>
-
-        <div class="card">
-          <div class="card-title">Ключевые цифры</div>
-          <div class="rc-hero" id="rcHero"></div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">Проверка по уровням PAS</div>
-          <table class="rc-table" id="rcPasTable">
-            <thead><tr><th>PAS</th><th>Ток A</th><th>Скорость на уклоне</th><th>Каденс (расч.)</th><th>Speed Limit %</th><th>Статус</th></tr></thead>
-            <tbody></tbody>
-          </table>
-          <p class="sim-caveat" style="margin-top:12px;">Каденс — только расчётный (датчика наружу нет). Красная зона перегрева: ток ≥22 A и каденс &lt;60 об/мин на заданном уклоне.</p>
-        </div>
-      </section>
-
       <!-- ===================== LOG ===================== -->
       <section class="tab-panel" data-panel="log">
         <div class="panel-header">
-          <div class="panel-eyebrow">08 · Wire log</div>
+          <div class="panel-eyebrow">06 · Wire log</div>
           <div class="panel-title">Raw frame trace</div>
           <div class="panel-desc">Every byte sent/received, for debugging a stubborn connection or verifying nothing unexpected is being written.</div>
         </div>
@@ -799,7 +733,6 @@ function checksum(bytes, from, to){ // sum bytes[from..to] inclusive, mod 256
 const state = {
   nominalCode: 2, // default 48V until GEN read
   maxCurrent: 25,
-  modelStr: '',
   bas: { LBP:41, LC:20, ALC:[1,50,58,64,70,76,82,88,94,100], ALBP:[1,38,44,52,60,68,76,84,92,100], WD:11, SMType:0, SMSig:1 },
   pas: { PT:3, DA:255, SL:255, SC:10, SSM:1, SDN:4, WM:null, TS:10, CD:8, SD:0, KC:80 },
   thr: { SV:11, EV:35, MODE:1, DA:255, SL:255, SC:10 }
@@ -951,7 +884,6 @@ function pushUIFromState(){
   el('thrAssist').value = state.thr.DA;
   el('thrSpdLim').value = state.thr.SL;
   el('thrStartCurr').value = state.thr.SC;
-  if(typeof renderRealityCheck==='function') renderRealityCheck();
 }
 function pullStateFromUI(section){
   if(section==='bas'||section==='all'){
@@ -1235,12 +1167,6 @@ function buildThrWriteFrame(){
 }
 async function writeBlock(block, chainNext){
   pullStateFromUI(block===BLK.BAS?'bas':block===BLK.PAS?'pas':'thr');
-  const spec = detectMotorSpec(state.modelStr);
-  if(state.bas.LC > spec.maxAmps){
-    toast(`Current Limit ${state.bas.LC}A exceeds ${spec.label} ceiling (${spec.maxAmps}A)`, 'err');
-    logLine(`Write blocked: LC ${state.bas.LC}A > ${spec.maxAmps}A for ${spec.label}`, 'l-err');
-    return;
-  }
   const frame = block===BLK.BAS?buildBasWriteFrame(): block===BLK.PAS?buildPasWriteFrame(): buildThrWriteFrame();
   pending = {type:block, mode:'write', chain:chainNext};
   await new Promise(r=>setTimeout(r,50));
@@ -1258,8 +1184,7 @@ function onGenFrame(frame){
 
   state.nominalCode = nomCode;
   state.maxCurrent = maxCurr;
-  state.modelStr = (manuf+' '+model).trim();
-  el('roModel').textContent = state.modelStr||'—';
+  el('roModel').textContent = (manuf+' '+model).trim()||'—';
   el('roVolt').textContent = voltLabel;
   el('roMaxCurr').textContent = maxCurr+'A';
   el('roFw').textContent = fw+' / HW '+hw;
@@ -1267,10 +1192,9 @@ function onGenFrame(frame){
   el('basLC').max = maxCurr;
   el('basLCHint').textContent = `Controller ceiling: ${maxCurr}A`;
 
-  logLine(`Controller identified: ${state.modelStr}, ${voltLabel}, ${maxCurr}A max, FW ${fw}`,'l-sys');
-  toast('Connected: '+state.modelStr,'ok');
+  logLine(`Controller identified: ${manuf} ${model}, ${voltLabel}, ${maxCurr}A max, FW ${fw}`,'l-sys');
+  toast('Connected: '+manuf+' '+model,'ok');
   pending=null;
-  if(typeof renderRealityCheck==='function') renderRealityCheck();
 }
 
 function onReadFrame(block, frame){
@@ -1569,144 +1493,6 @@ function initSim(){
 }
 
 /* =========================================================================
-   REALITY CHECK — gear limit, power ceiling, thermal heuristic (Sprint S2)
-   ========================================================================= */
-const MOTOR_SPECS = {
-  BBS01: { maxRpm: 90, maxAmps: 18, label: 'BBS01' },
-  BBS02: { maxRpm: 120, maxAmps: 25, label: 'BBS02 / BBS02B' },
-  BBSHD: { maxRpm: 140, maxAmps: 30, label: 'BBSHD' },
-  DEFAULT: { maxRpm: 120, maxAmps: 25, label: 'BBS02 (по умолчанию)' }
-};
-
-function detectMotorSpec(modelStr){
-  const m = (modelStr || '').toUpperCase();
-  if (m.includes('BBSHD') || /\bHD\b/.test(m)) return MOTOR_SPECS.BBSHD;
-  if (m.includes('BBS01')) return MOTOR_SPECS.BBS01;
-  if (m.includes('BBS02')) return MOTOR_SPECS.BBS02;
-  return MOTOR_SPECS.DEFAULT;
-}
-
-function wheelCircumferenceM(wdIndex){
-  return Math.PI * wheelDiameterMeters(wdIndex);
-}
-
-function calcGearLimitKmh(chainring, cog, maxRpm, wdIndex){
-  const circ = wheelCircumferenceM(wdIndex);
-  const ratio = chainring / cog;
-  const vKmh = maxRpm * ratio * circ * 60 / 1000;
-  return { vKmh, ratio, circ };
-}
-
-function cadenceAtSpeedKmh(speedKmh, chainring, cog, wdIndex){
-  if (speedKmh <= 0) return 0;
-  const circ = wheelCircumferenceM(wdIndex);
-  const ratio = chainring / cog;
-  return (speedKmh / 3.6) / (ratio * circ) * 60;
-}
-
-function requiredChainringForTarget(targetKmh, cog, maxRpm, wdIndex){
-  const circ = wheelCircumferenceM(wdIndex);
-  return Math.ceil(targetKmh * 1000 / (60 * maxRpm * circ) * cog);
-}
-
-function rcParams(){
-  pullStateFromUI('all');
-  return {
-    chainring: parseInt(el('rcChainring').value, 10) || 32,
-    cog: parseInt(el('rcCog').value, 10) || 11,
-    grade: parseFloat(el('rcGrade').value) || 0,
-    target: parseFloat(el('rcTarget').value) || 0,
-    spec: detectMotorSpec(state.modelStr),
-    wd: state.bas.WD
-  };
-}
-
-function renderRealityCheck(){
-  const p = rcParams();
-  el('rcGradeVal').textContent = p.grade + '%';
-
-  const gear = calcGearLimitKmh(p.chainring, p.cog, p.spec.maxRpm, p.wd);
-  const vLow = Math.round(gear.vKmh * 0.92);
-  const vHigh = Math.round(gear.vKmh * 1.02);
-
-  el('rcHero').innerHTML = `
-    <div class="rc-stat"><div class="lbl">Предел по передаче</div><div class="val">${vLow}–${vHigh}</div><div class="sub">km/h @ ${p.spec.maxRpm} об/мин</div></div>
-    <div class="rc-stat"><div class="lbl">Мотор</div><div class="val" style="font-size:18px">${p.spec.label}</div><div class="sub">макс. ${p.spec.maxAmps} A</div></div>
-    <div class="rc-stat"><div class="lbl">Current Limit</div><div class="val">${state.bas.LC}</div><div class="sub">A в настройках</div></div>
-    <div class="rc-stat"><div class="lbl">Передача</div><div class="val" style="font-size:22px">${p.chainring}/${p.cog}</div><div class="sub">× ${(gear.ratio).toFixed(2)}</div></div>
-  `;
-
-  const alerts = [];
-  if (state.bas.LC > p.spec.maxAmps){
-    alerts.push({ kind:'danger', title:'Превышен аппаратный лимит тока',
-      text:`Current Limit ${state.bas.LC} A выше потолка ${p.spec.label} (${p.spec.maxAmps} A). Контроллер может отвергнуть запись или работать нестабильно.` });
-  } else if (state.bas.LC >= 22){
-    alerts.push({ kind:'warn', title:'Высокий потолок тока',
-      text:`${state.bas.LC} A — верхняя зона для BBS02. На подъёмах при низком каденсе контроллер греется сильнее. Сообщество часто рекомендует 18–20 A для длинных лесных подъёмов.` });
-  }
-
-  if (p.target > 0){
-    if (p.target > vHigh){
-      const needRing = requiredChainringForTarget(p.target, p.cog, p.spec.maxRpm, p.wd);
-      alerts.push({ kind:'danger', title:'Недостижимо на вашей трансмиссии',
-        text:`С ${p.chainring}T/${p.cog}T и колесом из Basic мотор упирается в предел каденса при ~${Math.round(gear.vKmh)} km/h (${p.spec.maxRpm} об/мин). Цель ${p.target} km/h выше этого. Чтобы реально ехать быстрее — нужна большая передняя звезда (ориентир ≥${needRing}T), а не настройки контроллера.` });
-    } else {
-      const simP = { mass:95, grade:p.grade, volt:45, eta:85 };
-      const rows = computeProfileRows({ bas:state.bas, pas:state.pas, thr:state.thr }, simP);
-      const maxClimb = Math.max(...rows.map(r=>r.climbKmh));
-      if (p.target > maxClimb + 2){
-        alerts.push({ kind:'warn', title:'Цель выше расчётной мощности',
-          text:`При ${state.bas.LC} A на ${p.grade}% уклоне модель даёт ~${fmt1(maxClimb)} km/h. Цель ${p.target} km/h потребует больше мощности, чем даёт текущий Current Limit.` });
-      }
-    }
-  }
-
-  const tbody = document.querySelector('#rcPasTable tbody');
-  tbody.innerHTML = '';
-  const simP = { mass:95, grade:p.grade, volt:45, eta:85 };
-  const rows = computeProfileRows({ bas:state.bas, pas:state.pas, thr:state.thr }, simP);
-  let thermalHits = 0;
-
-  for (let i=0; i<=9; i++){
-    const r = rows[i];
-    const cad = cadenceAtSpeedKmh(r.climbKmh, p.chainring, p.cog, p.wd);
-    const spdLimPct = state.bas.ALBP[i];
-    const impliedKmh = (spdLimPct/100) * REF_MAX_KMH;
-    let status = 'OK', cls = '';
-    if (state.bas.LC >= 22 && cad > 0 && cad < 60){ status = '🔴 Перегрев'; cls = 'bad'; thermalHits++; }
-    else if (impliedKmh > vHigh && spdLimPct < 100){ status = '⚠️ Speed % выше передачи'; cls = 'warn'; }
-    else if (cad >= 70 && cad <= 100){ status = '🟢 Каденс OK'; }
-    else if (cad > 0 && cad < 70){ status = '🟡 Низкий каденс'; cls = 'warn'; }
-
-    const tr = document.createElement('tr');
-    if (cls) tr.className = cls;
-    tr.innerHTML = `<td>PAS ${i}</td><td>${r.currentA.toFixed(1)}</td><td>${fmt1(r.climbKmh)} km/h</td><td>${Math.round(cad)} об/мин</td><td>${spdLimPct}%</td><td>${status}</td>`;
-    tbody.appendChild(tr);
-  }
-
-  if (thermalHits > 0){
-    alerts.unshift({ kind:'danger', title:'Зона перегрева на подъёме',
-      text:`На ${p.grade}% при Current Limit ≥22 A расчётный каденс падает ниже 60 об/мин на ${thermalHits} уровнях PAS. Переключитесь на более лёгкую передачу или снизьте ток — иначе контроллер греется сильнее.` });
-  }
-
-  if (alerts.length === 0){
-    alerts.push({ kind:'ok', title:'В пределах физики',
-      text:`С ${p.chainring}T/${p.cog}T верхняя скорость моторной тяги ~${vLow}–${vHigh} km/h. Текущие настройки не выходят за жёсткие аппаратные лимиты.` });
-  }
-
-  el('rcAlerts').innerHTML = alerts.map(a =>
-    `<div class="rc-alert ${a.kind}"><b>${a.title}</b>${a.text}</div>`
-  ).join('');
-}
-
-function initRealityCheck(){
-  ['rcChainring','rcCog','rcGrade','rcTarget'].forEach(id=>{
-    el(id).addEventListener('input', renderRealityCheck);
-  });
-  renderRealityCheck();
-}
-
-/* =========================================================================
    WIRING UP UI
    ========================================================================= */
 document.querySelectorAll('.nav-btn').forEach(btn=>{
@@ -1716,7 +1502,6 @@ document.querySelectorAll('.nav-btn').forEach(btn=>{
     btn.classList.add('active');
     document.querySelector(`.tab-panel[data-panel="${btn.dataset.tab}"]`).classList.add('active');
     if(btn.dataset.tab==='sim' && typeof renderSim==='function') renderSim();
-    if(btn.dataset.tab==='reality' && typeof renderRealityCheck==='function') renderRealityCheck();
   });
 });
 
@@ -1793,7 +1578,6 @@ buildLowBatOptions();
 renderPresets();
 pushUIFromState();
 initSim();
-initRealityCheck();
 if(!('serial' in navigator)) el('serialWarning').style.display='block';
 setConnectedUI(false);
 logLine('BBS FLASH ready. Load a preset or connect hardware to begin.','l-sys');
