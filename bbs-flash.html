@@ -1593,9 +1593,9 @@ function computeRange(){
   const lc = state.bas ? state.bas.LC : 25;
   const mechW = volt * lc * ETA;
   function whPerKm(gradeFrac){
-    const v = solveSpeed(mechW, mass, gradeFrac);
-    if(v < 1) return 999;
-    return mechW / v;
+    const v = solveSpeed(mechW, mass, gradeFrac);   // returns m/s
+    if(v < 0.3) return 999;
+    return mechW / (v * 3.6);                        // W / (km/h) = Wh/km
   }
   const flatWh = whPerKm(0);
   const climbWh = whPerKm(avgGrade/100);
