@@ -1,0 +1,93 @@
+{
+  "project": "NeoChoice / BBS-Flash agent harness",
+  "generated": "2026-08-11",
+  "features": [
+    {
+      "id": "F01",
+      "title": "Reconcile bbs-flash to v2.1 clean base (git am patch)",
+      "status": "done",
+      "acceptance": ["v2.1 commits applied on branch reconcile-v21", "localStorage CALLS=0", "REF_MAX_KMH=0"],
+      "verify_cmd": ["git log --oneline -1", "grep -c 'localStorage\\\\.(get|set)' bbs-flash.html"]
+    },
+    {
+      "id": "F02",
+      "title": "Port eco/throttle presets + one-charge range calculator to v2.1",
+      "status": "done",
+      "acceptance": ["PRESETS has eco+throttle", "computeRange() present and runs"],
+      "verify_cmd": ["node tests/physics.test.mjs"]
+    },
+    {
+      "id": "F03",
+      "title": "S4 full RU localization (i18n engine, data-i18n on nav/gate/panels/fields)",
+      "status": "done",
+      "acceptance": ["83 data-i18n markers", "I18N_LANG ru/en toggle persists in IndexedDB"],
+      "verify_cmd": ["node -e \"const h=require('fs').readFileSync('bbs-flash.html','utf8');console.log((h.match(/data-i18n=/g)||[]).length)\""]
+    },
+    {
+      "id": "F04",
+      "title": "S4 tooltips for all Basic/PAS/Throttle params (keyboard-accessible)",
+      "status": "done",
+      "acceptance": ["17 TOOLTIPS keys", "attachTooltips() called", "aria-label + focus-visible"],
+      "verify_cmd": ["node tests/physics.test.mjs"]
+    },
+    {
+      "id": "F05",
+      "title": "Cyberpunk gate (RESTRICTED PADDOCK) styling",
+      "status": "done",
+      "acceptance": ["gate scanlines/neon CSS present", "no JS change", "prefers-reduced-motion intact"],
+      "verify_cmd": ["grep -c 'RESTRICTED PADDOCK\\|gateScan' bbs-flash.html"]
+    },
+    {
+      "id": "F06",
+      "title": "TDD physics suite (solveSpeed/computeRange/computeDelta)",
+      "status": "done",
+      "acceptance": ["tests/physics.test.mjs exits 0", "7 passed"],
+      "verify_cmd": ["node tests/physics.test.mjs"]
+    },
+    {
+      "id": "F07",
+      "title": "Harness: HERMES.md + reliable-agent-harness SKILL.md + feature_list.json + session-handoff.md",
+      "status": "in_progress",
+      "acceptance": ["HERMES.md with DoD", "SKILL.md present", "feature_list.json valid JSON", "session-handoff.md present"],
+      "verify_cmd": ["node -e \"JSON.parse(require('fs').readFileSync('feature_list.json','utf8'));console.log('json ok')\""]
+    },
+    {
+      "id": "F08",
+      "title": "SECURITY FIX: clamp all write-frame bytes to 0..255 + reject neg/NaN Current Limit",
+      "status": "blocked",
+      "blocker": "Awaiting full 10-user test reconciliation to apply once, with edge-case test",
+      "acceptance": ["negative LC rejected before sendFrame", "NaN throws, not sent as 0", "byteField() used in build*WriteFrame"],
+      "verify_cmd": ["node tests/security.test.mjs  (to be added)"],
+      "evidence": "Found by subagent #10: buildBasWriteFrame L1645 + safetyGate L1732 only checks LC>ceiling, not <1/NaN -> new Uint8Array([-5]) => byte 251 (251 A) to controller."
+    },
+    {
+      "id": "F09",
+      "title": "Delete 6 junk GitHub repos (agent, llm-council, ankoridzh, allocation-archive, hc, yagody-dota)",
+      "status": "blocked",
+      "blocker": "GitHub token lacks delete_repo scope (DELETE returns 403). User must delete manually or supply scoped token.",
+      "acceptance": ["6 repos removed from xftesht-coder"],
+      "verify_cmd": ["curl -s -o /dev/null -w '%{http_code}' -X DELETE -H \"Authorization: Bearer $TOKEN\" https://api.github.com/repos/xftesht-coder/<repo>"]
+    },
+    {
+      "id": "F10",
+      "title": "Remove dangling textanalyzer.neochoice.ru DNS A-record",
+      "status": "blocked",
+      "blocker": "DNS lives in registrar panel; agent cannot edit. User must click in panel.",
+      "acceptance": ["textanalyzer.neochoice.ru returns 000 / no DNS"]
+    },
+    {
+      "id": "F11",
+      "title": "Reconcile 9 remaining virtual-user test reports and fix accepted issues",
+      "status": "pending",
+      "acceptance": ["all 10 user reports collected", "accepted issues fixed", "tests green"],
+      "verify_cmd": ["node tests/physics.test.mjs"]
+    },
+    {
+      "id": "F12",
+      "title": "Push reconcile-v21 to GitHub bbs-flash (brand-clean, tests green)",
+      "status": "pending",
+      "acceptance": ["git push origin reconcile-v21", "grep honor/choice/earbuds in repo = 0"],
+      "verify_cmd": ["git push origin reconcile-v21", "grep -riE 'honor|choice|earbuds' ."]
+    }
+  ]
+}
