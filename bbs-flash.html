@@ -385,25 +385,25 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </details>
 
         <div class="card">
-          <div class="card-title">Power limits</div>
+          <div class="card-title" data-i18n="bas.powerlimits">Power limits</div>
           <div class="grid">
             <div class="field">
-              <label>Low Battery Protection <span class="unit">V</span></label>
+              <label data-i18n="bas.lbp">Low Battery Protection <span class="unit">V</span></label>
               <select id="basLBP"></select>
-              <small>Range depends on nominal pack voltage read from the controller.</small>
+              <small data-i18n="bas.lbp.hint">Range depends on nominal pack voltage read from the controller.</small>
             </div>
             <div class="field">
-              <label>Current Limit <span class="unit">A</span></label>
+              <label data-i18n="bas.lc">Current Limit <span class="unit">A</span></label>
               <input type="number" id="basLC" min="1" max="255"/>
-              <small id="basLCHint">Ceiling reported by controller sets the max here.</small>
+              <small id="basLCHint" data-i18n="bas.lc.hint">Ceiling reported by controller sets the max here.</small>
             </div>
             <div class="field">
-              <label>Wheel Diameter</label>
+              <label data-i18n="bas.wd">Wheel Diameter</label>
               <select id="basWD"></select>
-              <small>Only whole inches 16–30, plus 700C — a 27.5&quot; tire has no exact entry, round to 27&quot; or 28&quot;.</small>
+              <small data-i18n="bas.wd.hint">Only whole inches 16–30, plus 700C — a 27.5" tire has no exact entry, round to 27" or 28".</small>
             </div>
             <div class="field">
-              <label>Speed Meter Type</label>
+              <label data-i18n="bas.smtype">Speed Meter Type</label>
               <select id="basSMType">
                 <option value="0">External, Wheel Meter</option>
                 <option value="1">Internal, Motor Meter</option>
@@ -411,14 +411,14 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
               </select>
             </div>
             <div class="field">
-              <label>Speed Meter Signals <span class="unit">magnets</span></label>
+              <label data-i18n="bas.smsig">Speed Meter Signals <span class="unit">magnets</span></label>
               <input type="number" id="basSMSig" min="1" max="36"/>
             </div>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-title">Assist levels 0–9</div>
+          <div class="card-title" data-i18n="bas.assisttitle">Assist levels 0–9</div>
           <table class="pas-table" id="basAssistTable">
             <thead><tr><th>Level</th><th>Current %</th><th>Speed %</th></tr></thead>
             <tbody></tbody>
@@ -426,8 +426,8 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </div>
 
         <div class="actions-row">
-          <button class="btn" id="basRead" disabled>Read Basic</button>
-          <button class="btn primary" id="basWrite" disabled>Write Basic</button>
+          <button class="btn" id="basRead" disabled data-i18n="bas.read">Read Basic</button>
+          <button class="btn primary" id="basWrite" disabled data-i18n="bas.write">Write Basic</button>
         </div>
       </section>
 
@@ -439,16 +439,16 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
           <div class="panel-desc" data-i18n="panel.pas.desc">How the motor reacts to pedaling: sensor type, start behaviour, and how quickly it lets go when you stop — the parameter that protects your drivetrain during shifts.</div>
         </div>
 
-        <details class="card"><summary class="card-title" style="cursor:pointer;">What each setting does — tap to expand</summary>
+        <details class="card"><summary class="card-title" style="cursor:pointer;" data-i18n="pas.what">What each setting does — tap to expand</summary>
           <table class="pas-table" style="margin-top:10px;">
             <thead><tr><th>Setting</th><th style="text-align:left;">Increasing it →</th></tr></thead>
             <tbody>
-              <tr><td style="color:var(--text)">Start Current</td><td style="text-align:left;">Stronger kick from a standstill — the main lever for a punchier launch. Also stresses the controller/gear more at 0 cadence.</td></tr>
-              <tr><td style="color:var(--text)">Slow-start Mode</td><td style="text-align:left;">Faster power ramp-up when you start pedaling — snappier, but rougher on the drivetrain.</td></tr>
-              <tr><td style="color:var(--text)">Startup Degree</td><td style="text-align:left;">More pedal-signal pulses required before assist kicks in — <i>higher = slower to respond</i>, lower = snappier engagement.</td></tr>
-              <tr><td style="color:var(--text)">Time of Stop</td><td style="text-align:left;">Longer delay before the motor lets go once you stop pedaling — worse for shift protection, but smoother PAS on rough trail.</td></tr>
-              <tr><td style="color:var(--text)">Current Decay</td><td style="text-align:left;">Slower/gentler fall-off in power as your effort drops.</td></tr>
-              <tr><td style="color:var(--text)">Keep Current</td><td style="text-align:left;">Power stays stronger as cadence rises — less "fade" mid-pedal-stroke, more sustained pull.</td></tr>
+              <tr><td style="color:var(--text)" data-i18n="pas.startcurr">Start Current</td><td style="text-align:left;">Stronger kick from a standstill — the main lever for a punchier launch. Also stresses the controller/gear more at 0 cadence.</td></tr>
+              <tr><td style="color:var(--text)" data-i18n="pas.slowstart">Slow-start Mode</td><td style="text-align:left;">Faster power ramp-up when you start pedaling — snappier, but rougher on the drivetrain.</td></tr>
+              <tr><td style="color:var(--text)" data-i18n="pas.startdeg">Startup Degree</td><td style="text-align:left;">More pedal-signal pulses required before assist kicks in — <i>higher = slower to respond</i>, lower = snappier engagement.</td></tr>
+              <tr><td style="color:var(--text)" data-i18n="pas.timestop">Time of Stop</td><td style="text-align:left;">Longer delay before the motor lets go once you stop pedaling — worse for shift protection, but smoother PAS on rough trail.</td></tr>
+              <tr><td style="color:var(--text)" data-i18n="pas.currdecay">Current Decay</td><td style="text-align:left;">Slower/gentler fall-off in power as your effort drops.</td></tr>
+              <tr><td style="color:var(--text)" data-i18n="pas.keepcurr">Keep Current</td><td style="text-align:left;">Power stays stronger as cadence rises — less "fade" mid-pedal-stroke, more sustained pull.</td></tr>
             </tbody>
           </table>
         </details>
@@ -456,7 +456,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         <div class="card">
           <div class="grid">
             <div class="field">
-              <label>Pedal Sensor Type</label>
+              <label data-i18n="pas.senstype">Pedal Sensor Type</label>
               <select id="pasSensType">
                 <option value="0">None</option>
                 <option value="1">DH-Sensor-12</option>
@@ -465,53 +465,53 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
               </select>
             </div>
             <div class="field">
-              <label>Designated Assist</label>
+              <label data-i18n="pas.desigassist">Designated Assist</label>
               <select id="pasDesigAssist"></select>
             </div>
             <div class="field">
-              <label>Speed Limited</label>
+              <label data-i18n="pas.spdlim">Speed Limited</label>
               <select id="pasSpdLim"></select>
             </div>
             <div class="field">
-              <label>Start Current <span class="unit">%</span></label>
+              <label data-i18n="pas.startcurr">Start Current <span class="unit">%</span></label>
               <input type="number" id="pasStartCurr" min="1" max="20"/>
             </div>
             <div class="field">
-              <label>Slow-start Mode</label>
+              <label data-i18n="pas.slowstart">Slow-start Mode</label>
               <select id="pasSlowStart"></select>
             </div>
             <div class="field">
-              <label>Startup Degree <span class="unit">signals</span></label>
+              <label data-i18n="pas.startdeg">Startup Degree <span class="unit">signals</span></label>
               <input type="number" id="pasStartDeg" min="1" max="100"/>
             </div>
             <div class="field">
-              <label>Work Mode <span class="unit">raw, 10–80</span></label>
+              <label data-i18n="pas.workmode">Work Mode <span class="unit">raw, 10–80</span></label>
               <input type="number" id="pasWorkMode" min="10" max="80" placeholder="blank = undetermined"/>
-              <small>Community consensus: negligible effect on BBS02 — safe to leave undetermined.</small>
+              <small data-i18n="pas.workmode.hint">Community consensus: negligible effect on BBS02 — safe to leave undetermined.</small>
             </div>
             <div class="field">
-              <label>Time of Stop <span class="unit">×10ms</span></label>
+              <label data-i18n="pas.timestop">Time of Stop <span class="unit">×10ms</span></label>
               <input type="number" id="pasStopDelay" min="0" max="255"/>
-              <small>Lower = motor lets go faster when you stop pedaling. Protects the chain during shifts. BBS02B may floor around 20.</small>
+              <small data-i18n="pas.timestop.hint">Lower = motor lets go faster when you stop pedaling. Protects the chain during shifts. BBS02B may floor around 20.</small>
             </div>
             <div class="field">
-              <label>Current Decay</label>
+              <label data-i18n="pas.currdecay">Current Decay</label>
               <input type="number" id="pasCurrDecay" min="1" max="8"/>
             </div>
             <div class="field">
-              <label>Stop Decay <span class="unit">×10ms</span></label>
-              <input type="number" id="pasStopDecay" min="0" max="255"/>
+              <label data-i18n="pas.keepcurr">Keep Current <span class="unit">%</span></label>
+              <input type="number" id="pasKeepCurr" min="1" max="100"/>
             </div>
             <div class="field">
-              <label>Keep Current <span class="unit">%</span></label>
-              <input type="number" id="pasKeepCurr" min="1" max="100"/>
+              <label data-i18n="pas.stopdecay">Stop Decay <span class="unit">×10ms</span></label>
+              <input type="number" id="pasStopDecay" min="0" max="255"/>
             </div>
           </div>
         </div>
 
         <div class="actions-row">
-          <button class="btn" id="pasRead" disabled>Read Pedal Assist</button>
-          <button class="btn primary" id="pasWrite" disabled>Write Pedal Assist</button>
+          <button class="btn" id="pasRead" disabled data-i18n="pas.read">Read Pedal Assist</button>
+          <button class="btn primary" id="pasWrite" disabled data-i18n="pas.write">Write Pedal Assist</button>
         </div>
       </section>
 
@@ -523,13 +523,13 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
           <div class="panel-desc" data-i18n="panel.thr.desc">Voltage window, Speed vs Current mode, and its own independent assist/speed ceiling.</div>
         </div>
 
-        <details class="card"><summary class="card-title" style="cursor:pointer;">What each setting does — tap to expand</summary>
+        <details class="card"><summary class="card-title" style="cursor:pointer;" data-i18n="thr.what">What each setting does — tap to expand</summary>
           <table class="pas-table" style="margin-top:10px;">
             <thead><tr><th>Setting</th><th style="text-align:left;">Increasing it →</th></tr></thead>
             <tbody>
-              <tr><td style="color:var(--text)">Start Current</td><td style="text-align:left;">Punchier throttle tip-in right from a stop — the main lever for a snappier throttle launch.</td></tr>
-              <tr><td style="color:var(--text)">End Voltage</td><td style="text-align:left;">Widens the usable throttle travel before hitting full power — finer control near the top of the twist.</td></tr>
-              <tr><td style="color:var(--text)">Mode: Current vs Speed</td><td style="text-align:left;">Current mode = smoother, controller manages power directly. Speed mode = punchier but jerkier, throttle position ≈ target speed.</td></tr>
+              <tr><td style="color:var(--text)" data-i18n="thr.startcurr">Start Current</td><td style="text-align:left;">Punchier throttle tip-in right from a stop — the main lever for a snappier throttle launch.</td></tr>
+              <tr><td style="color:var(--text)" data-i18n="thr.endv">End Voltage</td><td style="text-align:left;">Widens the usable throttle travel before hitting full power — finer control near the top of the twist.</td></tr>
+              <tr><td style="color:var(--text)" data-i18n="thr.mode">Mode: Current vs Speed</td><td style="text-align:left;">Current mode = smoother, controller manages power directly. Speed mode = punchier but jerkier, throttle position ≈ target speed.</td></tr>
             </tbody>
           </table>
         </details>
@@ -537,35 +537,35 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         <div class="card">
           <div class="grid">
             <div class="field">
-              <label>Start Voltage <span class="unit">×0.1V</span></label>
+              <label data-i18n="thr.startv">Start Voltage <span class="unit">×0.1V</span></label>
               <input type="number" id="thrStartV" min="0" max="50"/>
             </div>
             <div class="field">
-              <label>End Voltage <span class="unit">×0.1V</span></label>
+              <label data-i18n="thr.endv">End Voltage <span class="unit">×0.1V</span></label>
               <input type="number" id="thrEndV" min="0" max="50"/>
             </div>
             <div class="field">
-              <label>Mode</label>
+              <label data-i18n="thr.mode2">Mode</label>
               <select id="thrMode"><option value="0">Speed</option><option value="1">Current</option></select>
             </div>
             <div class="field">
-              <label>Designated Assist</label>
+              <label data-i18n="thr.assist">Designated Assist</label>
               <select id="thrAssist"></select>
             </div>
             <div class="field">
-              <label>Speed Limited</label>
+              <label data-i18n="thr.spdlim">Speed Limited</label>
               <select id="thrSpdLim"></select>
             </div>
             <div class="field">
-              <label>Start Current <span class="unit">%</span></label>
+              <label data-i18n="thr.startcurr">Start Current <span class="unit">%</span></label>
               <input type="number" id="thrStartCurr" min="1" max="100"/>
             </div>
           </div>
         </div>
 
         <div class="actions-row">
-          <button class="btn" id="thrRead" disabled>Read Throttle</button>
-          <button class="btn primary" id="thrWrite" disabled>Write Throttle</button>
+          <button class="btn" id="thrRead" disabled data-i18n="thr.read">Read Throttle</button>
+          <button class="btn primary" id="thrWrite" disabled data-i18n="thr.write">Write Throttle</button>
         </div>
       </section>
 
@@ -852,6 +852,9 @@ const I18N = {
     'panel.profiles.desc':'Импорт/экспорт побайтово совместим с .el форматом оригинальной тулы — профили отсюда открываются в Penov-туле и наоборот. Пресеты ниже только загружают значения в поля; ничего не уходит в контроллер, пока вы не нажмёте «Записать всё».',
     'panel.sim.desc':'Оценивает максимальную скорость, скорость на подъёме и разгон по физике баланса мощности (P = сопротивление воздуха + качение + подъём), при текущем потреблении контроллера. Это сравнительный инструмент, не динамометрический прогноз — считайте цифры относительными.',
     'panel.log.desc':'Каждый байт отправлен/получен — для отладки упрямого соединения или проверки, что не пишется ничего лишнего.',
+    'bas.powerlimits':'Лимиты питания','bas.lbp':'Защита от разряда','bas.lbp.hint':'Диапазон зависит от номинального напряжения пакета, считанного из контроллера.','bas.lc':'Лимит тока','bas.lc.hint':'Потолок задаётся контроллером.','bas.wd':'Диаметр колеса','bas.wd.hint':'Только целые дюймы 16–30, плюс 700C — у покрышки 27.5" нет точной записи, округлите до 27" или 28".','bas.smtype':'Тип датчика скорости','bas.smsig':'Импульсов на оборот','bas.assisttitle':'Уровни ассистента 0–9','bas.read':'Считать базовые','bas.write':'Записать базовые',
+    'pas.what':'Что делает каждый параметр — нажмите, чтобы раскрыть','pas.startcurr':'Стартовый ток','pas.slowstart':'Плавность старта','pas.startdeg':'Угол включения','pas.timestop':'Задержка отключения','pas.currdecay':'Спад тока','pas.keepcurr':'Удерживаемый ток','pas.senstype':'Тип датчика педалей','pas.desigassist':'Назначенный ассистент','pas.spdlim':'Ограничение скорости','pas.workmode':'Режим работы','pas.workmode.hint':'Консенсус сообщества: на BBS02 эффект ничтожен — можно оставить неопределённым.','pas.timestop.hint':'Меньше = мотор быстрее отпускает при остановке педалей. Бережёт цепь при переключениях. BBS02B часто не принимает ниже 20.','pas.read':'Считать ассистент','pas.write':'Записать ассистент',
+    'thr.startv':'Напряжение начала газа','thr.endv':'Напряжение конца газа','thr.mode':'Режим газа','thr.mode2':'Режим','thr.what':'Что делает каждый параметр — нажмите, чтобы раскрыть','thr.mode.0':'По скорости','thr.mode.1':'По току','thr.assist':'Назначенный ассистент','thr.spdlim':'Ограничение скорости','thr.startcurr':'Стартовый ток газа','thr.read':'Считать газ','thr.write':'Записать газ',
     'lang':'Язык'
   },
   en: {
@@ -879,6 +882,9 @@ const I18N = {
     'panel.profiles.desc':'Import/export is byte-for-byte compatible with the original tool\'s .el format — profiles saved here open fine in the Penov tool, and vice versa. Presets below load values into the fields only; nothing is sent to the controller until you press Write.',
     'panel.sim.desc':'Estimates top speed, hill-climb speed and launch feel from your settings using power-balance physics (P = drag + rolling resistance + grade force, at your controller\'s current draw). This is a comparison tool, not a dyno-calibrated prediction — treat the numbers as relative, not gospel.',
     'panel.log.desc':'Every byte sent/received, for debugging a stubborn connection or verifying nothing unexpected is being written.',
+    'bas.powerlimits':'Power limits','bas.lbp':'Low Battery Protection','bas.lbp.hint':'Range depends on nominal pack voltage read from the controller.','bas.lc':'Current Limit','bas.lc.hint':'Ceiling reported by controller sets the max here.','bas.wd':'Wheel Diameter','bas.wd.hint':'Only whole inches 16–30, plus 700C — a 27.5" tire has no exact entry, round to 27" or 28".','bas.smtype':'Speed Meter Type','bas.smsig':'Speed Meter Signals','bas.assisttitle':'Assist levels 0–9','bas.read':'Read Basic','bas.write':'Write Basic',
+    'pas.what':'What each setting does — tap to expand','pas.startcurr':'Start Current','pas.slowstart':'Slow-start Mode','pas.startdeg':'Startup Degree','pas.timestop':'Time of Stop','pas.currdecay':'Current Decay','pas.keepcurr':'Keep Current','pas.senstype':'Pedal Sensor Type','pas.desigassist':'Designated Assist','pas.spdlim':'Speed Limited','pas.workmode':'Work Mode','pas.workmode.hint':'Community consensus: negligible effect on BBS02 — safe to leave undetermined.','pas.timestop.hint':'Lower = motor lets go faster when you stop pedaling. Protects the chain during shifts. BBS02B may floor around 20.','pas.read':'Read Pedal Assist','pas.write':'Write Pedal Assist',
+    'thr.startv':'Throttle Start Voltage','thr.endv':'Throttle End Voltage','thr.mode':'Throttle Mode','thr.mode2':'Mode','thr.what':'What each setting does — tap to expand','thr.mode.0':'By Speed','thr.mode.1':'By Current','thr.assist':'Designated Assist','thr.spdlim':'Speed Limited','thr.startcurr':'Throttle Start Current','thr.read':'Read Throttle','pas.stopdecay':'Stop Decay','thr.write':'Write Throttle',
     'lang':'Language'
   }
 };
@@ -892,12 +898,19 @@ function applyLang(){
   document.documentElement.setAttribute('lang', I18N_LANG);
   document.querySelectorAll('[data-i18n]').forEach(n=>{
     const k = n.getAttribute('data-i18n');
+    if(n.dataset.i18nHtml==='keep') return; // skip (dynamic)
     const txt = t(k);
-    if(n.tagName==='INPUT' && n.type!=='button' && n.type!=='submit') { /* skip */ }
-    else if(n.tagName==='TITLE' || n.dataset.i18nAttr==='text') n.textContent = txt;
-    else n.textContent = txt;
+    // Preserve child elements (e.g. <span class="unit">) — only replace the first
+    // direct text node, keeping any nested tags intact.
+    if(n.childNodes.length>1 || (n.childNodes.length===1 && n.childNodes[0].nodeType!==3)){
+      // find first text node
+      let tn=null;
+      n.childNodes.forEach(c=>{ if(!tn && c.nodeType===3) tn=c; });
+      if(tn) tn.nodeValue = txt; else n.insertBefore(document.createTextNode(txt), n.firstChild);
+    } else {
+      n.textContent = txt;
+    }
   });
-  // nav + rail status already handled via data-i18n; refresh dynamic UI bits
   if(typeof setConnectedUI==='function') setConnectedUI(false);
   const lg = el('langToggle'); if(lg) lg.textContent = I18N_LANG==='ru' ? 'EN' : 'RU';
 }
