@@ -115,6 +115,27 @@ body{min-height:100vh;background-image:radial-gradient(circle at 1px 1px, #00000
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px 18px;}
 .field{display:flex;flex-direction:column;gap:6px;}
+/* ===== Tooltip "i" buttons (S4 Task 2) — keyboard accessible ===== */
+.tip-btn{
+  position:absolute;top:0;right:0;width:18px;height:18px;border-radius:50%;
+  border:1px solid var(--rule);background:var(--panel-2);color:var(--copper);
+  font-size:11px;font-weight:700;line-height:1;cursor:pointer;padding:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.tip-btn:focus-visible{outline:2px solid var(--copper);outline-offset:2px;}
+.field{position:relative;padding-right:24px;}
+.tip-pop{
+  display:none;position:absolute;z-index:60;top:22px;right:0;width:260px;
+  background:var(--card);border:1px solid var(--rule);border-radius:8px;
+  box-shadow:0 6px 22px rgba(0,0,0,.18);padding:10px 12px;font-size:12px;
+  line-height:1.5;color:var(--text);text-align:left;
+}
+.tip-pop.open{display:block;}
+.tip-pop b{display:block;margin-bottom:4px;color:var(--text);font-size:12.5px;}
+.tip-row{font-size:11.5px;color:var(--text-dim);margin-top:2px;}
+.tip-row.up{color:var(--rally-green);}
+.tip-row.down{color:var(--rally-blue);}
+.tip-row.warn{color:var(--rally-red);font-weight:600;margin-top:5px;}
 .field label{font-size:12px;color:var(--text-dim);font-weight:500;display:flex;justify-content:space-between;}
 .field label .unit{color:var(--text-faint);font-family:var(--mono);font-size:10.5px;}
 .field input[type=number], .field select{
@@ -888,6 +909,118 @@ const I18N = {
     'lang':'Language'
   }
 };
+
+/* ===== TOOLTIPS (S4 Task 2) =====
+   Source of meaning: bafang_intelligence.md section 6 (Russian Localization table).
+   Each entry: what / increasing / decreasing / risk (risk only where real).
+   Keyed by field id. Rendered by attachTooltips() into keyboard-accessible
+   "i" buttons with aria-labels. */
+const TOOLTIPS = {
+  basLBP: {
+    ru:{ what:'Напряжение, ниже которого контроллер отключает мотор.', up:'Батарея разряжается меньше, ресурс дольше.', down:'Больше пробег, но глубже разряд.', risk:'Слишком низко = деградация ячеек.' },
+    en:{ what:'Voltage below which the controller cuts the motor.', up:'Battery discharges less, longer life.', down:'More range, but deeper discharge.', risk:'Too low = cell degradation.' }
+  },
+  basLC: {
+    ru:{ what:'Максимальный ток контроллера — общий потолок мощности.', up:'Больше мощности и тяги.', down:'Меньше нагрев, больше пробег.', risk:'>22 А на BBS02 = существенно больше тепла на низких скоростях.' },
+    en:{ what:'Controller max current - the overall power ceiling.', up:'More power and pull.', down:'Less heat, more range.', risk:'>22 A on BBS02 = much more heat at low speed.' }
+  },
+  basWD: {
+    ru:{ what:'Калибровка спидометра и всех лимитов по скорости.', up:'Спидометр занижает показания.', down:'Спидометр завышает показания.', risk:'Неверное значение ломает все скоростные лимиты.' },
+    en:{ what:'Calibrates the speedometer and every speed-based limit.', up:'Speedometer reads low.', down:'Speedometer reads high.', risk:'Wrong value breaks all speed limits.' }
+  },
+  basSMSig: {
+    ru:{ what:'Число магнитов на датчике скорости.', up:'-', down:'-', risk:'Не соответствует железу = неверная скорость.' },
+    en:{ what:'Number of magnets on the speed sensor.', up:'-', down:'-', risk:'Mismatch with hardware = wrong speed.' }
+  },
+  pasSensType: {
+    ru:{ what:'Модель датчика каденса (у BBS02 обычно DoubleSignal-24).', up:'-', down:'-', risk:'Nevernyy tip = PAS ne rabotaet.' },
+    en:{ what:'Cadence sensor model (BBS02 usually DoubleSignal-24).', up:'-', down:'-', risk:'Wrong type = PAS dead.' }
+  },
+  pasStartCurr: {
+    ru:{ what:'Ток при трогании с места.', up:'Резче старт, быстрее срыв с места.', down:'Плавнее, мягче к цепи.', risk:'Высокий + вес >100 кг + старт в гору = риск для цепи и нейлоновой шестерни.' },
+    en:{ what:'Current when pulling away from a stop.', up:'Sharper launch.', down:'Smoother, gentler on the chain.', risk:'High + rider >100 kg + uphill start = chain / nylon-gear risk.' }
+  },
+  pasSlowStart: {
+    ru:{ what:'Скорость нарастания мощности (1-8).', up:'Агрессивнее подхват.', down:'Плавнее, комфортнее в городе.', risk:'8 + высокий Start Current = удар по трансмиссии.' },
+    en:{ what:'Power ramp-up rate (1-8).', up:'More aggressive pickup.', down:'Smoother, nicer in town.', risk:'8 + high Start Current = drivetrain shock.' }
+  },
+  pasStartDeg: {
+    ru:{ what:'Сколько импульсов педалей до включения мотора.', up:'Мотор включается позже.', down:'Мотор подхватывает раньше.', risk:'Слишком мало = мотор дёргает при парковке.' },
+    en:{ what:'Pedal pulses before the motor engages.', up:'Motor engages later.', down:'Motor picks up sooner.', risk:'Too few = motor jerks while parked.' }
+  },
+  pasWorkMode: {
+    ru:{ what:'Режим отслеживания каденса.', up:'-', down:'-', risk:'На BBS02 эффект незначителен — можно оставить Undetermined.' },
+    en:{ what:'Cadence tracking mode.', up:'-', down:'-', risk:'On BBS02 negligible - leave Undetermined.' }
+  },
+  pasStopDelay: {
+    ru:{ what:'Cherez skolko motor perestayot tyanut posle ostanovki pedaley.', up:'Мотор «догоняет» дольше.', down:'Мгновенное снятие тяги — защита цепи при переключении.', risk:'На BBS02B значения <20 часто не принимаются.' },
+    en:{ what:'Delay before the motor stops after you stop pedaling.', up:'Motor "coasts" longer.', down:'Instant cut - protects chain on shifts.', risk:'BBS02B often rejects values <20.' }
+  },
+  pasCurrDecay: {
+    ru:{ what:'Как быстро падает ток при росте каденса.', up:'Резче спад.', down:'Мощность держится дольше.', risk:'Значение 6 — проверенный компромисс.' },
+    en:{ what:'How fast current falls as cadence rises.', up:'Sharper fall.', down:'Power holds longer.', risk:'Value 6 is a proven compromise.' }
+  },
+  pasStopDecay: {
+    ru:{ what:'Как плавно гаснет тяга.', up:'Мягче отпускание (до 95 в «smooth climber»).', down:'Резче обрыв.', risk:'' },
+    en:{ what:'How gently the pull fades.', up:'Softer release (up to 95 in "smooth climber").', down:'Sharper cut.', risk:'' }
+  },
+  pasKeepCurr: {
+    ru:{ what:'Какая доля тока сохраняется на высоком каденсе.', up:'Меньше «провал» тяги при разгоне.', down:'Сильнее спад.', risk:'' },
+    en:{ what:'Current fraction kept at high cadence.', up:'Less "fade" under acceleration.', down:'Stronger drop-off.', risk:'' }
+  },
+  thrStartV: {
+    ru:{ what:'Напряжение начала срабатывания газа.', up:'-', down:'-', risk:'Не соответствует ручке = газ не работает или залипает.' },
+    en:{ what:'Throttle start voltage.', up:'-', down:'-', risk:'Mismatch with the grip = dead or sticky throttle.' }
+  },
+  thrEndV: {
+    ru:{ what:'Напряжение полной мощности газа.', up:'-', down:'-', risk:'' },
+    en:{ what:'Throttle full-power voltage.', up:'-', down:'-', risk:'' }
+  },
+  thrMode: {
+    ru:{ what:'Speed = по скорости, Current = по току.', up:'-', down:'-', risk:'Current даёт более линейный отклик.' },
+    en:{ what:'Speed = by speed, Current = by current.', up:'-', down:'-', risk:'Current gives a more linear response.' }
+  },
+  thrStartCurr: {
+    ru:{ what:'Резкость отклика газа с нуля.', up:'Резче подхват газа.', down:'Точнее дозировка на скользком.', risk:'Высокий = срыв колеса на грунте.' },
+    en:{ what:'Throttle tip-in sharpness from zero.', up:'Sharper throttle pickup.', down:'Finer dosing on slick ground.', risk:'High = wheel spin on loose surfaces.' }
+  }
+};
+function tipHTML(key){
+  const t = TOOLTIPS[key]; if(!t) return '';
+  const d = t[I18N_LANG] || t.en;
+  const w = d.what || (t.en && t.en.what) || '';
+  let h = '<b>'+w+'</b>';
+  if(d.up && d.up!=='-') h += '<div class="tip-row up">↑ '+d.up+'</div>';
+  if(d.down && d.down!=='-') h += '<div class="tip-row down">↓ '+d.down+'</div>';
+  if(d.risk) h += '<div class="tip-row warn">⚠️ '+d.risk+'</div>';
+  return h;
+}
+function attachTooltips(){
+  Object.keys(TOOLTIPS).forEach(key=>{
+    const field = el(key);
+    if(!field) return;
+    const wrap = field.closest('.field');
+    if(!wrap || wrap.querySelector('.tip-btn')) return;
+    const btn = document.createElement('button');
+    btn.type='button'; btn.className='tip-btn'; btn.textContent='i';
+    btn.setAttribute('aria-label','Podskazka'); btn.setAttribute('aria-expanded','false');
+    const pop = document.createElement('div'); pop.className='tip-pop'; pop.setAttribute('role','tooltip');
+    pop.setAttribute('data-tipkey', key);
+    pop.innerHTML = tipHTML(key);
+    btn.addEventListener('click', function(e){ e.stopPropagation();
+      const open = pop.classList.contains('open');
+      document.querySelectorAll('.tip-pop.open').forEach(function(p){p.classList.remove('open');});
+      document.querySelectorAll('.tip-btn[aria-expanded="true"]').forEach(function(b){b.setAttribute('aria-expanded','false');});
+      if(!open){ pop.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
+    });
+    wrap.appendChild(btn); wrap.appendChild(pop);
+  });
+  document.addEventListener('click', function(){
+    document.querySelectorAll('.tip-pop.open').forEach(function(p){p.classList.remove('open');});
+    document.querySelectorAll('.tip-btn[aria-expanded="true"]').forEach(function(b){b.setAttribute('aria-expanded','false');});
+  });
+}
+
 let I18N_LANG = 'ru';
 function t(key, sub){
   let s = (I18N[I18N_LANG] && I18N[I18N_LANG][key]) || (I18N.en[key]) || key;
@@ -2244,9 +2377,17 @@ let gateAcknowledged = false;
 el('langToggle').addEventListener('click', ()=>{
   I18N_LANG = (I18N_LANG==='ru') ? 'en' : 'ru';
   applyLang();
+  refreshTooltips();
   saveLangPref(I18N_LANG);
   toast(I18N_LANG==='ru' ? 'Язык: Русский' : 'Language: English', 'ok');
 });
+
+function refreshTooltips(){
+  document.querySelectorAll('.tip-pop').forEach(pop=>{
+    const key = pop.getAttribute('data-tipkey');
+    if(key) pop.innerHTML = tipHTML(key);
+  });
+}
 
 /* init */
 loadLangPref().then(lang=>{ I18N_LANG = (lang==='en') ? 'en' : 'ru'; applyLang(); });
@@ -2261,6 +2402,7 @@ buildLowBatOptions();
 renderPresets();
 pushUIFromState();
 initSim();
+attachTooltips();
 if(!('serial' in navigator)) el('serialWarning').style.display='block';
 setConnectedUI(false);
 logLine('BBS FLASH ready. Load a preset or connect hardware to begin.','l-sys');
