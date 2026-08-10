@@ -284,6 +284,18 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 .legend-txt b{display:block;font-size:13.5px;color:#f1f5f9}
 .legend-txt span{font-size:12.5px;color:#94a3b8;line-height:1.5}
 @media (prefers-reduced-motion: reduce){.drawer,.drawer-backdrop{transition:none}}
+
+.field-grid{display:grid;gap:6px;margin:10px 0}
+.range-out{text-align:center;padding:18px;border-radius:14px;background:rgba(34,211,238,.07);border:1px solid var(--rail-line);margin-top:6px}
+.range-big{font-family:var(--disp,monospace);font-size:38px;font-weight:800;color:var(--hi-cyan);line-height:1}
+.range-big b{font-variant-numeric:tabular-nums}
+.range-sub{color:var(--text-dim);font-size:13px;margin-top:4px}
+.range-bars{display:grid;gap:6px;margin-top:14px}
+.range-bar{display:grid;grid-template-columns:54px 1fr 64px;align-items:center;gap:8px;font-size:12.5px}
+.range-bar .lvl{color:var(--text-dim);font-weight:600}
+.range-bar .track{height:10px;border-radius:8px;background:rgba(148,163,184,.16);overflow:hidden}
+.range-bar .track i{display:block;height:100%;background:linear-gradient(90deg,var(--hi-cyan),var(--hi-green));border-radius:8px}
+.range-bar .km{text-align:right;color:var(--text);font-weight:700;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -351,7 +363,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel active" data-panel="connect">
         <div class="panel-header">
           <div class="panel-eyebrow">01 · Link</div>
-          <div class="panel-title">Connect to controller</div>
+          <div class="panel-title" data-i18n="panel.connect">Connect to controller</div>
           <div class="panel-desc">Same UART wire protocol as the Penov/Penoff BafangConfigTool (1200 baud), rebuilt for Web Serial. Works in Chrome, Edge, or Opera on desktop. Plug in your USB–UART cable, then hit Connect and pick the port.</div>
         </div>
 
@@ -360,7 +372,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </div>
 
         <div class="card">
-          <div class="card-title">Session</div>
+          <div class="card-title" data-i18n="session">Session</div>
           <p style="font-size:12.5px;color:var(--text-dim);line-height:1.6;margin:0 0 4px 0;">
             <b style="color:var(--text)">Connect</b> pings the controller for its General block (manufacturer, model, firmware, nominal voltage, max current) — same handshake the original tool performs.<br/>
             <b style="color:var(--text)">Read all</b> chains Basic → Pedal Assist → Throttle reads, exactly like the original "READ FLASH" button. Do this twice on first connect, per the community's own advice — the first read is sometimes a stale/garbage frame.
@@ -372,7 +384,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel" data-panel="basic">
         <div class="panel-header">
           <div class="panel-eyebrow">02 · Basic tab</div>
-          <div class="panel-title">Power, protection &amp; assist table</div>
+          <div class="panel-title" data-i18n="panel.basic">Power, protection &amp; assist table</div>
           <div class="panel-desc">Low battery cutoff, overall current ceiling, the 0–9 assist-level current/speed table, wheel size and speed-meter calibration.</div>
         </div>
 
@@ -390,7 +402,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </details>
 
         <div class="card">
-          <div class="card-title">Power limits</div>
+          <div class="card-title" data-i18n="basic.powerlimits">Power limits</div>
           <div class="grid">
             <div class="field">
               <label>Low Battery Protection <span class="unit">V</span></label>
@@ -423,7 +435,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </div>
 
         <div class="card">
-          <div class="card-title">Assist levels 0–9</div>
+          <div class="card-title" data-i18n="basic.assistlevels">Assist levels 0–9</div>
           <table class="pas-table" id="basAssistTable">
             <thead><tr><th>Level</th><th>Current %</th><th>Speed %</th></tr></thead>
             <tbody></tbody>
@@ -440,7 +452,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel" data-panel="pas">
         <div class="panel-header">
           <div class="panel-eyebrow">03 · Pedal Assist tab</div>
-          <div class="panel-title">Cadence response tuning</div>
+          <div class="panel-title" data-i18n="panel.pas">Cadence response tuning</div>
           <div class="panel-desc">How the motor reacts to pedaling: sensor type, start behaviour, and how quickly it lets go when you stop — the parameter that protects your drivetrain during shifts.</div>
         </div>
 
@@ -524,7 +536,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel" data-panel="thr">
         <div class="panel-header">
           <div class="panel-eyebrow">04 · Throttle Handle tab</div>
-          <div class="panel-title">Throttle behaviour</div>
+          <div class="panel-title" data-i18n="panel.thr">Throttle behaviour</div>
           <div class="panel-desc">Voltage window, Speed vs Current mode, and its own independent assist/speed ceiling.</div>
         </div>
 
@@ -578,12 +590,12 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel" data-panel="profiles">
         <div class="panel-header">
           <div class="panel-eyebrow">05 · Profiles</div>
-          <div class="panel-title">.el files &amp; community presets</div>
+          <div class="panel-title" data-i18n="panel.profiles">.el files &amp; community presets</div>
           <div class="panel-desc">Import/export is byte-for-byte compatible with the original tool's .el format — profiles saved here open fine in the Penov tool, and vice versa. Presets below load values into the fields only; nothing is sent to the controller until you press Write.</div>
         </div>
 
         <div class="card">
-          <div class="card-title">Load / Save .el file</div>
+          <div class="card-title" data-i18n="profiles.loadsave">Load / Save .el file</div>
           <div class="file-row">
             <label class="btn" for="fileInput">Load .el file</label>
             <input type="file" id="fileInput" accept=".el,.txt"/>
@@ -593,7 +605,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </div>
 
         <div class="card">
-          <div class="card-title">Community presets (from the tuning comparison report)</div>
+          <div class="card-title" data-i18n="profiles.community">Community presets (from the tuning comparison report)</div>
           <div class="preset-grid" id="presetGrid"></div>
         </div>
       </section>
@@ -602,12 +614,12 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel" data-panel="sim">
         <div class="panel-header">
           <div class="panel-eyebrow">06 · Physics estimate</div>
-          <div class="panel-title">Ride simulator — compare two profiles</div>
+          <div class="panel-title" data-i18n="panel.sim">Ride simulator — compare two profiles</div>
           <div class="panel-desc">Estimates top speed, hill-climb speed and launch feel from your settings using power-balance physics (P = drag + rolling resistance + grade force, at your controller's current draw). This is a comparison tool, not a dyno-calibrated prediction — treat the numbers as relative, not gospel.</div>
         </div>
 
         <div class="card">
-          <div class="card-title">Rider &amp; bike parameters</div>
+          <div class="card-title" data-i18n="sim.rider">Rider &amp; bike parameters</div>
           <div class="sim-grid">
             <div class="slider-field">
               <div class="row"><label>Total mass (rider + bike + gear)</label><b id="simMassVal">115 kg</b></div>
@@ -630,7 +642,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </div>
 
         <div class="card">
-          <div class="card-title">Choose two profiles to compare</div>
+          <div class="card-title" data-i18n="sim.choose">Choose two profiles to compare</div>
           <div class="ab-row">
             <div class="ab-col a"><label>Profile A</label><select id="simProfA"></select></div>
             <div class="ab-col b"><label>Profile B</label><select id="simProfB"></select></div>
@@ -638,7 +650,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </div>
 
         <div class="card">
-          <div class="card-title">Live gauges &amp; drag race</div>
+          <div class="card-title" data-i18n="sim.gauges">Live gauges &amp; drag race</div>
           <div class="grid" style="margin-bottom:14px;">
             <div class="field">
               <label>PAS level to display</label>
@@ -694,7 +706,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </div>
 
         <div class="card">
-          <div class="card-title">Per-level output: power, current, top speed, climb speed</div>
+          <div class="card-title" data-i18n="sim.perlevel">Per-level output: power, current, top speed, climb speed</div>
           <table class="sim-table" id="simTable">
             <thead><tr><th>PAS level</th><th>Current A</th><th>Power W</th><th>Flat speed</th><th>Climb speed</th></tr></thead>
             <tbody></tbody>
@@ -708,21 +720,42 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </div>
 
         <div class="card">
-          <div class="card-title">What changes going from A → B</div>
+          <div class="card-title" data-i18n="sim.diff">What changes going from A → B</div>
           <div class="diff-list" id="diffList"></div>
         </div>
       </section>
+        <div class="card" id="rangeCard">
+          <div class="card-title" data-i18n="range.title">Дальность на одной зарядке</div>
+          <p class="sim-caveat" data-i18n="range.desc">Сколько реально проедешь на своей батарее: вес + горки решают всё. Чем дальше едешь — тем интереснее профиль расхода.</p>
+          <div class="field-grid">
+            <div class="row"><label data-i18n="range.ah">Ёмкость батареи (А·ч)</label><b id="simAhVal">20 А·ч</b></div>
+            <input type="range" id="simAh" min="5" max="40" value="20" step="1"/>
+            <div class="row"><label data-i18n="range.avg">Средний уклон маршрута</label><b id="simAvgGradeVal">3%</b></div>
+            <input type="range" id="simAvgGrade" min="0" max="15" value="3" step="1"/>
+            <div class="row"><label data-i18n="range.hill">Доля горок в маршруте</label><b id="simHillShareVal">30%</b></div>
+            <input type="range" id="simHillShare" min="0" max="100" value="30" step="5"/>
+            <div class="row"><label data-i18n="range.pas">Уровень PAS для расчёта</label><b id="simRangeLevelVal">5</b></div>
+            <input type="range" id="simRangeLevel" min="0" max="9" value="5" step="1"/>
+          </div>
+          <div class="range-out" id="rangeOut">
+            <div class="range-big"><b id="simRangeKm">—</b> <span data-i18n="range.km">км</span></div>
+            <div class="range-sub"><span id="simWhKm">—</span> <span data-i18n="range.whkm">Вт·ч/км</span> · <span id="simWhTot">—</span> <span data-i18n="range.whtot">Вт·ч доступно</span></div>
+          </div>
+          <div class="range-bars" id="rangeBars"></div>
+          <p class="sim-caveat" id="rangeNote"></p>
+        </div>
+
 
       <!-- ===================== REALITY CHECK ===================== -->
       <section class="tab-panel" data-panel="reality">
         <div class="panel-header">
           <div class="panel-eyebrow">07 · Reality Check</div>
-          <div class="panel-title">Честные пределы вашей трансмиссии</div>
+          <div class="panel-title" data-i18n="panel.reality">Честные пределы вашей трансмиссии</div>
           <div class="panel-desc">Главная фича v3.0: показывает, что реально достижимо на ваших звёздах и колесе — до записи настроек в контроллер. Предупреждает, но не блокирует (кроме аппаратных лимитов тока).</div>
         </div>
 
         <div class="card">
-          <div class="card-title">Трансмиссия и сценарий</div>
+          <div class="card-title" data-i18n="rc.transmission">Трансмиссия и сценарий</div>
           <div class="grid">
             <div class="field">
               <label>Передняя звезда <span class="unit">T</span></label>
@@ -748,12 +781,12 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         <div id="rcAlerts"></div>
 
         <div class="card">
-          <div class="card-title">Ключевые цифры</div>
+          <div class="card-title" data-i18n="rc.keypoints">Ключевые цифры</div>
           <div class="rc-hero" id="rcHero"></div>
         </div>
 
         <div class="card">
-          <div class="card-title">Проверка по уровням PAS</div>
+          <div class="card-title" data-i18n="rc.bylevel">Проверка по уровням PAS</div>
           <table class="rc-table" id="rcPasTable">
             <thead><tr><th>PAS</th><th>Ток A</th><th>Скорость на уклоне</th><th>Каденс (расч.)</th><th>Speed Limit %</th><th>Статус</th></tr></thead>
             <tbody></tbody>
@@ -766,7 +799,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel" data-panel="log">
         <div class="panel-header">
           <div class="panel-eyebrow">08 · Wire log</div>
-          <div class="panel-title">Raw frame trace</div>
+          <div class="panel-title" data-i18n="panel.log">Raw frame trace</div>
           <div class="panel-desc">Every byte sent/received, for debugging a stubborn connection or verifying nothing unexpected is being written.</div>
         </div>
         <div class="card">
@@ -794,7 +827,37 @@ const I18N = {
     'btn.disconnect':'Отключить','status.disconnected':'ОТКЛЮЧЕНО',
     'gate.title':'BBS FLASH','gate.enter':'Войти в загон',
     'legend.title':'Справочник значков и статусов','legend.btn':'Справочник',
-  },
+    'range.title':'Дальность на одной зарядке','range.desc':'Сколько реально проедешь на своей батарее: вес + горки решают всё. Чем дальше едешь — тем интереснее профиль расхода.',
+    'range.ah':'Ёмкость батареи (А·ч)','range.avg':'Средний уклон маршрута','range.hill':'Доля горок в маршруте',
+    'range.pas':'Уровень PAS для расчёта','range.km':'км','range.whkm':'Вт·ч/км','range.whtot':'Вт·ч доступно',
+      'session':'Session',
+    'basic.powerlimits':'Power limits',
+    'basic.assistlevels':'Assist levels 0–9',
+    'profiles.loadsave':'Load / Save .el file',
+    'profiles.community':'Community presets (from the tuning comparison report)',
+    'sim.rider':'Rider & bike parameters',
+    'sim.choose':'Choose two profiles to compare',
+    'sim.gauges':'Live gauges & drag race',
+    'sim.perlevel':'Per-level output: power, current, top speed, climb speed',
+    'sim.diff':'What changes going from A → B',
+    'rc.transmission':'Трансмиссия и сценарий',
+    'rc.keypoints':'Ключевые цифры',
+    'rc.bylevel':'Проверка по уровням PAS',
+    'panel.connect':'Connect to controller',
+    'panel.basic':'Power, protection & assist table',
+    'panel.pas':'Cadence response tuning',
+    'panel.thr':'Throttle behaviour',
+    'panel.profiles':'.el files & community presets',
+    'panel.sim':'Ride simulator — compare two profiles',
+    'panel.reality':'Честные пределы вашей трансмиссии',
+    'panel.log':'Raw frame trace',
+    'rc.tip.current':'Превышен аппаратный лимит тока',
+    'rc.tip.ceil':'Высокий потолок тока',
+    'rc.tip.unreach':'Недостижимо на вашей трансмиссии',
+    'rc.tip.overpower':'Цель выше расчётной мощности',
+    'rc.tip.thermal':'Зона перегрева на подъёме',
+    'rc.tip.ok':'В пределах физики',
+},
   en: {
     'lang.ru':'RU','lang.en':'EN',
     'nav.connect':'Connection','nav.basic':'Basic','nav.pas':'Pedal Assist',
@@ -804,7 +867,37 @@ const I18N = {
     'btn.disconnect':'Disconnect','status.disconnected':'DISCONNECTED',
     'gate.title':'BBS FLASH','gate.enter':'Enter the paddock',
     'legend.title':'Icon & status legend','legend.btn':'Legend',
-  }
+    'range.title':'One-charge range','range.desc':'Real distance on your battery: mass + hills decide everything. The further you go, the more interesting the consumption profile.',
+    'range.ah':'Battery capacity (Ah)','range.avg':'Average route grade','range.hill':'Hill share of route',
+    'range.pas':'PAS level for estimate','range.km':'km','range.whkm':'Wh/km','range.whtot':'Wh available',
+      'session':'Session',
+    'basic.powerlimits':'Power limits',
+    'basic.assistlevels':'Assist levels 0–9',
+    'profiles.loadsave':'Load / Save .el file',
+    'profiles.community':'Community presets (from the tuning comparison report)',
+    'sim.rider':'Rider & bike parameters',
+    'sim.choose':'Choose two profiles to compare',
+    'sim.gauges':'Live gauges & drag race',
+    'sim.perlevel':'Per-level output: power, current, top speed, climb speed',
+    'sim.diff':'What changes going from A to B',
+    'rc.transmission':'Transmission & scenario',
+    'rc.keypoints':'Key figures',
+    'rc.bylevel':'Check by PAS level',
+    'panel.connect':'Connect to controller',
+    'panel.basic':'Power, protection & assist table',
+    'panel.pas':'Cadence response tuning',
+    'panel.thr':'Throttle behaviour',
+    'panel.profiles':'.el files & community presets',
+    'panel.sim':'Ride simulator — compare two profiles',
+    'panel.reality':'Honest limits of your transmission',
+    'panel.log':'Raw frame trace',
+    'rc.tip.current':'Hardware current limit exceeded',
+    'rc.tip.ceil':'High current ceiling',
+    'rc.tip.unreach':'Unreachable on your transmission',
+    'rc.tip.overpower':'Target above estimated power',
+    'rc.tip.thermal':'Thermal zone on climb',
+    'rc.tip.ok':'Within physics',
+}
 };
 let LANG = 'ru';
 function t(key, fb){ return (I18N[LANG] && I18N[LANG][key] != null) ? I18N[LANG][key] : (fb || key); }
@@ -967,7 +1060,20 @@ const PRESETS = {
     bas:{LBP:40,LC:20,ALC:[0,25,30,40,50,58,65,75,88,100],ALBP:[0,100,100,100,100,100,100,100,100,100],WD:11,SMType:0,SMSig:1},
     pas:{PT:3,DA:255,SL:255,SC:20,SSM:7,SDN:2,WM:null,TS:20,CD:8,SD:0,KC:75},
     thr:{SV:11,EV:36,MODE:1,DA:255,SL:40,SC:16}
-  }
+  },
+
+  eco: { name:"Лютый эконом батареи", tag:"Max battery range — gentle everywhere",
+    desc:"Минимальный ток (18А — нижний предел BBS02), самые плавные ramp-ы (Slow-start 8, Start Degree 8), низкий Keep Current (50%) и мягкий газ по току. По документации низкий ток + плавные нарастания = минимум пикового нагрева и расхода. Для максимальной дальности.",
+    bas:{LBP:41,LC:18,ALC:[0,15,22,30,40,50,60,72,86,100],ALBP:[0,30,40,52,64,76,86,93,100,100],WD:11,SMType:0,SMSig:1},
+    pas:{PT:3,DA:255,SL:255,SC:8,SSM:8,SDN:4,WM:null,TS:18,CD:4,SD:0,KC:50},
+    thr:{SV:11,EV:36,MODE:1,DA:255,SL:255,SC:6}
+  },
+  throttle: { name:"Full Throttle", tag:"Max punch — use the wrist throttle",
+    desc:"Потолок тока BBS02 (25А), агрессивные ramp-ы (Slow-start 1, Start Degree 1), высокий Keep Current (90%) и газ по току с резким стартом (SC 20). Максимум тяги и разгона, но расход и нагрев — по полной. Для коротких рывков, не для дальности.",
+    bas:{LBP:40,LC:25,ALC:[0,40,55,70,82,90,95,98,100,100],ALBP:[0,100,100,100,100,100,100,100,100,100],WD:11,SMType:0,SMSig:1},
+    pas:{PT:3,DA:255,SL:255,SC:20,SSM:1,SDN:1,WM:null,TS:25,CD:8,SD:0,KC:90},
+    thr:{SV:11,EV:36,MODE:1,DA:255,SL:255,SC:20}
+  },
 };
 
 /* =========================================================================
@@ -1475,6 +1581,50 @@ function wheelDiameterMeters(wdIndex){
 }
 
 // Solve P_mech = (m*g*(Crr*cos(theta)+sin(theta)) + 0.5*rho*CdA*v^2) * v  for v, via bisection.
+
+function computeRange(){
+  const G=9.81, RHO=1.225, CRR=0.012, CDA=0.65, ETA=0.85;
+  const ah = parseFloat(el('simAh').value)||20;
+  const volt = parseFloat(el('simVolt').value)||45;
+  const avgGrade = parseFloat(el('simAvgGrade').value)||3;
+  const hillShare = (parseFloat(el('simHillShare').value)||30)/100;
+  const level = parseInt(el('simRangeLevel').value)||5;
+  const mass = parseFloat(el('simMass').value)||115;
+  const lc = state.bas ? state.bas.LC : 25;
+  const mechW = volt * lc * ETA;
+  function whPerKm(gradeFrac){
+    const v = solveSpeed(mechW, mass, gradeFrac);
+    if(v < 1) return 999;
+    return mechW / v;
+  }
+  const flatWh = whPerKm(0);
+  const climbWh = whPerKm(avgGrade/100);
+  const mixedWh = hillShare*climbWh + (1-hillShare)*flatWh;
+  const whAvail = volt * ah * 0.85;
+  const rangeKm = mixedWh>0 ? whAvail/mixedWh : 0;
+  const alc = state.bas && state.bas.ALC ? state.bas.ALC : [0,20,30,40,50,58,65,75,88,100];
+  let bars='';
+  for(let L=0; L<=9; L++){
+    const p=(alc[L]||0)/100;
+    const w=whPerKm(avgGrade/100*(0.5+0.5*p));
+    const r=w>0?whAvail/w:0;
+    const maxR=Math.max(rangeKm,1);
+    const pctw=Math.min(100, r/maxR*100);
+    bars+=`<div class="range-bar"><span class="lvl">PAS ${L}</span><span class="track"><i style="width:${pctw}%"></i></span><span class="km">${r>0?r.toFixed(0):'—'} км</span></div>`;
+  }
+  el('simAhVal').textContent = ah+' А·ч';
+  el('simAvgGradeVal').textContent = avgGrade+'%';
+  el('simHillShareVal').textContent = Math.round(hillShare*100)+'%';
+  el('simRangeLevelVal').textContent = level;
+  el('simRangeKm').textContent = rangeKm>0 ? rangeKm.toFixed(0) : '—';
+  el('simWhKm').textContent = mixedWh.toFixed(1);
+  el('simWhTot').textContent = whAvail.toFixed(0);
+  el('rangeBars').innerHTML = bars;
+  el('rangeNote').textContent = (avgGrade>8)
+    ? '⬆ Крутой средний уклон — расход растёт квадратично. Эконом на PAS 1–3.'
+    : 'Смешанный маршрут: чем выше PAS, тем короче дальность, но быстрее.';
+}
+
 function solveSpeed(pMech, mass, gradeFrac){
   if(pMech<=0) return 0;
   const theta = Math.atan(gradeFrac);
@@ -1584,6 +1734,7 @@ function renderSim(){
 
   renderDiff(profA, profB, rowsA, rowsB, scoreA, scoreB);
   renderGaugesAndRace(rowsA, rowsB, p);
+  computeRange();
 }
 
 const MAX_GAUGE_SPEED = 50, MAX_GAUGE_AMPS = 25;
@@ -1668,9 +1819,10 @@ function initSim(){
   el('simProfA').value = PRESETS.yourCurrent ? 'yourCurrent' : '__live';
   el('simProfB').value = PRESETS.peppy ? 'peppy' : '__live';
   ['simMass','simGrade','simVolt','simEta','simProfA','simProfB','simLevel','simMetric'].forEach(id=>{
-    el(id).addEventListener('input', renderSim);
+    el(id).addEventListener('input', e=>{ renderSim(); computeRange(); });
   });
   renderSim();
+  computeRange();
 }
 
 /* =========================================================================
@@ -1743,24 +1895,24 @@ function renderRealityCheck(){
 
   const alerts = [];
   if (state.bas.LC > p.spec.maxAmps){
-    alerts.push({ kind:'danger', title:'Превышен аппаратный лимит тока',
+    alerts.push({ kind:'danger', title:t('rc.tip.current'),
       text:`Current Limit ${state.bas.LC} A выше потолка ${p.spec.label} (${p.spec.maxAmps} A). Контроллер может отвергнуть запись или работать нестабильно.` });
   } else if (state.bas.LC >= 22){
-    alerts.push({ kind:'warn', title:'Высокий потолок тока',
+    alerts.push({ kind:'warn', title:t('rc.tip.ceil'),
       text:`${state.bas.LC} A — верхняя зона для BBS02. На подъёмах при низком каденсе контроллер греется сильнее. Сообщество часто рекомендует 18–20 A для длинных лесных подъёмов.` });
   }
 
   if (p.target > 0){
     if (p.target > vHigh){
       const needRing = requiredChainringForTarget(p.target, p.cog, p.spec.maxRpm, p.wd);
-      alerts.push({ kind:'danger', title:'Недостижимо на вашей трансмиссии',
+      alerts.push({ kind:'danger', title:t('rc.tip.unreach'),
         text:`С ${p.chainring}T/${p.cog}T и колесом из Basic мотор упирается в предел каденса при ~${Math.round(gear.vKmh)} km/h (${p.spec.maxRpm} об/мин). Цель ${p.target} km/h выше этого. Чтобы реально ехать быстрее — нужна большая передняя звезда (ориентир ≥${needRing}T), а не настройки контроллера.` });
     } else {
       const simP = { mass:95, grade:p.grade, volt:45, eta:85 };
       const rows = computeProfileRows({ bas:state.bas, pas:state.pas, thr:state.thr }, simP);
       const maxClimb = Math.max(...rows.map(r=>r.climbKmh));
       if (p.target > maxClimb + 2){
-        alerts.push({ kind:'warn', title:'Цель выше расчётной мощности',
+        alerts.push({ kind:'warn', title:t('rc.tip.overpower'),
           text:`При ${state.bas.LC} A на ${p.grade}% уклоне модель даёт ~${fmt1(maxClimb)} km/h. Цель ${p.target} km/h потребует больше мощности, чем даёт текущий Current Limit.` });
       }
     }
@@ -1790,12 +1942,12 @@ function renderRealityCheck(){
   }
 
   if (thermalHits > 0){
-    alerts.unshift({ kind:'danger', title:'Зона перегрева на подъёме',
+    alerts.unshift({ kind:'danger', title:t('rc.tip.thermal'),
       text:`На ${p.grade}% при Current Limit ≥22 A расчётный каденс падает ниже 60 об/мин на ${thermalHits} уровнях PAS. Переключитесь на более лёгкую передачу или снизьте ток — иначе контроллер греется сильнее.` });
   }
 
   if (alerts.length === 0){
-    alerts.push({ kind:'ok', title:'В пределах физики',
+    alerts.push({ kind:'ok', title:t('rc.tip.ok'),
       text:`С ${p.chainring}T/${p.cog}T верхняя скорость моторной тяги ~${vLow}–${vHigh} km/h. Текущие настройки не выходят за жёсткие аппаратные лимиты.` });
   }
 
