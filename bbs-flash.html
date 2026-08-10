@@ -262,6 +262,28 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
   .topbar{padding:14px 16px;}
   .content{padding:18px 16px 50px 16px;}
 }
+
+/* ===== i18n lang toggle + icon legend drawer (hi-tech bike theme) ===== */
+:root{ --hi-cyan:#22d3ee; --hi-green:#34d399; --hi-amber:#fbbf24; --hi-red:#f87171; --rail-line:rgba(34,211,238,.35); }
+.brand-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:10px}
+.lang-toggle{display:inline-flex;border:1px solid var(--rail-line);border-radius:999px;overflow:hidden;font-size:12px;font-weight:700;letter-spacing:.5px;backdrop-filter:blur(8px)}
+.lang-toggle button{background:transparent;color:#94a3b8;border:0;padding:6px 12px;cursor:pointer;transition:.2s}
+.lang-toggle button.active{background:linear-gradient(135deg,var(--hi-cyan),var(--hi-green));color:#04141a}
+.legend-btn{cursor:pointer;border:1px solid var(--rail-line);background:rgba(34,211,238,.08);color:var(--hi-cyan);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;letter-spacing:.5px;transition:.2s}
+.legend-btn:hover{box-shadow:0 0 0 4px rgba(34,211,238,.12)}
+.drawer-backdrop{position:fixed;inset:0;background:rgba(2,6,18,.55);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:.3s;z-index:80}
+.drawer-backdrop.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,92vw);background:linear-gradient(160deg,#0b1020,#0e1730);border-left:1px solid var(--rail-line);box-shadow:-20px 0 60px rgba(0,0,0,.5);transform:translateX(105%);transition:transform .38s cubic-bezier(.22,1,.36,1);z-index:90;display:flex;flex-direction:column;color:#e2e8f0}
+.drawer.open{transform:translateX(0)}
+.drawer-head{padding:20px 22px;border-bottom:1px solid var(--rail-line);display:flex;align-items:center;justify-content:space-between}
+.drawer-head h3{margin:0;font-size:16px;letter-spacing:.5px;background:linear-gradient(135deg,var(--hi-cyan),var(--hi-green));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.drawer-close{background:transparent;border:0;color:#94a3b8;font-size:22px;cursor:pointer;line-height:1}
+.drawer-body{padding:14px 18px 40px;overflow:auto}
+.legend-item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px dashed rgba(148,163,184,.18)}
+.legend-ico{font-size:22px;line-height:1;min-width:26px;text-align:center}
+.legend-txt b{display:block;font-size:13.5px;color:#f1f5f9}
+.legend-txt span{font-size:12.5px;color:#94a3b8;line-height:1.5}
+@media (prefers-reduced-motion: reduce){.drawer,.drawer-backdrop{transition:none}}
 </style>
 </head>
 <body>
