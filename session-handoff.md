@@ -29,6 +29,7 @@
 ## Важные факты среды
 - Сервер `5.181.23.24` (Debian 13, nginx). SSH-ключ `/c/Users/anton/.ssh/id_ed25519` (key-only).
 - Живые сайты (HTTP 200): neochoice.ru, bbsflash, roomscope, toncheck.
+- **LIVE SERVER STALE:** bbsflash.neochoice.ru = старая копия БЕЗ i18n/тултипов/киберпанка. Все S4-фиксы — только в локальном `reconcile-v21`. Юзеры 1/3 жаловались на «гейт по-английски» — это старая копия на сервере, не баг локальных правок. Нужен deploy (F14).
 - `tools/smoke.mjs` (Playwright/Chromium) и `Audit-BbsFlash.ps1` (PowerShell) НЕ
   запускаются локально → отмечать как `NOT VERIFIED (no browser/PS)`.
 - Токен GitHub берётся из Git Credential Manager (`git credential fill`), НЕ хардкодить.

@@ -1150,6 +1150,17 @@ function checksum(bytes, from, to){ // sum bytes[from..to] inclusive, mod 256
   let s=0; for(let i=from;i<=to;i++) s+=bytes[i]; return s % 256;
 }
 
+// F08 hardening: every value written to a Bafang frame MUST be a finite integer
+// clamped to [lo,hi] and masked to a single byte. Negative/NaN/overflow inputs
+// are rejected loudly BEFORE sendFrame — never coerced silently into a bogus byte
+// (e.g. -5 -> Uint8Array => 251 => controller sees 251 A).
+function byteField(v, lo, hi, name){
+  const n = Math.trunc(Number(v));
+  if(!Number.isFinite(n)) throw new Error('Field "'+name+'" is not a number: '+JSON.stringify(v));
+  if(n < lo || n > hi)   throw new Error('Field "'+name+'"='+n+' out of range ['+lo+','+hi+']');
+  return n & 0xFF;
+}
+
 /* =========================================================================
    STATE
    ========================================================================= */
@@ -1642,11 +1653,12 @@ function buildBasWriteFrame(){
   const b = state.bas;
   const f = new Array(28).fill(0);
   f[0]=0x16; f[1]=0x52; f[2]=24;
-  f[3]=b.LBP; f[4]=b.LC;
-  for(let i=0;i<10;i++) f[5+i]=b.ALC[i];
-  for(let i=0;i<10;i++) f[15+i]=b.ALBP[i];
+  f[3]=byteField(b.LBP,0,255,'Low Batt Prot');
+  f[4]=byteField(b.LC,1,(state.family?state.family.maxA:30),'Current Limit');
+  for(let i=0;i<10;i++) f[5+i]=byteField(b.ALC[i],0,100,'Assist '+i+' Curr');
+  for(let i=0;i<10;i++) f[15+i]=byteField(b.ALBP[i],0,100,'Assist '+i+' Speed');
   f[25]=wheelEncode(b.WD);
-  f[26]=(b.SMType===2?3:b.SMType)*64 + b.SMSig;
+  f[26]=(b.SMType===2?3:b.SMType)*64 + byteField(b.SMSig,0,3,'Speed Signal');
   f[27]=checksum(f,1,26);
   return f;
 }
@@ -1654,12 +1666,17 @@ function buildPasWriteFrame(){
   const p = state.pas;
   const f = new Array(15).fill(0);
   f[0]=0x16; f[1]=0x53; f[2]=11;
-  f[3]=p.PT;
-  f[4]= p.DA===255?255:p.DA;
-  f[5]= p.SL===255?255:p.SL;
-  f[6]=p.SC; f[7]=p.SSM; f[8]=p.SDN;
-  f[9]= (p.WM===null)?255:p.WM;
-  f[10]=p.TS; f[11]=p.CD; f[12]=p.SD; f[13]=p.KC;
+  f[3]=byteField(p.PT,0,255,'PAS Type');
+  f[4]= byteField(p.DA,0,255,'Designated Assist');
+  f[5]= byteField(p.SL,0,255,'Speed Limit');
+  f[6]=byteField(p.SC,0,255,'Start Current');
+  f[7]=byteField(p.SSM,0,255,'Slow Start');
+  f[8]=byteField(p.SDN,0,255,'Start Degree');
+  f[9]= (p.WM===null)?255:byteField(p.WM,0,255,'Work Mode');
+  f[10]=byteField(p.TS,0,255,'Stop Delay');
+  f[11]=byteField(p.CD,0,255,'Current Decay');
+  f[12]=byteField(p.SD,0,255,'Stop Decay');
+  f[13]=byteField(p.KC,0,255,'Keep Current');
   f[14]=checksum(f,1,13);
   return f;
 }
@@ -1667,10 +1684,12 @@ function buildThrWriteFrame(){
   const t = state.thr;
   const f = new Array(10).fill(0);
   f[0]=0x16; f[1]=0x54; f[2]=6;
-  f[3]=t.SV; f[4]=t.EV; f[5]=t.MODE;
-  f[6]= t.DA===255?255:t.DA;
-  f[7]= t.SL===255?255:t.SL;
-  f[8]=t.SC;
+  f[3]=byteField(t.SV,0,255,'Throttle Start V');
+  f[4]=byteField(t.EV,0,255,'Throttle End V');
+  f[5]=byteField(t.MODE,0,255,'Throttle Mode');
+  f[6]= byteField(t.DA,0,255,'Assist');
+  f[7]= byteField(t.SL,0,255,'Speed Limit');
+  f[8]=byteField(t.SC,0,255,'Start Current');
   f[9]=checksum(f,1,8);
   return f;
 }
@@ -1729,10 +1748,13 @@ function safetyGate(sections){
   const ceiling = controllerCeilingA();
   if(sections.includes('bas')){
     pullStateFromUI('bas');
-    if(state.bas.LC > ceiling){
+    const lc = state.bas.LC;
+    if(!Number.isFinite(lc) || lc < 1 || lc > ceiling){
       const fam = state.family ? state.family.label : 'this controller';
-      toast(`Current Limit ${state.bas.LC}A exceeds the ${ceiling}A ceiling for ${fam}`,'err');
-      logLine(`Write blocked: Current Limit ${state.bas.LC}A > ${ceiling}A ceiling (${fam}).`,'l-err');
+      toast(I18N_LANG==='ru'
+        ? `Ток ограничения должен быть от 1 до ${ceiling} А, получено ${lc}`
+        : `Current Limit must be 1..${ceiling} A, got ${lc}`);
+      logLine(`Write blocked: Current Limit ${lc}A out of 1..${ceiling}A range`,'l-err');
       return false;
     }
   }

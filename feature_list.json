@@ -1,93 +1,49 @@
 {
-  "project": "NeoChoice / BBS-Flash agent harness",
+  "project": "NeoChoice / BBS-Flash — 10-user test reconciliation",
   "generated": "2026-08-11",
+  "note": "ALL 10 virtual-user reports collected (users 1-9 + #10 stress). LIVE SERVER is STALE (pre-i18n base). Local reconcile-v21 has S4/i18n/cyberpunk fixes NOT deployed. Security-header check re-verified by lead: no HSTS/CSP/X-Frame-Options/X-Content-Type-Options on any of 4 hosts. toncheck does direct browser call to api.anthropic.com (needs server proxy).",
+  "aggregated_findings": {
+    "critical": [
+      "F08: negative/NaN Current Limit -> byte 251 (251A) sent to controller (user #10). LOCAL FIX NEEDED.",
+      "F18: gate checkbox 14px + button 32px < 44px touch min on mobile (user #4).",
+      "F19: no <h1> (div logo), emoji not aria-hidden, no :focus-visible, low contrast (user #5).",
+      "F20: missing HSTS/CSP/X-Frame-Options/X-Content-Type-Options on all 4 hosts (user #6, lead-verified).",
+      "F21: toncheck calls api.anthropic.com directly from browser -> broken + key-exposure risk (users #3/#10/#6)."
+    ],
+    "high": [
+      "F15: no meta description / h1 / robots.txt(404) / sitemap(404) / OG / canonical / JSON-LD on all 4 (user #8).",
+      "F16: UTF-8 BOM before <!DOCTYPE> on live neochoice.ru + toncheck (users #8/#9). Local clean.",
+      "F17: 9 dead i18n keys in bbs-flash dict (user #9, lead-counted).",
+      "F13/F05: gate localization + cyberpunk DONE locally, NOT deployed (server stale)."
+    ],
+    "medium_low": [
+      "Mixed-language card labels on hub ('Diamond Mail' vs 'Тон-чек') (users #1/#3/#7/#9).",
+      "No media queries for 390px -> horizontal scroll (user #4).",
+      "Web Serial only in desktop Chrome/Edge/Opera (user #1, by design)."
+    ]
+  },
   "features": [
-    {
-      "id": "F01",
-      "title": "Reconcile bbs-flash to v2.1 clean base (git am patch)",
-      "status": "done",
-      "acceptance": ["v2.1 commits applied on branch reconcile-v21", "localStorage CALLS=0", "REF_MAX_KMH=0"],
-      "verify_cmd": ["git log --oneline -1", "grep -c 'localStorage\\\\.(get|set)' bbs-flash.html"]
-    },
-    {
-      "id": "F02",
-      "title": "Port eco/throttle presets + one-charge range calculator to v2.1",
-      "status": "done",
-      "acceptance": ["PRESETS has eco+throttle", "computeRange() present and runs"],
-      "verify_cmd": ["node tests/physics.test.mjs"]
-    },
-    {
-      "id": "F03",
-      "title": "S4 full RU localization (i18n engine, data-i18n on nav/gate/panels/fields)",
-      "status": "done",
-      "acceptance": ["83 data-i18n markers", "I18N_LANG ru/en toggle persists in IndexedDB"],
-      "verify_cmd": ["node -e \"const h=require('fs').readFileSync('bbs-flash.html','utf8');console.log((h.match(/data-i18n=/g)||[]).length)\""]
-    },
-    {
-      "id": "F04",
-      "title": "S4 tooltips for all Basic/PAS/Throttle params (keyboard-accessible)",
-      "status": "done",
-      "acceptance": ["17 TOOLTIPS keys", "attachTooltips() called", "aria-label + focus-visible"],
-      "verify_cmd": ["node tests/physics.test.mjs"]
-    },
-    {
-      "id": "F05",
-      "title": "Cyberpunk gate (RESTRICTED PADDOCK) styling",
-      "status": "done",
-      "acceptance": ["gate scanlines/neon CSS present", "no JS change", "prefers-reduced-motion intact"],
-      "verify_cmd": ["grep -c 'RESTRICTED PADDOCK\\|gateScan' bbs-flash.html"]
-    },
-    {
-      "id": "F06",
-      "title": "TDD physics suite (solveSpeed/computeRange/computeDelta)",
-      "status": "done",
-      "acceptance": ["tests/physics.test.mjs exits 0", "7 passed"],
-      "verify_cmd": ["node tests/physics.test.mjs"]
-    },
-    {
-      "id": "F07",
-      "title": "Harness: HERMES.md + reliable-agent-harness SKILL.md + feature_list.json + session-handoff.md",
-      "status": "in_progress",
-      "acceptance": ["HERMES.md with DoD", "SKILL.md present", "feature_list.json valid JSON", "session-handoff.md present"],
-      "verify_cmd": ["node -e \"JSON.parse(require('fs').readFileSync('feature_list.json','utf8'));console.log('json ok')\""]
-    },
-    {
-      "id": "F08",
-      "title": "SECURITY FIX: clamp all write-frame bytes to 0..255 + reject neg/NaN Current Limit",
-      "status": "blocked",
-      "blocker": "Awaiting full 10-user test reconciliation to apply once, with edge-case test",
-      "acceptance": ["negative LC rejected before sendFrame", "NaN throws, not sent as 0", "byteField() used in build*WriteFrame"],
-      "verify_cmd": ["node tests/security.test.mjs  (to be added)"],
-      "evidence": "Found by subagent #10: buildBasWriteFrame L1645 + safetyGate L1732 only checks LC>ceiling, not <1/NaN -> new Uint8Array([-5]) => byte 251 (251 A) to controller."
-    },
-    {
-      "id": "F09",
-      "title": "Delete 6 junk GitHub repos (agent, llm-council, ankoridzh, allocation-archive, hc, yagody-dota)",
-      "status": "blocked",
-      "blocker": "GitHub token lacks delete_repo scope (DELETE returns 403). User must delete manually or supply scoped token.",
-      "acceptance": ["6 repos removed from xftesht-coder"],
-      "verify_cmd": ["curl -s -o /dev/null -w '%{http_code}' -X DELETE -H \"Authorization: Bearer $TOKEN\" https://api.github.com/repos/xftesht-coder/<repo>"]
-    },
-    {
-      "id": "F10",
-      "title": "Remove dangling textanalyzer.neochoice.ru DNS A-record",
-      "status": "blocked",
-      "blocker": "DNS lives in registrar panel; agent cannot edit. User must click in panel.",
-      "acceptance": ["textanalyzer.neochoice.ru returns 000 / no DNS"]
-    },
-    {
-      "id": "F11",
-      "title": "Reconcile 9 remaining virtual-user test reports and fix accepted issues",
-      "status": "pending",
-      "acceptance": ["all 10 user reports collected", "accepted issues fixed", "tests green"],
-      "verify_cmd": ["node tests/physics.test.mjs"]
-    },
-    {
-      "id": "F12",
-      "title": "Push reconcile-v21 to GitHub bbs-flash (brand-clean, tests green)",
-      "status": "pending",
-      "acceptance": ["git push origin reconcile-v21", "grep honor/choice/earbuds in repo = 0"],
-      "verify_cmd": ["git push origin reconcile-v21", "grep -riE 'honor|choice|earbuds' ."]
-    }
+    {"id":"F01","title":"Reconcile bbs-flash to v2.1 clean base","status":"done","acceptance":["v2.1 on reconcile-v21","localStorage CALLS=0","REF_MAX_KMH=0"],"verify_cmd":["git log --oneline -1","grep -c 'localStorage\\\\.(get|set)' bbs-flash.html"]},
+    {"id":"F02","title":"Port eco/throttle presets + range calculator","status":"done","acceptance":["PRESETS eco+throttle","computeRange() runs"],"verify_cmd":["node tests/physics.test.mjs"]},
+    {"id":"F03","title":"S4 full RU localization (i18n)","status":"done","acceptance":["83 data-i18n","RU/EN IndexedDB toggle"],"verify_cmd":["node -e \"const h=require('fs').readFileSync('bbs-flash.html','utf8');console.log((h.match(/data-i18n=/g)||[]).length)\""]},
+    {"id":"F04","title":"S4 tooltips (keyboard-accessible)","status":"done","acceptance":["17 TOOLTIPS","attachTooltips() called"],"verify_cmd":["node tests/physics.test.mjs"]},
+    {"id":"F05","title":"Cyberpunk gate styling","status":"done","acceptance":["gateScan/gateBlink CSS","prefers-reduced-motion intact"],"verify_cmd":["grep -c 'gateScan' bbs-flash.html"]},
+    {"id":"F06","title":"TDD physics suite","status":"done","acceptance":["7 passed 0 failed"],"verify_cmd":["node tests/physics.test.mjs"]},
+    {"id":"F07","title":"Harness artifacts (HERMES.md, SKILL, feature_list, handoff)","status":"done","acceptance":["HERMES.md DoD","SKILL present","json valid"],"verify_cmd":["node -e \"JSON.parse(require('fs').readFileSync('feature_list.json','utf8'))\""]},
+    {"id":"F08","title":"SECURITY FIX: clamp write-frame bytes 0..255 + reject neg/NaN Current Limit","status":"in_progress","acceptance":["negative LC rejected before sendFrame","NaN throws","byteField() in build*WriteFrame","tests/security.test.mjs green"],"verify_cmd":["node tests/security.test.mjs"],"evidence":"User #10: buildBasWriteFrame L1645 + safetyGate L1732 only check LC>ceiling, not <1/NaN -> byte 251 (251A) to controller."},
+    {"id":"F09","title":"Delete 6 junk GitHub repos","status":"blocked","blocker":"Token lacks delete_repo (DELETE 403). User deletes manually or supplies scoped token.","acceptance":["6 repos removed"],"verify_cmd":["curl -s -o /dev/null -w '%{http_code}' -X DELETE -H \"Authorization: Bearer $TOKEN\" https://api.github.com/repos/xftesht-coder/<repo>"]},
+    {"id":"F10","title":"Remove dangling textanalyzer DNS A-record","status":"blocked","blocker":"DNS in registrar panel; agent cannot edit.","acceptance":["textanalyzer returns 000"]},
+    {"id":"F11","title":"Reconcile all 10 virtual-user reports","status":"done","acceptance":["10/10 collected","aggregated into findings"],"verify_cmd":["echo ok"]},
+    {"id":"F12","title":"Push reconcile-v21 to GitHub (brand-clean)","status":"pending","acceptance":["git push origin reconcile-v21","grep honor/choice/earbuds = 0"],"verify_cmd":["git push origin reconcile-v21","grep -riE 'honor|choice|earbuds' ."]},
+    {"id":"F13","title":"Gate localization DONE locally, NOT deployed","status":"done","acceptance":["data-i18n on gate 368-372"],"verify_cmd":["grep -c 'data-i18n=\"gate.flag\"' bbs-flash.html"],"note":"User #1/#3 'gate English' = STALE LIVE SERVER, not local bug. F14 deploy needed."},
+    {"id":"F14","title":"DEPLOY local reconcile-v21 -> server + GitHub sync","status":"pending","acceptance":["scp to /var/www/bbsflash/","live shows localized gate+tooltips+cyberpunk"],"verify_cmd":["ssh root@5.181.23.24 'curl -s https://bbsflash.neochoice.ru/ | grep -c data-i18n'"],"blocker":"Do AFTER F08 + F12."},
+    {"id":"F15","title":"SEO/meta gaps on all 4 sites","status":"pending","acceptance":["meta description","<h1> present","robots.txt + sitemap.xml","OG/canonical/JSON-LD"],"verify_cmd":["grep -c 'name=\"description\"' bbs-flash.html","curl -s https://neochoice.ru/robots.txt -o /dev/null -w '%{http_code}'"],"evidence":"User #8: 4/4 missing meta description, h1, robots(404), sitemap(404), OG, canonical, JSON-LD."},
+    {"id":"F16","title":"Strip UTF-8 BOM from live files (neochoice, toncheck)","status":"pending","acceptance":["files start with <!DOCTYPE, not <feff>"],"verify_cmd":["ssh root@5.181.23.24 'head -c3 /var/www/neochoice/index.html | od -c'"],"evidence":"Users #8/#9: BOM before DOCTYPE on live neochoice/toncheck. Local reconcile-v21 clean (verified)."},
+    {"id":"F17","title":"Remove 9 dead i18n keys from dict","status":"pending","acceptance":["dead keys removed"],"verify_cmd":["grep -c \"'panel.basic.eyebrow'\\|'thr.mode.0'\\|'rail.connected'\" bbs-flash.html"],"evidence":"User #9 + lead count: 9 dead keys (5 panel.*.eyebrow, rail.connected, thr.mode.0, thr.mode.1)."},
+    {"id":"F18","title":"Mobile/touch: gate controls <44px + no 390px media queries","status":"in_progress","acceptance":["gate checkbox >=44px","gate button >=44px","@media max-width:480px present"],"verify_cmd":["grep -c '@media' bbs-flash.html"],"evidence":"User #4: #enterPaddock height 32px, checkbox 14px; no 390px media queries anywhere."},
+    {"id":"F19","title":"a11y: <h1>, emoji aria-hidden, :focus-visible, contrast","status":"pending","acceptance":["<h1> in bbs-flash","emoji aria-hidden",":focus-visible style","contrast >=4.5:1"],"verify_cmd":["grep -c '<h1' bbs-flash.html"],"evidence":"User #5: no h1, emoji not aria-hidden, no :focus, #94a3b8 on dark."},
+    {"id":"F20","title":"Add security headers (HSTS/CSP/X-Frame/X-Content-Type/Referrer) via nginx","status":"pending","acceptance":["curl -I shows Strict-Transport-Security","shows Content-Security-Policy","shows X-Frame-Options","shows X-Content-Type-Options"],"verify_cmd":["curl -sI https://neochoice.ru/ | grep -iE 'strict-transport|content-security|x-frame|x-content-type'"],"evidence":"User #6 + lead re-verify: none present on any host."},
+    {"id":"F21","title":"toncheck: move api.anthropic.com call to server-side proxy","status":"pending","acceptance":["no direct api.anthropic.com from browser","proxy endpoint /api/scan"],"verify_cmd":["grep -c 'api.anthropic.com' toncheck/index.html"],"evidence":"Users #3/#10/#6: direct browser call to api.anthropic.com -> broken + key exposure."},
+    {"id":"F22","title":"honorchoice DNS offline (by design)","status":"done","acceptance":["honorchoice.neochoice.ru not in live config"],"verify_cmd":["curl -s -o /dev/null -w '%{http_code}' https://honorchoice.neochoice.ru/"],"note":"Confirmed earlier: removed from nginx; returns non-200."}
   ]
 }
