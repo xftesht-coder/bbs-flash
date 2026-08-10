@@ -3,3 +3,5 @@ working-copy/
 *.bak
 _server_*
 _new.html
+nul
+index.html

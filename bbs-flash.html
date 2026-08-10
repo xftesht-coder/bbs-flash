@@ -269,10 +269,10 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 <div class="gate" id="gate">
   <div class="gate-card">
     <div class="gate-flag">◆ ◆ ◆ Restricted paddock ◆ ◆ ◆</div>
-    <div class="gate-title">BBS FLASH</div>
+    <div class="gate-title" data-i18n="gate.title">BBS FLASH</div>
     <div class="gate-desc">This tool talks directly to a Bafang BBS02/BBS02B controller over UART. It is built for that exact platform — settings and safety ranges will not make sense on other motors. If that's not your hardware, please don't write settings from here.</div>
     <label class="gate-check"><input type="checkbox" id="gateCheck"/> I ride a Bafang BBS02 / BBS02B and understand this tool writes to my controller</label><br/>
-    <button class="btn primary" id="gateEnter" disabled>Enter the paddock</button>
+    <button class="btn primary" id="gateEnter" disabled data-i18n="gate.enter">Enter the paddock</button>
   </div>
 </div>
 
@@ -284,6 +284,13 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         BBS FLASH
       </div>
       <div class="brand-sub">UART Configurator · v3</div>
+      <div class="brand-bar">
+        <div class="lang-toggle" id="langToggle">
+          <button data-lang="ru" class="active">RU</button>
+          <button data-lang="en">EN</button>
+        </div>
+        <button class="legend-btn" id="legendBtn">🚲 Справочник</button>
+      </div>
     </div>
     <nav class="nav">
       <button class="nav-btn active" data-tab="connect"><span class="idx">01</span>Connection</button>
@@ -296,17 +303,17 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <button class="nav-btn" data-tab="log"><span class="idx">08</span>Wire Log</button>
     </nav>
     <div class="rail-foot">
-      <div class="led-row"><span class="led" id="railLed"></span><span id="railStatus">DISCONNECTED</span></div>
+      <div class="led-row"><span class="led" id="railLed"></span><span id="railStatus" data-i18n="status.disconnected">DISCONNECTED</span></div>
     </div>
   </aside>
 
   <div class="main">
     <div class="topbar">
       <div class="conn-block">
-        <button class="btn primary" id="btnConnect">Connect</button>
-        <button class="btn" id="btnReadAll" disabled>Read all</button>
-        <button class="btn primary" id="btnWriteAll" disabled>Write all</button>
-        <button class="btn danger ghost" id="btnDisconnect" disabled>Disconnect</button>
+        <button class="btn primary" id="btnConnect" data-i18n="btn.connect">Connect</button>
+        <button class="btn" id="btnReadAll" disabled data-i18n="btn.read">Read all</button>
+        <button class="btn primary" id="btnWriteAll" disabled data-i18n="btn.write">Write all</button>
+        <button class="btn danger ghost" id="btnDisconnect" disabled data-i18n="btn.disconnect">Disconnect</button>
       </div>
       <div class="dev-readout" id="devReadout">
         <div><span>Model</span><b id="roModel">—</b></div>
@@ -753,6 +760,82 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
+
+/* ===================== i18n (RU default, EN toggle) ===================== */
+const I18N = {
+  ru: {
+    'lang.ru':'RU','lang.en':'EN',
+    'nav.connect':'Подключение','nav.basic':'База','nav.pas':'Педальный помощник',
+    'nav.thr':'Ручка газа','nav.profiles':'Профили','nav.sim':'Симулятор поездки',
+    'nav.reality':'Проверка реальностью','nav.log':'Лог шины',
+    'btn.connect':'Подключить','btn.read':'Считать всё','btn.write':'Записать всё',
+    'btn.disconnect':'Отключить','status.disconnected':'ОТКЛЮЧЕНО',
+    'gate.title':'BBS FLASH','gate.enter':'Войти в загон',
+    'legend.title':'Справочник значков и статусов','legend.btn':'Справочник',
+  },
+  en: {
+    'lang.ru':'RU','lang.en':'EN',
+    'nav.connect':'Connection','nav.basic':'Basic','nav.pas':'Pedal Assist',
+    'nav.thr':'Throttle','nav.profiles':'Profiles','nav.sim':'Ride Simulator',
+    'nav.reality':'Reality Check','nav.log':'Wire Log',
+    'btn.connect':'Connect','btn.read':'Read all','btn.write':'Write all',
+    'btn.disconnect':'Disconnect','status.disconnected':'DISCONNECTED',
+    'gate.title':'BBS FLASH','gate.enter':'Enter the paddock',
+    'legend.title':'Icon & status legend','legend.btn':'Legend',
+  }
+};
+let LANG = 'ru';
+function t(key, fb){ return (I18N[LANG] && I18N[LANG][key] != null) ? I18N[LANG][key] : (fb || key); }
+
+/* IndexedDB-backed prefs (NO localStorage per project rules) */
+const _idb = indexedDB.open('bbsflash-prefs', 1);
+_idb.onupgradeneeded = e => { const db=e.target.result; if(!db.objectStoreNames.contains('kv')) db.createObjectStore('kv'); };
+function idbPut(k,v){ const r=_idb.result.transaction('kv','readwrite').objectStore('kv').put(v,k); }
+function idbGet(k,cb){ const r=_idb.result.transaction('kv','readonly').objectStore('kv').get(k); r.onsuccess=()=>cb(r.result); }
+
+/* Icon/status legend (sourced from CLAUDE.md + bafang_intelligence.md) */
+const LEGEND = [
+  {ico:'🟢', t:'Готов / подключено', d:'Связь с контроллером установлена, можно читать и писать.'},
+  {ico:'🟡', t:'Подключено, есть предупреждение', d:'Работает, но Reality Check нашёл мягкое превышение (например, ток близок к потолку).'},
+  {ico:'🔴', t:'Не подключено / ошибка', d:'Нет связи с мотором или аппаратная ошибка. Запись заблокирована.'},
+  {ico:'⚠️', t:'Предупреждение о риске', d:'Рост параметра ведёт к реальному риску (перегрев, перегрузка цепи). Не игнорируй.'},
+  {ico:'◆', t:'Декоративный маркер', d:'«Закрытый загон» — стилистика интерфейса, не несёт технического смысла.'},
+  {ico:'02', t:'Код ошибки 02 — газ', d:'Проблема с ручкой газа (Throttle). Проверь подключение и потенциометр.'},
+  {ico:'08', t:'Код ошибки 08 — контроллер/мотор', d:'Аппаратная ошибка силовой части. Не записывай ток выше потолка.'},
+  {ico:'21', t:'Код ошибки 21 — датчик скорости', d:'Нет сигнала от датчика скорости (НЕ overcurrent). Проверь магнит и проводку.'},
+  {ico:'30', t:'Код ошибки 30 — связь', d:'Обрыв связи с контроллером. Кабель/разъём UART.'},
+  {ico:'10', t:'Код ошибки 10 — перегрев', d:'Температурный порог. Дай мотору остыть перед повторной записью.'},
+];
+function renderLegend(){
+  const wrap=document.getElementById('legendBody'); if(!wrap) return;
+  wrap.innerHTML = LEGEND.map(x=>`<div class="legend-item"><div class="legend-ico">${x.ico}</div><div class="legend-txt"><b>${x.t}</b><span>${x.d}</span></div></div>`).join('');
+}
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n'); const v=t(k, el.textContent);
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA') el.placeholder=v; else el.textContent=v;
+  });
+  document.querySelectorAll('#langToggle button').forEach(b=>b.classList.toggle('active', b.dataset.lang===LANG));
+  if(document.getElementById('legendTitle')) document.getElementById('legendTitle').textContent=t('legend.title');
+  if(document.getElementById('legendBtn')) document.getElementById('legendBtn').textContent='🚲 '+t('legend.btn');
+  // nav labels
+  const navMap={'connect':'nav.connect','basic':'nav.basic','pas':'nav.pas','thr':'nav.thr','profiles':'nav.profiles','sim':'nav.sim','reality':'nav.reality','log':'nav.log'};
+  document.querySelectorAll('.nav-btn').forEach(b=>{ const k=navMap[b.dataset.tab]; if(k){ const span=b.querySelector('.idx'); b.textContent=''; if(span) b.appendChild(span); b.appendChild(document.createTextNode(t(k))); } });
+}
+function setLang(l){ LANG=l; idbPut('lang', l); applyLang(); }
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderLegend();
+  idbGet('lang', v=>{ if(v==='ru'||v==='en') LANG=v; applyLang(); });
+  document.getElementById('langToggle').addEventListener('click', e=>{ const b=e.target.closest('button[data-lang]'); if(b) setLang(b.dataset.lang); });
+  const db=document.getElementById('legendDrawer'), bd=document.getElementById('drawerBackdrop');
+  const open=()=>{db.classList.add('open');bd.classList.add('open');db.setAttribute('aria-hidden','false');};
+  const close=()=>{db.classList.remove('open');bd.classList.remove('open');db.setAttribute('aria-hidden','true');};
+  document.getElementById('legendBtn').addEventListener('click', open);
+  document.getElementById('drawerClose').addEventListener('click', close);
+  bd.addEventListener('click', close);
+});
+
 /* =========================================================================
    PROTOCOL LAYER — ported 1:1 from BBSTool/Source/Communication.pas + Main.pas
    ========================================================================= */
@@ -1798,5 +1881,14 @@ if(!('serial' in navigator)) el('serialWarning').style.display='block';
 setConnectedUI(false);
 logLine('BBS FLASH ready. Load a preset or connect hardware to begin.','l-sys');
 </script>
+
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<aside class="drawer" id="legendDrawer" aria-hidden="true">
+  <div class="drawer-head">
+    <h3 id="legendTitle" data-i18n="legend.title">🚲 Справочник значков и статусов</h3>
+    <button class="drawer-close" id="drawerClose" aria-label="Закрыть">×</button>
+  </div>
+  <div class="drawer-body" id="legendBody"></div>
+</aside>
 </body>
 </html>
