@@ -252,6 +252,18 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 
 .sim-caveat{font-size:11.5px;color:var(--text-faint);line-height:1.55;margin-top:4px;}
 
+/* ===== One-charge range card ===== */
+.range-out{margin-top:14px;}
+.range-big{font-family:var(--disp);font-size:46px;font-weight:800;line-height:1;color:var(--rally-green);}
+.range-big span{font-size:18px;font-weight:600;color:var(--text-dim);margin-left:4px;}
+.range-sub{font-size:12px;color:var(--text-dim);margin-top:4px;}
+.range-bars{margin-top:14px;display:flex;flex-direction:column;gap:5px;}
+.rbar-row{display:flex;align-items:center;gap:8px;font-size:11.5px;}
+.rlvl{width:42px;flex:none;font-family:var(--mono);color:var(--text-dim);}
+.rbar-track{flex:1;height:10px;background:var(--panel-2);border:1px solid var(--rule);border-radius:5px;overflow:hidden;}
+.rbar-fill{height:100%;background:linear-gradient(90deg,var(--rally-green),var(--rally-blue));border-radius:5px;}
+.rbar-val{width:52px;flex:none;text-align:right;font-family:var(--mono);color:var(--text);font-weight:600;}
+
 .warn-banner{
   background:#fff6e9;border:1px solid #f0d29a;color:#8a5a00;
   padding:11px 16px;border-radius:8px;font-size:12.5px;margin-bottom:18px;line-height:1.5;
@@ -746,6 +758,31 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
           <div class="card-title">What changes going from A → B</div>
           <div class="diff-list" id="diffList"></div>
         </div>
+
+        <div class="card" id="rangeCard">
+          <div class="card-title">Дальность на одной зарядке</div>
+          <div class="panel-desc" style="margin-bottom:10px;">Сколько реально проедешь на одной батарее с таким весом, током и горками. Чем дальше — тем круче. Физика та же, что в симуляторе: P = сопротивление воздуха + качение + подъём, умноженное на расход батареи.</div>
+          <div class="sim-grid">
+            <div class="slider-field">
+              <div class="row"><label>Ёмкость батареи, А·ч</label><b id="simAhVal">20 А·ч</b></div>
+              <input type="range" id="simAh" min="5" max="40" value="20" step="1"/>
+            </div>
+            <div class="slider-field">
+              <div class="row"><label>Средний уклон маршрута, %</label><b id="simAvgGradeVal">3%</b></div>
+              <input type="range" id="simAvgGrade" min="0" max="15" value="3" step="1"/>
+            </div>
+            <div class="slider-field">
+              <div class="row"><label>Доля горок в маршруте, %</label><b id="simHillShareVal">30%</b></div>
+              <input type="range" id="simHillShare" min="0" max="100" value="30" step="5"/>
+            </div>
+            <div class="slider-field">
+              <div class="row"><label>PAS-уровень для расчёта</label><b id="simRangeLevelVal">5</b></div>
+              <input type="range" id="simRangeLevel" min="0" max="9" value="5" step="1"/>
+            </div>
+          </div>
+          <div class="range-out" id="rangeOut"></div>
+          <div class="range-bars" id="rangeBars"></div>
+        </div>
       </section>
 
       <!-- ===================== LOG ===================== -->
@@ -883,6 +920,18 @@ const PRESETS = {
     bas:{LBP:40,LC:20,ALC:[0,25,30,40,50,58,65,75,88,100],ALBP:[0,100,100,100,100,100,100,100,100,100],WD:11,SMType:0,SMSig:1},
     pas:{PT:3,DA:255,SL:255,SC:20,SSM:7,SDN:2,WM:null,TS:20,CD:8,SD:0,KC:75},
     thr:{SV:11,EV:36,MODE:1,DA:255,SL:40,SC:16}
+  },
+  eco: { name:"Лютый эконом батареи", tag:"Max battery range — gentle everywhere",
+    desc:"Минимальный ток (18А — нижний предел BBS02), самые плавные ramp-ы (Slow-start 8, Start Degree 8) и высокий Keep Current 90% — мотор работает в узком холодном диапазоне. Меньше пиковый ток = меньше нагрев и расход на километр. Лесная техника из раздела 1 отчёта: перегрев лечится передачами, а не амперами.",
+    bas:{LBP:40,LC:18,ALC:[0,12,18,26,34,42,50,60,72,85],ALBP:[0,100,100,100,100,100,100,100,100,100],WD:11,SMType:0,SMSig:1},
+    pas:{PT:3,DA:255,SL:255,SC:8,SSM:8,SDN:8,WM:null,TS:20,CD:8,SD:0,KC:90},
+    thr:{SV:11,EV:36,MODE:1,DA:255,SL:40,SC:8}
+  },
+  throttle: { name:"Full Throttle", tag:"Max punch — hot, short",
+    desc:"Потолок тока 25А, агрессивные ramp-ы (Slow-start 1, Start Degree 2, Start Current 20%) и газ по току (MODE 1). Максимальная тяга и разгон, но накопление тепла быстрое — для коротких рывков, не для длинных апхилов. Требует снижения тока на долгих подъёмах, иначе контроллер троттлится.",
+    bas:{LBP:40,LC:25,ALC:[0,30,45,60,72,82,90,96,100,100],ALBP:[0,100,100,100,100,100,100,100,100,100],WD:11,SMType:0,SMSig:1},
+    pas:{PT:3,DA:255,SL:255,SC:20,SSM:1,SDN:2,WM:null,TS:20,CD:8,SD:0,KC:90},
+    thr:{SV:11,EV:36,MODE:1,DA:255,SL:255,SC:20}
   }
 };
 
@@ -1780,6 +1829,51 @@ function renderRealityCheck(p, profA, profB, rowsA, rowsB){
   box.innerHTML = `<div class="rc-head">${head}</div><div class="rc-body">${notes.join('<br>')}</div>`;
 }
 
+// One-charge range estimate. Reuses the same physics as the simulator:
+// mechW = V * LC * eff; consumption Wh/km = mechW / v(km/h). Mixed route
+// (flat share + hill share) gives a realistic number, not a flat-road fantasy.
+function computeRange(){
+  const G=9.81, RHO=1.225, CRR=0.012, CDA=0.65, ETA=0.85;
+  const ah = parseFloat(el('simAh').value)||20;
+  const volt = parseFloat(el('simVolt').value)||45;
+  const avgGrade = parseFloat(el('simAvgGrade').value)||3;
+  const hillShare = (parseFloat(el('simHillShare').value)||30)/100;
+  const level = parseInt(el('simRangeLevel').value)||5;
+  const mass = parseFloat(el('simMass').value)||115;
+  const crr = parseFloat(el('simSurface').value)||0.012;
+  const cda = parseFloat(el('simCda').value)||0.65;
+  const lc = state.bas ? state.bas.LC : 25;
+  const mechW = volt * lc * ETA;
+
+  function whPerKm(gradeFrac){
+    const v = solveSpeed(mechW, mass, gradeFrac, crr, cda);  // m/s
+    if(v < 0.3) return 999;
+    return mechW / (v * 3.6);   // W / (km/h) = Wh/km
+  }
+  const flatWh = whPerKm(0);
+  const climbWh = whPerKm(avgGrade/100);
+  const mixedWh = hillShare*climbWh + (1-hillShare)*flatWh;
+  const whAvail = volt * ah * 0.85;   // usable energy (DoD 85%)
+  const rangeKm = mixedWh>0 ? whAvail/mixedWh : 0;
+
+  // bars: range at each PAS level (more current = more power = less range)
+  const prof = resolveProfile(el('simProfA').value);
+  const lcA = Math.min(controllerCeilingA(), prof.bas.LC);
+  let bars = '';
+  for(let lvl=0; lvl<=9; lvl++){
+    const cur = Math.min(prof.bas.LC * prof.bas.ALC[lvl]/100, lcA);
+    const w = volt * cur * ETA;
+    const vFlat = solveSpeed(w, mass, 0, crr, cda);
+    const wh = vFlat<0.3 ? 999 : w/(vFlat*3.6);
+    const r = wh>0 ? whAvail/wh : 0;
+    const pct = Math.max(2, Math.min(100, r/ (rangeKm||1) * 50));
+    bars += `<div class="rbar-row"><span class="rlvl">PAS ${lvl}</span><div class="rbar-track"><div class="rbar-fill" style="width:${pct}%"></div></div><span class="rbar-val">${r.toFixed(0)} км</span></div>`;
+  }
+  el('rangeOut').innerHTML = `<div class="range-big">${rangeKm.toFixed(0)} <span>км</span></div>
+    <div class="range-sub">на PAS ${level} · расход ${mixedWh.toFixed(1)} Вт·ч/км · батарея ${ah} А·ч · ${avgGrade}% уклон, ${Math.round(hillShare*100)}% горок</div>`;
+  el('rangeBars').innerHTML = bars;
+}
+
 function fmt1(n){ return (Math.round(n*10)/10).toFixed(1); }
 
 function renderSim(){
@@ -1825,6 +1919,7 @@ function renderSim(){
   renderRealityCheck(p, profA, profB, rowsA, rowsB);
   renderDiff(profA, profB, rowsA, rowsB, scoreA, scoreB);
   renderGaugesAndRace(rowsA, rowsB, p);
+  computeRange();
 }
 
 function needleAngle(val, max){ // -90deg (min) .. +90deg (max) sweep over a semicircle
@@ -1949,7 +2044,8 @@ function initSim(){
   el('simProfA').value = PRESETS.yourCurrent ? 'yourCurrent' : '__live';
   el('simProfB').value = PRESETS.peppy ? 'peppy' : '__live';
   ['simMass','simGrade','simVolt','simEta','simProfA','simProfB','simLevel','simMetric',
-   'simSurface','simCda','rcChainring','rcCogMin','rcCogMax','rcTire','rcMaxRpm'].forEach(id=>{
+   'simSurface','simCda','rcChainring','rcCogMin','rcCogMax','rcTire','rcMaxRpm',
+   'simAh','simAvgGrade','simHillShare','simRangeLevel'].forEach(id=>{
     el(id).addEventListener('input', renderSim);
     el(id).addEventListener('change', renderSim);
   });
