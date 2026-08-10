@@ -292,11 +292,11 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 
 <div class="gate" id="gate">
   <div class="gate-card">
-    <div class="gate-flag">◆ ◆ ◆ Restricted paddock ◆ ◆ ◆</div>
-    <div class="gate-title">BBS FLASH</div>
-    <div class="gate-desc">This tool talks directly to a Bafang BBS02/BBS02B controller over UART. It is built for that exact platform — settings and safety ranges will not make sense on other motors. If that's not your hardware, please don't write settings from here.</div>
-    <label class="gate-check"><input type="checkbox" id="gateCheck"/> I ride a Bafang BBS02 / BBS02B and understand this tool writes to my controller</label><br/>
-    <button class="btn primary" id="gateEnter" disabled>Enter the paddock</button>
+    <div class="gate-flag" data-i18n="gate.flag">◆ ◆ ◆ Restricted paddock ◆ ◆ ◆</div>
+    <div class="gate-title" data-i18n="gate.title">BBS FLASH</div>
+    <div class="gate-desc" data-i18n="gate.desc">This tool talks directly to a Bafang BBS02/BBS02B controller over UART. It is built for that exact platform — settings and safety ranges will not make sense on other motors. If that's not your hardware, please don't write settings from here.</div>
+    <label class="gate-check"><input type="checkbox" id="gateCheck"/> <span data-i18n="gate.check">I ride a Bafang BBS02 / BBS02B and understand this tool writes to my controller</span></label><br/>
+    <button class="btn primary" id="gateEnter" disabled data-i18n="gate.enter">Enter the paddock</button>
   </div>
 </div>
 
@@ -307,35 +307,36 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#d81e2c" stroke-width="2"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke="#d81e2c" stroke-width="2" stroke-linecap="round"/></svg>
         BBS FLASH
       </div>
-      <div class="brand-sub">UART Configurator · v2</div>
+      <div class="brand-sub" data-i18n="brand.sub">UART Configurator · v2</div>
     </div>
     <nav class="nav">
-      <button class="nav-btn active" data-tab="connect"><span class="idx">01</span>Connection</button>
-      <button class="nav-btn" data-tab="basic"><span class="idx">02</span>Basic</button>
-      <button class="nav-btn" data-tab="pas"><span class="idx">03</span>Pedal Assist</button>
-      <button class="nav-btn" data-tab="thr"><span class="idx">04</span>Throttle</button>
-      <button class="nav-btn" data-tab="profiles"><span class="idx">05</span>Profiles</button>
-      <button class="nav-btn" data-tab="sim"><span class="idx">06</span>Ride Simulator</button>
-      <button class="nav-btn" data-tab="log"><span class="idx">07</span>Wire Log</button>
+      <button class="nav-btn active" data-tab="connect"><span class="idx">01</span><span data-i18n="nav.connect">Connection</span></button>
+      <button class="nav-btn" data-tab="basic"><span class="idx">02</span><span data-i18n="nav.basic">Basic</span></button>
+      <button class="nav-btn" data-tab="pas"><span class="idx">03</span><span data-i18n="nav.pas">Pedal Assist</span></button>
+      <button class="nav-btn" data-tab="thr"><span class="idx">04</span><span data-i18n="nav.thr">Throttle</span></button>
+      <button class="nav-btn" data-tab="profiles"><span class="idx">05</span><span data-i18n="nav.profiles">Profiles</span></button>
+      <button class="nav-btn" data-tab="sim"><span class="idx">06</span><span data-i18n="nav.sim">Ride Simulator</span></button>
+      <button class="nav-btn" data-tab="log"><span class="idx">07</span><span data-i18n="nav.log">Wire Log</span></button>
     </nav>
     <div class="rail-foot">
-      <div class="led-row"><span class="led" id="railLed"></span><span id="railStatus">DISCONNECTED</span></div>
+      <div class="led-row"><span class="led" id="railLed"></span><span id="railStatus" data-i18n="rail.disconnected">DISCONNECTED</span></div>
     </div>
   </aside>
 
   <div class="main">
     <div class="topbar">
       <div class="conn-block">
-        <button class="btn primary" id="btnConnect">Connect</button>
-        <button class="btn" id="btnReadAll" disabled>Read all</button>
-        <button class="btn primary" id="btnWriteAll" disabled>Write all</button>
-        <button class="btn danger ghost" id="btnDisconnect" disabled>Disconnect</button>
+        <button class="btn primary" id="btnConnect" data-i18n="top.connect">Connect</button>
+        <button class="btn" id="btnReadAll" disabled data-i18n="top.read">Read all</button>
+        <button class="btn primary" id="btnWriteAll" disabled data-i18n="top.write">Write all</button>
+        <button class="btn danger ghost" id="btnDisconnect" disabled data-i18n="top.disconnect">Disconnect</button>
+        <button class="btn ghost" id="langToggle" style="margin-left:8px;">EN</button>
       </div>
       <div class="dev-readout" id="devReadout">
-        <div><span>Model</span><b id="roModel">—</b></div>
-        <div><span>Nominal V</span><b id="roVolt">—</b></div>
-        <div><span>Max current</span><b id="roMaxCurr">—</b></div>
-        <div><span>Firmware</span><b id="roFw">—</b></div>
+        <div><span data-i18n="ro.model">Model</span><b id="roModel">—</b></div>
+        <div><span data-i18n="ro.volt">Nominal V</span><b id="roVolt">—</b></div>
+        <div><span data-i18n="ro.maxcurr">Max current</span><b id="roMaxCurr">—</b></div>
+        <div><span data-i18n="ro.fw">Firmware</span><b id="roFw">—</b></div>
       </div>
     </div>
 
@@ -345,8 +346,8 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel active" data-panel="connect">
         <div class="panel-header">
           <div class="panel-eyebrow">01 · Link</div>
-          <div class="panel-title">Connect to controller</div>
-          <div class="panel-desc">Same UART wire protocol as the Penov/Penoff BafangConfigTool (1200 baud), rebuilt for Web Serial. Works in Chrome, Edge, or Opera on desktop. Plug in your USB–UART cable, then hit Connect and pick the port.</div>
+          <div class="panel-title" data-i18n="panel.connect.title">Connect to controller</div>
+          <div class="panel-desc" data-i18n="panel.connect.desc">Same UART wire protocol as the Penov/Penoff BafangConfigTool (1200 baud), rebuilt for Web Serial. Works in Chrome, Edge, or Opera on desktop. Plug in your USB–UART cable, then hit Connect and pick the port.</div>
         </div>
 
         <div class="warn-banner" id="serialWarning" style="display:none;">
@@ -366,8 +367,8 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel" data-panel="basic">
         <div class="panel-header">
           <div class="panel-eyebrow">02 · Basic tab</div>
-          <div class="panel-title">Power, protection &amp; assist table</div>
-          <div class="panel-desc">Low battery cutoff, overall current ceiling, the 0–9 assist-level current/speed table, wheel size and speed-meter calibration.</div>
+          <div class="panel-title" data-i18n="panel.basic.title">Power, protection &amp; assist table</div>
+          <div class="panel-desc" data-i18n="panel.basic.desc">Low battery cutoff, overall current ceiling, the 0–9 assist-level current/speed table, wheel size and speed-meter calibration.</div>
         </div>
 
         <details class="card"><summary class="card-title" style="cursor:pointer;">What each setting does — tap to expand</summary>
@@ -434,8 +435,8 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel" data-panel="pas">
         <div class="panel-header">
           <div class="panel-eyebrow">03 · Pedal Assist tab</div>
-          <div class="panel-title">Cadence response tuning</div>
-          <div class="panel-desc">How the motor reacts to pedaling: sensor type, start behaviour, and how quickly it lets go when you stop — the parameter that protects your drivetrain during shifts.</div>
+          <div class="panel-title" data-i18n="panel.pas.title">Cadence response tuning</div>
+          <div class="panel-desc" data-i18n="panel.pas.desc">How the motor reacts to pedaling: sensor type, start behaviour, and how quickly it lets go when you stop — the parameter that protects your drivetrain during shifts.</div>
         </div>
 
         <details class="card"><summary class="card-title" style="cursor:pointer;">What each setting does — tap to expand</summary>
@@ -518,8 +519,8 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel" data-panel="thr">
         <div class="panel-header">
           <div class="panel-eyebrow">04 · Throttle Handle tab</div>
-          <div class="panel-title">Throttle behaviour</div>
-          <div class="panel-desc">Voltage window, Speed vs Current mode, and its own independent assist/speed ceiling.</div>
+          <div class="panel-title" data-i18n="panel.thr.title">Throttle behaviour</div>
+          <div class="panel-desc" data-i18n="panel.thr.desc">Voltage window, Speed vs Current mode, and its own independent assist/speed ceiling.</div>
         </div>
 
         <details class="card"><summary class="card-title" style="cursor:pointer;">What each setting does — tap to expand</summary>
@@ -572,8 +573,8 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel" data-panel="profiles">
         <div class="panel-header">
           <div class="panel-eyebrow">05 · Profiles</div>
-          <div class="panel-title">.el files &amp; community presets</div>
-          <div class="panel-desc">Import/export is byte-for-byte compatible with the original tool's .el format — profiles saved here open fine in the Penov tool, and vice versa. Presets below load values into the fields only; nothing is sent to the controller until you press Write.</div>
+          <div class="panel-title" data-i18n="panel.profiles.title">.el files &amp; community presets</div>
+          <div class="panel-desc" data-i18n="panel.profiles.desc">Import/export is byte-for-byte compatible with the original tool's .el format — profiles saved here open fine in the Penov tool, and vice versa. Presets below load values into the fields only; nothing is sent to the controller until you press Write.</div>
         </div>
 
         <div class="card">
@@ -596,8 +597,8 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel" data-panel="sim">
         <div class="panel-header">
           <div class="panel-eyebrow">06 · Physics estimate</div>
-          <div class="panel-title">Ride simulator — compare two profiles</div>
-          <div class="panel-desc">Estimates top speed, hill-climb speed and launch feel from your settings using power-balance physics (P = drag + rolling resistance + grade force, at your controller's current draw). This is a comparison tool, not a dyno-calibrated prediction — treat the numbers as relative, not gospel.</div>
+          <div class="panel-title" data-i18n="panel.sim.title">Ride simulator — compare two profiles</div>
+          <div class="panel-desc" data-i18n="panel.sim.desc">Estimates top speed, hill-climb speed and launch feel from your settings using power-balance physics (P = drag + rolling resistance + grade force, at your controller's current draw). This is a comparison tool, not a dyno-calibrated prediction — treat the numbers as relative, not gospel.</div>
         </div>
 
         <div class="card">
@@ -789,8 +790,8 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <section class="tab-panel" data-panel="log">
         <div class="panel-header">
           <div class="panel-eyebrow">06 · Wire log</div>
-          <div class="panel-title">Raw frame trace</div>
-          <div class="panel-desc">Every byte sent/received, for debugging a stubborn connection or verifying nothing unexpected is being written.</div>
+          <div class="panel-title" data-i18n="panel.log.title">Raw frame trace</div>
+          <div class="panel-desc" data-i18n="panel.log.desc">Every byte sent/received, for debugging a stubborn connection or verifying nothing unexpected is being written.</div>
         </div>
         <div class="card">
           <div class="log" id="logBox"></div>
@@ -820,6 +821,105 @@ const BLK = { GEN:0x51, BAS:0x52, PAS:0x53, THR:0x54 };
 
 const WHEEL_LIST = [16,17,18,19,20,21,22,23,24,25,26,27,'700C',28,29,30]; // index = combobox index
 const SPDLIM_KMH = []; for(let k=15;k<=40;k++) SPDLIM_KMH.push(k); // index0 reserved for "By Display"
+
+/* ============================ i18n ============================ */
+/* Lightweight RU/EN dictionary. Static text uses data-i18n="key"; dynamic
+   strings call t('key') (with optional %s substitution). Language choice is
+   persisted in IndexedDB — never localStorage (see CLAUDE.md / bafang report). */
+const I18N = {
+  ru: {
+    'nav.connect':'Подключение','nav.basic':'Базовые','nav.pas':'Педальный ассистент',
+    'nav.thr':'Газ','nav.profiles':'Профили','nav.sim':'Симулятор поездки','nav.log':'Лог шины',
+    'gate.flag':'◆ ◆ ◆ Закрытый паддок ◆ ◆ ◆','gate.title':'BBS FLASH',
+    'gate.desc':'Этот инструмент работает напрямую с контроллером Bafang BBS02/BBS02B по UART. Он сделан ровно под эту платформу — настройки и лимиты безопасности на других моторах не имеют смысла. Если у вас не это железо, не записывайте настройки отсюда.',
+    'gate.check':'Я езжу на Bafang BBS02 / BBS02B и понимаю, что этот инструмент пишет в мой контроллер',
+    'gate.enter':'Войти в паддок',
+    'brand.sub':'UART-конфигуратор · v2',
+    'rail.disconnected':'ОТКЛЮЧЕНО','rail.connected':'ПОДКЛЮЧЕНО · 1200 БОД',
+    'top.connect':'Подключить','top.read':'Считать всё','top.write':'Записать всё','top.disconnect':'Отключить',
+    'ro.model':'Модель','ro.volt':'Ном. V','ro.maxcurr':'Макс. ток','ro.fw':'Прошивка',
+    'panel.connect.title':'Подключение к контроллеру',
+    'panel.connect.desc':'Тот же UART-протокол проводов, что в Penov/Penoff BafangConfigTool (1200 бод), переписан для Web Serial. Работает в Chrome, Edge или Opera на десктопе. Включите USB–UART кабель, нажмите «Подключить» и выберите порт.',
+    'panel.basic.eyebrow':'02 · Вкладка «Базовые»','panel.basic.title':'Питание, защита и таблица ассистента',
+    'panel.basic.desc':'Отсечка при разряде, общий потолок тока, таблица тока/скорости уровней 0–9, размер колеса и калибровка датчика скорости.',
+    'panel.pas.eyebrow':'03 · Вкладка «Педальный ассистент»','panel.pas.title':'Педальный ассистент (PAS)',
+    'panel.thr.eyebrow':'04 · Вкладка «Газ»','panel.thr.title':'Ручка газа',
+    'panel.profiles.eyebrow':'05 · Профили','panel.profiles.title':'.el файлы и готовые пресеты',
+    'panel.sim.eyebrow':'06 · Оценка физики','panel.sim.title':'Симулятор поездки — сравнение двух профилей',
+    'panel.log.eyebrow':'07 · Лог шины','panel.log.title':'Журнал обмена по шине',
+    'panel.pas.desc':'Как мотор реагирует на педалирование: тип датчика, поведение при старте и как быстро отпускает, когда вы перестаёте крутить — параметр, который бережёт трансмиссию при переключениях.',
+    'panel.thr.desc':'Окно напряжения, режим «по скорости» против «по току» и собственный независимый потолок ассистента/скорости газа.',
+    'panel.profiles.desc':'Импорт/экспорт побайтово совместим с .el форматом оригинальной тулы — профили отсюда открываются в Penov-туле и наоборот. Пресеты ниже только загружают значения в поля; ничего не уходит в контроллер, пока вы не нажмёте «Записать всё».',
+    'panel.sim.desc':'Оценивает максимальную скорость, скорость на подъёме и разгон по физике баланса мощности (P = сопротивление воздуха + качение + подъём), при текущем потреблении контроллера. Это сравнительный инструмент, не динамометрический прогноз — считайте цифры относительными.',
+    'panel.log.desc':'Каждый байт отправлен/получен — для отладки упрямого соединения или проверки, что не пишется ничего лишнего.',
+    'lang':'Язык'
+  },
+  en: {
+    'nav.connect':'Connection','nav.basic':'Basic','nav.pas':'Pedal Assist',
+    'nav.thr':'Throttle','nav.profiles':'Profiles','nav.sim':'Ride Simulator','nav.log':'Wire Log',
+    'gate.flag':'◆ ◆ ◆ Restricted paddock ◆ ◆ ◆','gate.title':'BBS FLASH',
+    'gate.desc':'This tool talks directly to a Bafang BBS02/BBS02B controller over UART. It is built for that exact platform — settings and safety ranges will not make sense on other motors. If that\'s not your hardware, please don\'t write settings from here.',
+    'gate.check':'I ride a Bafang BBS02 / BBS02B and understand this tool writes to my controller',
+    'gate.enter':'Enter the paddock',
+    'brand.sub':'UART Configurator · v2',
+    'rail.disconnected':'DISCONNECTED','rail.connected':'CONNECTED · 1200 BAUD',
+    'top.connect':'Connect','top.read':'Read all','top.write':'Write all','top.disconnect':'Disconnect',
+    'ro.model':'Model','ro.volt':'Nominal V','ro.maxcurr':'Max current','ro.fw':'Firmware',
+    'panel.connect.title':'Connect to controller',
+    'panel.connect.desc':'Same UART wire protocol as the Penov/Penoff BafangConfigTool (1200 baud), rebuilt for Web Serial. Works in Chrome, Edge, or Opera on desktop. Plug in your USB–UART cable, then hit Connect and pick the port.',
+    'panel.basic.eyebrow':'02 · Basic tab','panel.basic.title':'Power, protection & assist table',
+    'panel.basic.desc':'Low battery cutoff, overall current ceiling, the 0–9 assist-level current/speed table, wheel size and speed-meter calibration.',
+    'panel.pas.eyebrow':'03 · Pedal Assist tab','panel.pas.title':'Pedal Assist (PAS)',
+    'panel.thr.eyebrow':'04 · Throttle tab','panel.thr.title':'Throttle',
+    'panel.profiles.eyebrow':'05 · Profiles','panel.profiles.title':'.el files & community presets',
+    'panel.sim.eyebrow':'06 · Physics estimate','panel.sim.title':'Ride simulator — compare two profiles',
+    'panel.log.eyebrow':'07 · Wire Log','panel.log.title':'Wire communication log',
+    'panel.pas.desc':'How the motor reacts to pedaling: sensor type, start behaviour, and how quickly it lets go when you stop — the parameter that protects your drivetrain during shifts.',
+    'panel.thr.desc':'Voltage window, Speed vs Current mode, and its own independent assist/speed ceiling.',
+    'panel.profiles.desc':'Import/export is byte-for-byte compatible with the original tool\'s .el format — profiles saved here open fine in the Penov tool, and vice versa. Presets below load values into the fields only; nothing is sent to the controller until you press Write.',
+    'panel.sim.desc':'Estimates top speed, hill-climb speed and launch feel from your settings using power-balance physics (P = drag + rolling resistance + grade force, at your controller\'s current draw). This is a comparison tool, not a dyno-calibrated prediction — treat the numbers as relative, not gospel.',
+    'panel.log.desc':'Every byte sent/received, for debugging a stubborn connection or verifying nothing unexpected is being written.',
+    'lang':'Language'
+  }
+};
+let I18N_LANG = 'ru';
+function t(key, sub){
+  let s = (I18N[I18N_LANG] && I18N[I18N_LANG][key]) || (I18N.en[key]) || key;
+  if(sub!==undefined) s = s.replace('%s', sub);
+  return s;
+}
+function applyLang(){
+  document.documentElement.setAttribute('lang', I18N_LANG);
+  document.querySelectorAll('[data-i18n]').forEach(n=>{
+    const k = n.getAttribute('data-i18n');
+    const txt = t(k);
+    if(n.tagName==='INPUT' && n.type!=='button' && n.type!=='submit') { /* skip */ }
+    else if(n.tagName==='TITLE' || n.dataset.i18nAttr==='text') n.textContent = txt;
+    else n.textContent = txt;
+  });
+  // nav + rail status already handled via data-i18n; refresh dynamic UI bits
+  if(typeof setConnectedUI==='function') setConnectedUI(false);
+  const lg = el('langToggle'); if(lg) lg.textContent = I18N_LANG==='ru' ? 'EN' : 'RU';
+}
+function loadLangPref(){
+  return new Promise(res=>{
+    try{
+      const rq = indexedDB.open('bbsflash',1);
+      rq.onsuccess = e=>{ const db=e.target.result;
+        try{ const tx=db.transaction('kv','readonly'); const g=tx.objectStore('kv').get('lang');
+          g.onsuccess=()=>{ res(g.result || 'ru'); }; g.onerror=()=>res('ru'); }
+        catch(_){ res('ru'); } };
+      rq.onerror = ()=> res('ru');
+    }catch(_){ res('ru'); }
+  });
+}
+function saveLangPref(lang){
+  try{
+    const rq = indexedDB.open('bbsflash',1);
+    rq.onsuccess = e=>{ const db=e.target.result;
+      try{ const tx=db.transaction('kv','readwrite'); tx.objectStore('kv').put(lang,'lang'); }catch(_){} };
+  }catch(_){}
+}
 
 function lowBatRange(nominalCode){
   switch(nominalCode){
@@ -2127,7 +2227,16 @@ let gateAcknowledged = false;
   });
 })();
 
+/* language toggle — persisted in IndexedDB, not localStorage */
+el('langToggle').addEventListener('click', ()=>{
+  I18N_LANG = (I18N_LANG==='ru') ? 'en' : 'ru';
+  applyLang();
+  saveLangPref(I18N_LANG);
+  toast(I18N_LANG==='ru' ? 'Язык: Русский' : 'Language: English', 'ok');
+});
+
 /* init */
+loadLangPref().then(lang=>{ I18N_LANG = (lang==='en') ? 'en' : 'ru'; applyLang(); });
 buildAssistLevelOptions(el('pasDesigAssist'));
 buildSpeedLimOptions(el('pasSpdLim'));
 buildSlowStartOptions(el('pasSlowStart'));
