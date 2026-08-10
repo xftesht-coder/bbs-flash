@@ -290,16 +290,68 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
   padding:11px 16px;border-radius:8px;font-size:12.5px;margin-bottom:18px;line-height:1.5;
 }
 
+/* ===== GATE — cyberpunk overlay (S4 visual pass) ===== */
 .gate{
-  position:fixed;inset:0;z-index:100;background:#f3f1ec;
+  position:fixed;inset:0;z-index:100;
   display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;padding:20px;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(0,240,255,.10), transparent 60%),
+    radial-gradient(900px 500px at 50% 120%, rgba(255,43,214,.10), transparent 60%),
+    #05070d;
+  color:#cdefff;overflow:hidden;
 }
+/* scanlines + faint neon grid (decorative, non-interactive) */
+.gate::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(0deg, rgba(0,240,255,.05) 0 1px, transparent 1px 3px);
+  animation:gateScan 8s linear infinite;
+}
+.gate::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.22;
+  background-image:linear-gradient(rgba(0,240,255,.08) 1px, transparent 1px),linear-gradient(90deg, rgba(0,240,255,.08) 1px, transparent 1px);
+  background-size:40px 40px;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 30%, transparent 75%);
+          mask-image:radial-gradient(circle at 50% 50%, #000 30%, transparent 75%);
+}
+@keyframes gateScan{from{background-position:0 0;}to{background-position:0 120px;}}
 .gate.hidden{display:none;}
-.gate-card{max-width:460px;text-align:center;}
-.gate-flag{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--copper);text-transform:uppercase;margin-bottom:10px;}
-.gate-title{font-family:var(--disp);font-size:26px;font-weight:700;margin-bottom:10px;}
-.gate-desc{font-size:13.5px;color:var(--text-dim);line-height:1.6;margin-bottom:20px;}
-.gate-check{display:flex;align-items:center;gap:8px;justify-content:center;font-size:12.5px;color:var(--text-dim);margin-bottom:16px;}
+.gate-card{
+  position:relative;z-index:1;max-width:480px;text-align:center;
+  padding:34px 30px;border:1px solid rgba(0,240,255,.35);border-radius:14px;
+  background:rgba(8,12,22,.72);
+  box-shadow:0 0 0 1px rgba(255,43,214,.12), 0 0 30px rgba(0,240,255,.18), inset 0 0 30px rgba(0,240,255,.06);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+}
+.gate-flag{
+  font-family:var(--mono);font-size:11px;letter-spacing:.32em;
+  color:#ff2bd6;text-transform:uppercase;margin-bottom:14px;
+  text-shadow:0 0 8px rgba(255,43,214,.8);animation:gateBlink 2.4s steps(1) infinite;
+}
+@keyframes gateBlink{0%,72%{opacity:1;}73%,100%{opacity:.35;}}
+.gate-title{
+  font-family:var(--mono);font-size:34px;font-weight:800;letter-spacing:.06em;margin-bottom:14px;
+  color:#00f0ff;text-shadow:0 0 10px rgba(0,240,255,.9),0 0 24px rgba(0,240,255,.4);
+}
+.gate-desc{
+  font-family:var(--mono);font-size:12.5px;color:#8fd6e6;line-height:1.7;margin-bottom:22px;
+  border-left:2px solid rgba(0,240,255,.4);border-right:2px solid rgba(255,43,214,.4);padding:0 14px;
+}
+.gate-check{
+  display:flex;align-items:center;gap:10px;justify-content:center;
+  font-family:var(--mono);font-size:12px;color:#bfeefc;margin-bottom:18px;
+}
+.gate-check input{width:18px;height:18px;accent-color:#00f0ff;}
+/* cyberpunk enter button (scoped to the gate so the rest of the app is untouched) */
+#gateEnter{
+  font-family:var(--mono);letter-spacing:.12em;text-transform:lowercase;
+  color:#03121a;background:linear-gradient(90deg,#00f0ff,#39ff14);
+  border:1px solid #00f0ff;border-radius:6px;padding:12px 26px;
+  box-shadow:0 0 16px rgba(0,240,255,.6);cursor:pointer;
+  transition:filter .15s, box-shadow .15s, transform .05s;
+}
+#gateEnter:hover:not(:disabled){filter:brightness(1.12);box-shadow:0 0 26px rgba(0,240,255,.9);}
+#gateEnter:active:not(:disabled){transform:translateY(1px);}
+#gateEnter:disabled{filter:grayscale(.7) brightness(.6);box-shadow:none;cursor:not-allowed;}
 
 @media (max-width:820px){
   .rail{position:fixed;left:-220px;transition:.2s;z-index:40;height:100vh;}
@@ -846,7 +898,7 @@ const SPDLIM_KMH = []; for(let k=15;k<=40;k++) SPDLIM_KMH.push(k); // index0 res
 /* ============================ i18n ============================ */
 /* Lightweight RU/EN dictionary. Static text uses data-i18n="key"; dynamic
    strings call t('key') (with optional %s substitution). Language choice is
-   persisted in IndexedDB — never localStorage (see CLAUDE.md / bafang report). */
+   persisted in IndexedDB — never in browser Web Storage (see CLAUDE.md / bafang report). */
 const I18N = {
   ru: {
     'nav.connect':'Подключение','nav.basic':'Базовые','nav.pas':'Педальный ассистент',
@@ -1440,15 +1492,15 @@ function setConnectedUI(connected){
 }
 
 async function connectSerial(){
-  if(!('serial' in navigator)){ el('serialWarning').style.display='block'; toast('Web Serial not supported in this browser','err'); return; }
+  if(!('serial' in navigator)){ el('serialWarning').style.display='block'; toast(I18N_LANG==='ru' ? 'Web Serial не поддерживается в этом браузере' : 'Web Serial not supported in this browser','err'); return; }
   try{
     port = await navigator.serial.requestPort();
     await port.open({ baudRate: BAUD, dataBits:8, stopBits:1, parity:'none' });
     writer = port.writable.getWriter();
     readLoop();
-    logLine('Port opened @1200 baud','l-sys');
+    logLine(I18N_LANG==='ru' ? 'Порт открыт @1200 бод' : 'Port opened @1200 baud','l-sys');
     setConnectedUI(true);
-    toast('Port opened — pinging controller…');
+    toast(I18N_LANG==='ru' ? 'Порт открыт — пинг контроллера…' : 'Port opened — pinging controller…');
     await sendGenPing();
   }catch(e){
     logLine('Connect failed: '+e.message,'l-err');
@@ -1463,7 +1515,7 @@ async function disconnectSerial(){
   }catch(e){ /* ignore */ }
   port=null; writer=null; reader=null;
   setConnectedUI(false);
-  logLine('Disconnected','l-sys');
+  logLine(I18N_LANG==='ru' ? 'Отключено' : 'Disconnected','l-sys');
 }
 
 async function readLoop(){
@@ -1669,7 +1721,7 @@ function computeDelta(section){
    the delta, and refuses any Current Limit above the detected family ceiling. */
 function safetyGate(sections){
   if(!lastKnownGood){
-    toast('Read all first — no backup on file yet','err');
+    toast(I18N_LANG==='ru' ? 'Сначала «Считать всё» — резервной копии ещё нет' : 'Read all first — no backup on file yet','err');
     logLine('Write blocked: no prior Read all, so no backup exists','l-err');
     return false;
   }
@@ -1693,20 +1745,20 @@ function safetyGate(sections){
   });
 
   const header = sections.length > 1
-    ? 'Write all — Basic → Pedal Assist → Throttle'
-    : 'Write '+SECTION_LABEL[sections[0]]+' block';
+    ? (I18N_LANG==='ru' ? 'Записать всё — Basic → Pedal Assist → Throttle' : 'Write all — Basic → Pedal Assist → Throttle')
+    : (I18N_LANG==='ru' ? 'Записать блок '+SECTION_LABEL[sections[0]] : 'Write '+SECTION_LABEL[sections[0]]+' block');
 
   const body = lines.length
-    ? 'These values change vs the last read:\n\n' + lines.join('\n')
-    : 'Nothing differs from the last read. Writing will send identical values.';
+    ? (I18N_LANG==='ru' ? 'Эти значения отличаются от последнего считывания:\\n\\n' : 'These values change vs the last read:\\n\\n') + lines.join('\n')
+    : (I18N_LANG==='ru' ? 'Ничего не отличается от последнего считывания. Будут записаны те же значения.' : 'Nothing differs from the last read. Writing will send identical values.');
 
   const ok = confirm(
     header + '\n\n' + body + '\n\n' +
-    'A backup of the last read is already saved to your Downloads folder as backup_<timestamp>.el.\n\n' +
-    'This rewrites the settings block only — not firmware. Out-of-range values are rejected by the controller and nothing changes. To undo, load the backup .el and write again.\n\n' +
-    'Proceed?'
+    (I18N_LANG==='ru'
+      ? 'Резервная копия последнего считывания уже сохранена в папку Downloads как backup_<время>.el.\n\nЗаписываются только настройки, не прошивка. Значения вне диапазона контроллер отвергнет, и ничего не изменится. Чтобы отменить — загрузите backup .el и запишите снова.\n\nПродолжить?'
+      : 'A backup of the last read is already saved to your Downloads folder as backup_<timestamp>.el.\n\nThis rewrites the settings block only — not firmware. Out-of-range values are rejected by the controller and nothing changes. To undo, load the backup .el and write again.\n\nProceed?')
   );
-  if(!ok){ toast('Write cancelled'); logLine('Write cancelled by user','l-sys'); return false; }
+  if(!ok){ toast(I18N_LANG==='ru' ? 'Запись отменена' : 'Write cancelled'); logLine('Write cancelled by user','l-sys'); return false; }
   logLine('Write approved. Delta: '+(lines.length? lines.length+' field(s)':'none'),'l-sys');
   return true;
 }
@@ -2088,7 +2140,7 @@ function computeRange(){
   const mass = parseFloat(el('simMass').value)||115;
   const crr = parseFloat(el('simSurface').value)||0.012;
   const cda = parseFloat(el('simCda').value)||0.65;
-  const lc = state.bas ? state.bas.LC : 25;
+  const lc = (typeof state !== 'undefined' && state.bas) ? state.bas.LC : 25;
   const mechW = volt * lc * ETA;
 
   function whPerKm(gradeFrac){
@@ -2373,7 +2425,7 @@ let gateAcknowledged = false;
   });
 })();
 
-/* language toggle — persisted in IndexedDB, not localStorage */
+/* language toggle — persisted in IndexedDB, not in browser Web Storage */
 el('langToggle').addEventListener('click', ()=>{
   I18N_LANG = (I18N_LANG==='ru') ? 'en' : 'ru';
   applyLang();
@@ -2405,7 +2457,7 @@ initSim();
 attachTooltips();
 if(!('serial' in navigator)) el('serialWarning').style.display='block';
 setConnectedUI(false);
-logLine('BBS FLASH ready. Load a preset or connect hardware to begin.','l-sys');
+logLine(I18N_LANG==='ru' ? 'BBS FLASH готов. Загрузите пресет или подключите контроллер.' : 'BBS FLASH ready. Load a preset or connect hardware to begin.','l-sys');
 </script>
 </body>
 </html>
