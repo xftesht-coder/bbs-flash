@@ -2472,6 +2472,7 @@ let gateAcknowledged = false;
 el('langToggle').addEventListener('click', ()=>{
   I18N_LANG = (I18N_LANG==='ru') ? 'en' : 'ru';
   applyLang();
+  if(typeof renderSim==='function') renderSim();
   refreshTooltips();
   saveLangPref(I18N_LANG);
   toast(I18N_LANG==='ru' ? 'Язык: Русский' : 'Language: English', 'ok');
@@ -2486,7 +2487,7 @@ function refreshTooltips(){
 
 /* init */
 applyLang();  // immediate RU default — UI defaults to Russian (CLAUDE.md); async load may switch to EN below
-loadLangPref().then(lang=>{ I18N_LANG = (lang==='en') ? 'en' : 'ru'; applyLang(); });
+loadLangPref().then(lang=>{ I18N_LANG = (lang==='en') ? 'en' : 'ru'; applyLang(); if(typeof renderSim==='function') renderSim(); });
 buildAssistLevelOptions(el('pasDesigAssist'));
 buildSpeedLimOptions(el('pasSpdLim'));
 buildSlowStartOptions(el('pasSlowStart'));
