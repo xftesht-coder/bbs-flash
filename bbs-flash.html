@@ -937,8 +937,8 @@ const I18N = {
     'panel.sim.desc':'Оценивает максимальную скорость, скорость на подъёме и разгон по физике баланса мощности (P = сопротивление воздуха + качение + подъём), при текущем потреблении контроллера. Это сравнительный инструмент, не динамометрический прогноз — считайте цифры относительными.',
     'panel.log.desc':'Каждый байт отправлен/получен — для отладки упрямого соединения или проверки, что не пишется ничего лишнего.',
     'bas.powerlimits':'Лимиты питания','bas.lbp':'Защита от разряда','bas.lbp.hint':'Диапазон зависит от номинального напряжения пакета, считанного из контроллера.','bas.lc':'Лимит тока','bas.lc.hint':'Потолок задаётся контроллером.','bas.wd':'Диаметр колеса','bas.wd.hint':'Только целые дюймы 16–30, плюс 700C — у покрышки 27.5" нет точной записи, округлите до 27" или 28".','bas.smtype':'Тип датчика скорости','bas.smsig':'Импульсов на оборот','bas.assisttitle':'Уровни ассистента 0–9','bas.read':'Считать базовые','bas.write':'Записать базовые',
-    'pas.what':'Что делает каждый параметр — нажмите, чтобы раскрыть','pas.startcurr':'Стартовый ток','pas.slowstart':'Плавность старта','pas.startdeg':'Угол включения','pas.timestop':'Задержка отключения','pas.currdecay':'Спад тока','pas.keepcurr':'Удерживаемый ток','pas.senstype':'Тип датчика педалей','pas.desigassist':'Назначенный ассистент','pas.spdlim':'Ограничение скорости','pas.workmode':'Режим работы','pas.workmode.hint':'Консенсус сообщества: на BBS02 эффект ничтожен — можно оставить неопределённым.','pas.timestop.hint':'Меньше = мотор быстрее отпускает при остановке педалей. Бережёт цепь при переключениях. BBS02B часто не принимает ниже 20.','pas.read':'Считать ассистент','pas.write':'Записать ассистент',
-    'thr.what':'Что делает каждый параметр — нажмите, чтобы раскрыть','thr.assist':'Назначенный ассистент','thr.spdlim':'Ограничение скорости','thr.startcurr':'Стартовый ток газа','thr.read':'Считать газ','thr.write':'Записать газ',
+    'pas.what':'Что делает каждый параметр — нажмите, чтобы раскрыть','pas.startcurr':'Стартовый ток','pas.slowstart':'Плавность старта','pas.startdeg':'Угол включения','pas.timestop':'Задержка отключения','pas.currdecay':'Спад тока','pas.keepcurr':'Удерживаемый ток','pas.senstype':'Тип датчика педалей','pas.desigassist':'Назначенный ассистент','pas.spdlim':'Ограничение скорости','pas.workmode':'Режим работы','pas.workmode.hint':'Консенсус сообщества: на BBS02 эффект ничтожен — можно оставить неопределённым.','pas.timestop.hint':'Меньше = мотор быстрее отпускает при остановке педалей. Бережёт цепь при переключениях. BBS02B часто не принимает ниже 20.','pas.read':'Считать ассистент','pas.write':'Записать ассистент','pas.stopdecay':'Спад при остановке',
+    'thr.what':'Что делает каждый параметр — нажмите, чтобы раскрыть','thr.assist':'Назначенный ассистент','thr.spdlim':'Ограничение скорости','thr.startcurr':'Стартовый ток газа','thr.read':'Считать газ','thr.write':'Записать газ','thr.startv':'Напряжение начала','thr.endv':'Напряжение конца','thr.mode':'Режим (ток/скорость)','thr.mode2':'Режим',
     'lang':'Язык'
   },
   en: {
@@ -968,7 +968,7 @@ const I18N = {
     'panel.log.desc':'Every byte sent/received, for debugging a stubborn connection or verifying nothing unexpected is being written.',
     'bas.powerlimits':'Power limits','bas.lbp':'Low Battery Protection','bas.lbp.hint':'Range depends on nominal pack voltage read from the controller.','bas.lc':'Current Limit','bas.lc.hint':'Ceiling reported by controller sets the max here.','bas.wd':'Wheel Diameter','bas.wd.hint':'Only whole inches 16–30, plus 700C — a 27.5" tire has no exact entry, round to 27" or 28".','bas.smtype':'Speed Meter Type','bas.smsig':'Speed Meter Signals','bas.assisttitle':'Assist levels 0–9','bas.read':'Read Basic','bas.write':'Write Basic',
     'pas.what':'What each setting does — tap to expand','pas.startcurr':'Start Current','pas.slowstart':'Slow-start Mode','pas.startdeg':'Startup Degree','pas.timestop':'Time of Stop','pas.currdecay':'Current Decay','pas.keepcurr':'Keep Current','pas.senstype':'Pedal Sensor Type','pas.desigassist':'Designated Assist','pas.spdlim':'Speed Limited','pas.workmode':'Work Mode','pas.workmode.hint':'Community consensus: negligible effect on BBS02 — safe to leave undetermined.','pas.timestop.hint':'Lower = motor lets go faster when you stop pedaling. Protects the chain during shifts. BBS02B may floor around 20.','pas.read':'Read Pedal Assist','pas.write':'Write Pedal Assist',
-    'thr.what':'What each setting does — tap to expand','thr.assist':'Designated Assist','thr.spdlim':'Speed Limited','thr.startcurr':'Throttle Start Current','thr.read':'Read Throttle','pas.stopdecay':'Stop Decay','thr.write':'Write Throttle',
+    'thr.what':'What each setting does — tap to expand','thr.assist':'Designated Assist','thr.spdlim':'Speed Limited','thr.startcurr':'Throttle Start Current','thr.read':'Read Throttle','pas.stopdecay':'Stop Decay','thr.write':'Write Throttle','thr.startv':'Throttle Start Voltage','thr.endv':'Throttle End Voltage','thr.mode':'Mode (Current vs Speed)','thr.mode2':'Mode','pas.stopdecay':'Stop Decay',
     'lang':'Language'
   }
 };
@@ -2475,6 +2475,7 @@ function refreshTooltips(){
 }
 
 /* init */
+applyLang();  // immediate RU default — UI defaults to Russian (CLAUDE.md); async load may switch to EN below
 loadLangPref().then(lang=>{ I18N_LANG = (lang==='en') ? 'en' : 'ru'; applyLang(); });
 buildAssistLevelOptions(el('pasDesigAssist'));
 buildSpeedLimOptions(el('pasSpdLim'));
