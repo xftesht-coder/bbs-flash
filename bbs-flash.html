@@ -845,23 +845,23 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         </div>
 
         <div class="card" id="rangeCard">
-          <div class="card-title">Дальность на одной зарядке</div>
-          <div class="panel-desc" style="margin-bottom:10px;">Сколько реально проедешь на одной батарее с таким весом, током и горками. Чем дальше — тем круче. Физика та же, что в симуляторе: P = сопротивление воздуха + качение + подъём, умноженное на расход батареи.</div>
+          <div class="card-title" data-i18n="sim.range.title">Дальность на одной зарядке</div>
+          <div class="panel-desc" style="margin-bottom:10px;" data-i18n="sim.range.desc">Сколько реально проедешь на одной батарее с таким весом, током и горками. Чем дальше — тем круче. Физика та же, что в симуляторе: P = сопротивление воздуха + качение + подъём, умноженное на расход батареи.</div>
           <div class="sim-grid">
             <div class="slider-field">
-              <div class="row"><label>Ёмкость батареи, А·ч</label><b id="simAhVal">20 А·ч</b></div>
+              <div class="row"><label data-i18n="sim.range.ah">Ёмкость батареи, А·ч</label><b id="simAhVal">20 А·ч</b></div>
               <input type="range" id="simAh" min="5" max="40" value="20" step="1"/>
             </div>
             <div class="slider-field">
-              <div class="row"><label>Средний уклон маршрута, %</label><b id="simAvgGradeVal">3%</b></div>
+              <div class="row"><label data-i18n="sim.range.grade">Средний уклон маршрута, %</label><b id="simAvgGradeVal">3%</b></div>
               <input type="range" id="simAvgGrade" min="0" max="15" value="3" step="1"/>
             </div>
             <div class="slider-field">
-              <div class="row"><label>Доля горок в маршруте, %</label><b id="simHillShareVal">30%</b></div>
+              <div class="row"><label data-i18n="sim.range.hillshare">Доля горок в маршруте, %</label><b id="simHillShareVal">30%</b></div>
               <input type="range" id="simHillShare" min="0" max="100" value="30" step="5"/>
             </div>
             <div class="slider-field">
-              <div class="row"><label>PAS-уровень для расчёта</label><b id="simRangeLevelVal">5</b></div>
+              <div class="row"><label data-i18n="sim.range.level">PAS-уровень для расчёта</label><b id="simRangeLevelVal">5</b></div>
               <input type="range" id="simRangeLevel" min="0" max="9" value="5" step="1"/>
             </div>
           </div>
@@ -939,6 +939,7 @@ const I18N = {
     'bas.powerlimits':'Лимиты питания','bas.lbp':'Защита от разряда','bas.lbp.hint':'Диапазон зависит от номинального напряжения пакета, считанного из контроллера.','bas.lc':'Лимит тока','bas.lc.hint':'Потолок задаётся контроллером.','bas.wd':'Диаметр колеса','bas.wd.hint':'Только целые дюймы 16–30, плюс 700C — у покрышки 27.5" нет точной записи, округлите до 27" или 28".','bas.smtype':'Тип датчика скорости','bas.smsig':'Импульсов на оборот','bas.assisttitle':'Уровни ассистента 0–9','bas.read':'Считать базовые','bas.write':'Записать базовые',
     'pas.what':'Что делает каждый параметр — нажмите, чтобы раскрыть','pas.startcurr':'Стартовый ток','pas.slowstart':'Плавность старта','pas.startdeg':'Угол включения','pas.timestop':'Задержка отключения','pas.currdecay':'Спад тока','pas.keepcurr':'Удерживаемый ток','pas.senstype':'Тип датчика педалей','pas.desigassist':'Назначенный ассистент','pas.spdlim':'Ограничение скорости','pas.workmode':'Режим работы','pas.workmode.hint':'Консенсус сообщества: на BBS02 эффект ничтожен — можно оставить неопределённым.','pas.timestop.hint':'Меньше = мотор быстрее отпускает при остановке педалей. Бережёт цепь при переключениях. BBS02B часто не принимает ниже 20.','pas.read':'Считать ассистент','pas.write':'Записать ассистент','pas.stopdecay':'Спад при остановке',
     'thr.what':'Что делает каждый параметр — нажмите, чтобы раскрыть','thr.assist':'Назначенный ассистент','thr.spdlim':'Ограничение скорости','thr.startcurr':'Стартовый ток газа','thr.read':'Считать газ','thr.write':'Записать газ','thr.startv':'Напряжение начала','thr.endv':'Напряжение конца','thr.mode':'Режим (ток/скорость)','thr.mode2':'Режим',
+    'sim.range.title':'Дальность на одной зарядке','sim.range.desc':'Сколько реально проедешь на одной батарее с таким весом, током и горками. Чем дальше — тем круче. Физика та же, что в симуляторе: P = сопротивление воздуха + качение + подъём, умноженное на расход батареи.','sim.range.ah':'Ёмкость батареи, А·ч','sim.range.grade':'Средний уклон маршрута, %','sim.range.hillshare':'Доля горок в маршруте, %','sim.range.level':'PAS-уровень для расчёта','sim.range.km':'км','sim.range.sub':'на PAS','sim.range.cons':'расход','sim.range.batt':'батарея','sim.range.gradeShort':'уклон','sim.range.hillsShort':'горок',
     'lang':'Язык'
   },
   en: {
@@ -969,6 +970,7 @@ const I18N = {
     'bas.powerlimits':'Power limits','bas.lbp':'Low Battery Protection','bas.lbp.hint':'Range depends on nominal pack voltage read from the controller.','bas.lc':'Current Limit','bas.lc.hint':'Ceiling reported by controller sets the max here.','bas.wd':'Wheel Diameter','bas.wd.hint':'Only whole inches 16–30, plus 700C — a 27.5" tire has no exact entry, round to 27" or 28".','bas.smtype':'Speed Meter Type','bas.smsig':'Speed Meter Signals','bas.assisttitle':'Assist levels 0–9','bas.read':'Read Basic','bas.write':'Write Basic',
     'pas.what':'What each setting does — tap to expand','pas.startcurr':'Start Current','pas.slowstart':'Slow-start Mode','pas.startdeg':'Startup Degree','pas.timestop':'Time of Stop','pas.currdecay':'Current Decay','pas.keepcurr':'Keep Current','pas.senstype':'Pedal Sensor Type','pas.desigassist':'Designated Assist','pas.spdlim':'Speed Limited','pas.workmode':'Work Mode','pas.workmode.hint':'Community consensus: negligible effect on BBS02 — safe to leave undetermined.','pas.timestop.hint':'Lower = motor lets go faster when you stop pedaling. Protects the chain during shifts. BBS02B may floor around 20.','pas.read':'Read Pedal Assist','pas.write':'Write Pedal Assist',
     'thr.what':'What each setting does — tap to expand','thr.assist':'Designated Assist','thr.spdlim':'Speed Limited','thr.startcurr':'Throttle Start Current','thr.read':'Read Throttle','pas.stopdecay':'Stop Decay','thr.write':'Write Throttle','thr.startv':'Throttle Start Voltage','thr.endv':'Throttle End Voltage','thr.mode':'Mode (Current vs Speed)','thr.mode2':'Mode','pas.stopdecay':'Stop Decay',
+    'sim.range.title':'Range on a single charge','sim.range.desc':'How far you actually get on one battery at this weight, current and hills. Farther is better. Same physics as the simulator: P = air drag + rolling + climb, times battery draw.','sim.range.ah':'Battery capacity, Ah','sim.range.grade':'Average route grade, %','sim.range.hillshare':'Share of hills in route, %','sim.range.level':'PAS level for estimate','sim.range.km':'km','sim.range.sub':'on PAS','sim.range.cons':'draw','sim.range.batt':'battery','sim.range.gradeShort':'grade','sim.range.hillsShort':'hills',
     'lang':'Language'
   }
 };
@@ -1145,6 +1147,7 @@ function range(a,b){const r=[];for(let i=a;i<=b;i++)r.push(i);return r;}
 function wheelEncode(idx){
   if (idx === 12) return 55; // 700C special case
   const inches = parseInt(WHEEL_LIST[idx],10);
+  if(!Number.isFinite(inches)) throw new Error('Invalid wheel index: '+JSON.stringify(idx));
   return inches*2;
 }
 function wheelDecode(byte){
@@ -1668,7 +1671,7 @@ function buildBasWriteFrame(){
   f[4]=byteField(b.LC,1,(state.family?state.family.maxA:30),'Current Limit');
   for(let i=0;i<10;i++) f[5+i]=byteField(b.ALC[i],0,100,'Assist '+i+' Curr');
   for(let i=0;i<10;i++) f[15+i]=byteField(b.ALBP[i],0,100,'Assist '+i+' Speed');
-  f[25]=wheelEncode(b.WD);
+  f[25]=byteField(wheelEncode(b.WD),0,255,'Wheel Diameter');
   f[26]=(b.SMType===2?3:b.SMType)*64 + byteField(b.SMSig,0,3,'Speed Signal');
   f[27]=checksum(f,1,26);
   return f;
@@ -2200,8 +2203,8 @@ function computeRange(){
     const pct = Math.max(2, Math.min(100, r/ (rangeKm||1) * 50));
     bars += `<div class="rbar-row"><span class="rlvl">PAS ${lvl}</span><div class="rbar-track"><div class="rbar-fill" style="width:${pct}%"></div></div><span class="rbar-val">${r.toFixed(0)} км</span></div>`;
   }
-  el('rangeOut').innerHTML = `<div class="range-big">${rangeKm.toFixed(0)} <span>км</span></div>
-    <div class="range-sub">на PAS ${level} · расход ${mixedWh.toFixed(1)} Вт·ч/км · батарея ${ah} А·ч · ${avgGrade}% уклон, ${Math.round(hillShare*100)}% горок</div>`;
+  el('rangeOut').innerHTML = `<div class="range-big">${rangeKm.toFixed(0)} <span>${t('sim.range.km')}</span></div>
+    <div class="range-sub">${t('sim.range.sub', 'pas')} ${level} · ${t('sim.range.cons')} ${mixedWh.toFixed(1)} Вт·ч/км · ${t('sim.range.batt')} ${ah} А·ч · ${avgGrade}% ${t('sim.range.gradeShort')}, ${Math.round(hillShare*100)}% ${t('sim.range.hillsShort')}</div>`;
   el('rangeBars').innerHTML = bars;
 }
 
