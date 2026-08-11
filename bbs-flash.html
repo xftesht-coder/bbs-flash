@@ -1092,6 +1092,8 @@ function t(key, sub){
   if(sub!==undefined) s = s.replace('%s', sub);
   return s;
 }
+// L: resolve a bilingual preset field {ru,en} or pass through a plain string
+function L(v){ return (v && typeof v==='object') ? (v[I18N_LANG] || v.en || '') : v; }
 function applyLang(){
   document.documentElement.setAttribute('lang', I18N_LANG);
   document.querySelectorAll('[data-i18n]').forEach(n=>{
@@ -1244,14 +1246,14 @@ const PRESETS = {
     pas:{PT:3,DA:255,SL:255,SC:20,SSM:7,SDN:2,WM:null,TS:20,CD:8,SD:0,KC:75},
     thr:{SV:11,EV:36,MODE:1,DA:255,SL:40,SC:16}
   },
-  eco: { name:"Лютый эконом батареи", tag:"Max battery range — gentle everywhere",
-    desc:"Минимальный ток (18А — нижний предел BBS02), самые плавные ramp-ы (Slow-start 8, Start Degree 8) и высокий Keep Current 90% — мотор работает в узком холодном диапазоне. Меньше пиковый ток = меньше нагрев и расход на километр. Лесная техника из раздела 1 отчёта: перегрев лечится передачами, а не амперами.",
+  eco: { name:{ru:"Лютый эконом батареи", en:"Hardcore battery eco"}, tag:"Max battery range — gentle everywhere",
+    desc:{ru:"Минимальный ток (18А — нижний предел BBS02), самые плавные ramp-ы (Slow-start 8, Start Degree 8) и высокий Keep Current 90% — мотор работает в узком холодном диапазоне. Меньше пиковый ток = меньше нагрев и расход на километр. Лесная техника из раздела 1 отчёта: перегрев лечится передачами, а не амперами.", en:"Lowest current (18A — BBS02 floor), gentlest ramps (Slow-start 8, Start Degree 8) and high Keep Current 90% — the motor stays in a narrow, cool band. Less peak current = less heat and Wh per km. Forest-riding lesson from report §1: fix overheating with gears, not amps."},
     bas:{LBP:40,LC:18,ALC:[0,12,18,26,34,42,50,60,72,85],ALBP:[0,100,100,100,100,100,100,100,100,100],WD:11,SMType:0,SMSig:1},
     pas:{PT:3,DA:255,SL:255,SC:8,SSM:8,SDN:8,WM:null,TS:20,CD:8,SD:0,KC:90},
     thr:{SV:11,EV:36,MODE:1,DA:255,SL:40,SC:8}
   },
   throttle: { name:"Full Throttle", tag:"Max punch — hot, short",
-    desc:"Потолок тока 25А, агрессивные ramp-ы (Slow-start 1, Start Degree 2, Start Current 20%) и газ по току (MODE 1). Максимальная тяга и разгон, но накопление тепла быстрое — для коротких рывков, не для длинных апхилов. Требует снижения тока на долгих подъёмах, иначе контроллер троттлится.",
+    desc:{ru:"Потолок тока 25А, агрессивные ramp-ы (Slow-start 1, Start Degree 2, Start Current 20%) и газ по току (MODE 1). Максимальная тяга и разгон, но накопление тепла быстрое — для коротких рывков, не для длинных апхилов. Требует снижения тока на долгих подъёмах, иначе контроллер троттлится.", en:"25A ceiling, aggressive ramps (Slow-start 1, Start Degree 2, Start Current 20%) and current-mode throttle (MODE 1). Max torque and launch, but heat builds fast — for short bursts, not long climbs. Ease current on sustained climbs or the controller will thermal-throttle."},
     bas:{LBP:40,LC:25,ALC:[0,30,45,60,72,82,90,96,100,100],ALBP:[0,100,100,100,100,100,100,100,100,100],WD:11,SMType:0,SMSig:1},
     pas:{PT:3,DA:255,SL:255,SC:20,SSM:1,SDN:2,WM:null,TS:20,CD:8,SD:0,KC:90},
     thr:{SV:11,EV:36,MODE:1,DA:255,SL:255,SC:20}
@@ -1305,8 +1307,8 @@ function renderPresets(){
   const grid = el('presetGrid'); grid.innerHTML='';
   Object.entries(PRESETS).forEach(([key,p])=>{
     const card = document.createElement('div'); card.className='preset-card';
-    card.innerHTML = `<div class="preset-name">${p.name}</div><div class="preset-desc">${p.desc}</div><div class="preset-tag">${p.tag}</div>`;
-    card.onclick = ()=>{ applyPresetToState(p); pushUIFromState(); toast(`Loaded "${p.name}" into the fields`, 'ok'); };
+    card.innerHTML = `<div class="preset-name">${L(p.name)}</div><div class="preset-desc">${L(p.desc)}</div><div class="preset-tag">${L(p.tag)}</div>`;
+    card.onclick = ()=>{ applyPresetToState(p); pushUIFromState(); toast(`Loaded "${L(p.name)}" into the fields`, 'ok'); };
     grid.appendChild(card);
   });
 }
