@@ -4,6 +4,14 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>BBS FLASH — Bafang UART Configurator</title>
+<meta name="description" content="BBS FLASH — веб-конфигуратор моторов Bafang BBS01/BBS02/BBSHD через Web Serial. Настройка тока, PAS-уровней, калькулятор запаса хода и безопасная запись в контроллер."/>
+<meta name="theme-color" content="#f3ede1"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="BBS FLASH — Bafang UART Configurator"/>
+<meta property="og:description" content="Веб-конфигуратор моторов Bafang BBS01/BBS02/BBSHD через Web Serial: ток, PAS, запас хода, безопасная запись."/>
+<meta property="og:url" content="https://bbsflash.neochoice.ru/"/>
+<meta name="twitter:card" content="summary"/>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"BBS FLASH","applicationCategory":"DeveloperApplication","operatingSystem":"Chrome/Edge/Opera (Web Serial)","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Веб-конфигуратор моторов Bafang BBS01/BBS02/BBSHD через Web Serial."}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -378,7 +386,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 
 <div class="gate" id="gate">
   <div class="gate-card">
-    <h1 class="sr-only">BBS FLASH — Bafang UART Configurator</h1>
+    <p class="sr-only">BBS FLASH — Bafang UART Configurator</p>
     <div class="gate-flag" data-i18n="gate.flag">◆ ◆ ◆ Restricted paddock ◆ ◆ ◆</div>
     <div class="gate-title" data-i18n="gate.title">BBS FLASH</div>
     <div class="gate-desc" data-i18n="gate.desc">This tool talks directly to a Bafang BBS02/BBS02B controller over UART. It is built for that exact platform — settings and safety ranges will not make sense on other motors. If that's not your hardware, please don't write settings from here.</div>
@@ -390,10 +398,10 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 <div class="app">
   <aside class="rail" id="rail">
     <div class="brand">
-      <div class="brand-mark">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#d81e2c" stroke-width="2"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke="#d81e2c" stroke-width="2" stroke-linecap="round"/></svg>
+      <h1 class="brand-mark">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#b5732e" stroke-width="2"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke="#b5732e" stroke-width="2" stroke-linecap="round"/></svg>
         BBS FLASH
-      </div>
+      </h1>
       <div class="brand-sub" data-i18n="brand.sub">UART Configurator · v2</div>
     </div>
     <nav class="nav">
@@ -1060,7 +1068,7 @@ function tipHTML(key){
   let h = '<b>'+w+'</b>';
   if(d.up && d.up!=='-') h += '<div class="tip-row up">↑ '+d.up+'</div>';
   if(d.down && d.down!=='-') h += '<div class="tip-row down">↓ '+d.down+'</div>';
-  if(d.risk) h += '<div class="tip-row warn">⚠️ '+d.risk+'</div>';
+  if(d.risk) h += '<div class="tip-row warn"><span aria-hidden="true">⚠️</span> '+d.risk+'</div>';
   return h;
 }
 function attachTooltips(){
