@@ -849,7 +849,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
           <div class="panel-desc" style="margin-bottom:10px;" data-i18n="sim.range.desc">Сколько реально проедешь на одной батарее с таким весом, током и горками. Чем дальше — тем круче. Физика та же, что в симуляторе: P = сопротивление воздуха + качение + подъём, умноженное на расход батареи.</div>
           <div class="sim-grid">
             <div class="slider-field">
-              <div class="row"><label data-i18n="sim.range.ah">Ёмкость батареи, А·ч</label><b id="simAhVal">20 А·ч</b></div>
+              <div class="row"><label data-i18n="sim.range.ah">Ёмкость батареи, А·ч</label><b id="simAhVal">20</b></div>
               <input type="range" id="simAh" min="5" max="40" value="20" step="1"/>
             </div>
             <div class="slider-field">
@@ -2175,6 +2175,11 @@ function computeRange(){
   const avgGrade = parseFloat(el('simAvgGrade').value)||3;
   const hillShare = (parseFloat(el('simHillShare').value)||30)/100;
   const level = parseInt(el('simRangeLevel').value)||5;
+  // localized live values for sliders (Б7)
+  el('simAhVal').textContent = `${ah} ${t('sim.range.ahUnit')}`;
+  el('simAvgGradeVal').textContent = `${avgGrade}%`;
+  el('simHillShareVal').textContent = `${Math.round(hillShare*100)}%`;
+  el('simRangeLevelVal').textContent = `${level}`;
   const mass = parseFloat(el('simMass').value)||115;
   const crr = parseFloat(el('simSurface').value)||0.012;
   const cda = parseFloat(el('simCda').value)||0.65;
