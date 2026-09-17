@@ -196,6 +196,11 @@ async function toPanel(page, id) {
           assert.ok(!/[А-Яа-яЁё]/.test(text), `Russian remains in ${id}`);
         }
         await page.locator("#theme").click();
+        // Preferences are asynchronous IndexedDB writes. Verify the commit,
+        // not an arbitrary delay, before testing persistence across reload.
+        await page.waitForFunction(
+          async () => (await BBSStore.get("prefs", "theme")) === "dark",
+        );
         await page.reload();
         await page.waitForFunction(
           () => document.documentElement.lang === "en",
