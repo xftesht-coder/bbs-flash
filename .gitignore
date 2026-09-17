@@ -4,4 +4,5 @@ working-copy/
 _server_*
 _new.html
 nul
-index.html
+test-results/
+playwright-report/
