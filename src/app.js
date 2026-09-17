@@ -6,26 +6,21 @@
     $ = (id) => document.getElementById(id);
   const TEXT = {
     language: ["Язык", "Language"],
-    dark: ["Тёмная тема", "Dark theme"],
-    light: ["Светлая тема", "Light theme"],
+    dark: ["Ночь", "Night"],
+    light: ["День", "Day"],
+    guideButton: ["? Penoff", "? Penoff"],
     offline: ["Не подключено", "Disconnected"],
     online: ["Подключено", "Connected"],
-    eyebrow: [
-      "Настройки · анализ · резервные копии",
-      "Settings · analysis · backups",
-    ],
-    title: [
-      "Понимай настройки своего Bafang",
-      "Understand your Bafang settings",
-    ],
+    eyebrow: ["Пит-бокс / электрическая тяга", "Pit garage / electric drive"],
+    title: ["СОБЕРИ СВОЙ ХАРАКТЕР.", "TUNE YOUR RIDE."],
     subtitle: [
-      "Редактор параметров UART и расчётный стенд. Открывай профили, сравнивай режимы и проверяй изменения до записи.",
-      "UART settings editor and a calculation workbench. Open profiles, compare scenarios and review changes before writing.",
+      "Ток. Подхват. Помощь. Твой Bafang — твой сетап.",
+      "Current. Pickup. Assist. Your Bafang, your setup.",
     ],
     roadmap: ["План развития ↗", "Roadmap ↗"],
     experimental: [
-      "Версия 3.1.0. Запись — экспериментальная, без проверки на физическом моторе. Доступна только для HZXT SZZ9 / FW 2.0.1.1 / 48 V после явного включения. Другие контроллеры — только чтение.",
-      "Version 3.1.0. Writes are experimental and have not been tested on a physical motor. Only HZXT SZZ9 / FW 2.0.1.1 / 48 V can be enabled explicitly. Other controllers are read-only.",
+      "Версия 3.2.0. Запись — экспериментальная, без проверки на физическом моторе. Доступна только для HZXT SZZ9 / FW 2.0.1.1 / 48 V после явного включения. Другие контроллеры — только чтение.",
+      "Version 3.2.0. Writes are experimental and have not been tested on a physical motor. Only HZXT SZZ9 / FW 2.0.1.1 / 48 V can be enabled explicitly. Other controllers are read-only.",
     ],
     connection: ["Подключение", "Connection"],
     basic: ["Основные", "Basic"],
@@ -212,8 +207,55 @@
       "Draft current limit exceeds the assumed limit of the selected model.",
     ],
     footer: [
-      "Настройки UART · без прошивки firmware · без облачной отправки профилей",
-      "UART settings · no firmware flashing · no cloud profile uploads",
+      " · настройки UART, не прошивка",
+      " · UART settings, not firmware",
+    ],
+    guide: ["Справочник / Penoff", "Field guide / Penoff"],
+    close: ["Закрыть", "Close"],
+    basedOn: ["На основе BafangConfigTool ·", "Based on BafangConfigTool ·"],
+    creditTitle: ["Спасибо, Penoff.", "Thank you, Penoff."],
+    creditText: [
+      "В основе BBS Flash — подход, параметры, формат профилей .el и работа с UART из Bafang Configuration Tool. Исходную программу Bafang доработал Stefan Penov (Penoff). Его приложение, исходники и справочник — основа нашей работы.",
+      "BBS Flash builds on the workflow, parameters, .el profiles and UART work in Bafang Configuration Tool. Stefan Penov (Penoff) improved the original Bafang application. His application, source and manual are foundational to this project.",
+    ],
+    ourPart: [
+      "Наш вклад: работа в браузере, этот интерфейс, сравнение профилей, расчётные модели и дополнительные проверки записи. Мы не выдаём параметры и протокол Bafang за своё изобретение.",
+      "Our contribution is the browser app, this interface, profile comparison, estimates and additional write checks. We do not claim to have invented Bafang's parameters or protocol.",
+    ],
+    penoffSource: [
+      "Оригинальная работа Penoff ↗",
+      "Penoff's original work ↗",
+    ],
+    guideScope: [
+      "Подсказки ниже — наш краткий пересказ справочника из архива проекта. Поведение прошивок различается; ограничения BBS Flash указаны отдельно.",
+      "The notes below are our concise paraphrase of the manual bundled with the project. Firmware behavior varies; BBS Flash policies are identified separately.",
+    ],
+    guideSelect: ["Разобрать параметр", "Explore a parameter"],
+    aboutProject: [
+      "О проекте и первоисточнике",
+      "About the project and its origins",
+    ],
+    guideMeaning: ["За что отвечает", "What it controls"],
+    guideEffect: ["Что изменится", "What changes"],
+    guideCaution: ["Учитывай при настройке", "Tuning considerations"],
+    allCredits: ["Источники и благодарности ↗", "Sources and credits ↗"],
+    helpLabel: ["Справка: ", "Help: "],
+    ridePreview: ["Тестовый заезд", "Ride preview"],
+    estimateTag: ["РАСЧЁТ", "ESTIMATE"],
+    trackFlat: ["Асфальт / 0%", "Tarmac / 0%"],
+    trackClimb: ["Подъём", "Climb"],
+    speedUnit: ["км/ч · расчёт", "km/h · estimate"],
+    kmUnit: ["км", "km"],
+    hudCurrent: ["Лимит тока", "Current limit"],
+    hudCadence: ["Каденс", "Cadence"],
+    hudRange: ["Дальность", "Range"],
+    reserveTag: ["резерв 15%", "15% reserve"],
+    selectPas: ["Уровень помощи", "Assist level"],
+    hudRisk: ["Высокий ток / низкий каденс", "High current / low cadence"],
+    animatePreview: ["Анимация заезда", "Animate ride"],
+    hudDisclaimer: [
+      "Визуализация расчёта. Не телеметрия и не команда мотору.",
+      "An animated estimate. Not telemetry or a motor command.",
     ],
     safetyDoc: ["Ограничения и безопасность", "Limits and safety"],
     feedback: ["Сообщить о проблеме", "Report an issue"],
@@ -419,7 +461,7 @@
     rangeGrade: ["Уклон подъёмов, %", "Uphill gradient, %"],
   };
   let lang = "ru",
-    theme = "light",
+    theme = "dark",
     session = null,
     busy = false,
     storageReady = false,
@@ -557,6 +599,42 @@
     if (cls) el.className = cls;
     return el;
   }
+  let guideKey = "";
+  function renderGuide() {
+    const select = $("guideSelect");
+    select.replaceChildren();
+    const intro = node("option", t("aboutProject"));
+    intro.value = "";
+    select.append(intro);
+    for (const key of Object.keys(BBSGuide.fields)) {
+      const option = node(
+        "option",
+        key === "assist" ? t("assistTable") : t(key),
+      );
+      option.value = key;
+      select.append(option);
+    }
+    select.value = guideKey;
+    $("guideAbout").hidden = !!guideKey;
+    const detail = $("guideDetail");
+    detail.replaceChildren();
+    if (!guideKey) return;
+    const entry = BBSGuide.fields[guideKey];
+    detail.append(node("p", entry.name, "guide-original"));
+    entry[lang].forEach((text, i) => {
+      const section = node("section");
+      section.append(
+        node("h3", t(["guideMeaning", "guideEffect", "guideCaution"][i])),
+        node("p", text),
+      );
+      detail.append(section);
+    });
+  }
+  function openGuide(key = "") {
+    guideKey = BBSGuide.fields[key] ? key : "";
+    renderGuide();
+    $("guideDialog").showModal();
+  }
   function buildField(parent, id, label, spec, value, help) {
     const box = node("div", undefined, "field");
     const lab = node("label", t(label));
@@ -580,8 +658,18 @@
       control.required = true;
     }
     control.value = value;
-    box.append(lab, control);
-    if (help) {
+    const fieldHeading = node("div", undefined, "field-heading");
+    fieldHeading.append(lab);
+    if (BBSGuide.fields[label]) {
+      const button = node("button", "?", "help-button");
+      button.type = "button";
+      button.dataset.help = label;
+      button.setAttribute("aria-haspopup", "dialog");
+      button.onclick = () => openGuide(label);
+      fieldHeading.append(button);
+    }
+    box.append(fieldHeading, control);
+    if (help && !BBSGuide.fields[label]) {
       const hint = node("small", t(help));
       hint.dataset.t = help;
       hint.id = id + "-help";
@@ -790,6 +878,24 @@
     $("theme").textContent = t(theme === "dark" ? "light" : "dark");
     $("tabs").setAttribute("aria-label", t("title"));
     $("log").setAttribute("aria-label", t("log"));
+    document
+      .querySelectorAll("[data-help]")
+      .forEach((button) =>
+        button.setAttribute(
+          "aria-label",
+          t("helpLabel") +
+            t(
+              button.dataset.help === "assist"
+                ? "assistTable"
+                : button.dataset.help,
+            ),
+        ),
+      );
+    $("sceneTitle").textContent = t("ridePreview");
+    $("raceHud").setAttribute("aria-label", t("ridePreview"));
+    $("hudCurrentBar").setAttribute("aria-label", t("hudCurrent"));
+    $("hudCadenceBar").setAttribute("aria-label", t("hudCadence"));
+    renderGuide();
     for (let i = 0; i < 10; i++) {
       $("ALC-" + i).setAttribute("aria-label", `PAS ${i}: ${t("currentPct")}`);
       $("ALBP-" + i).setAttribute("aria-label", `PAS ${i}: ${t("speedPct")}`);
@@ -901,7 +1007,9 @@
       $("whKm").textContent =
         estimate.whKm === null ? "—" : estimate.whKm.toFixed(1);
       $("availableWh").textContent = estimate.availableWh.toFixed(0);
+      BBSDash.update({ row: selected, scenario: p, estimate });
     } catch (error) {
+      BBSDash.clear();
       for (const id of [
         "gearLimit",
         "cadence",
@@ -1137,6 +1245,7 @@
           b.setAttribute("aria-selected", String(active));
           $("panel-" + b.dataset.panel).hidden = !active;
         });
+        document.body.dataset.activePanel = button.dataset.panel;
         if (button.dataset.panel === "simulator") renderCalculations();
       }),
   );
@@ -1161,6 +1270,18 @@
       event.returnValue = "";
     }
   });
+  $("openGuide").onclick = () => openGuide();
+  $("closeGuide").onclick = () => $("guideDialog").close();
+  $("guideSelect").onchange = () => {
+    guideKey = $("guideSelect").value;
+    renderGuide();
+  };
+  document
+    .querySelectorAll("[data-help]")
+    .forEach(
+      (button) => (button.onclick = () => openGuide(button.dataset.help)),
+    );
+  BBSDash.init(renderCalculations);
   applyLanguage();
   $("storageStatus").textContent = t("storageWaiting");
   (async () => {

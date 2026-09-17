@@ -1,4 +1,4 @@
-# Verification of 3.1.0
+# Verification of 3.2.0
 
 Baseline audited: `8e0495904e566757f40a52427861c5d3990dc677`. Tests do not access a physical serial port.
 
@@ -24,6 +24,8 @@ npm run test:browser
 - Correct gearing direction, electrical/mechanical power conversion, PAS-specific range, zero inputs, row-level thermal heuristic, BBSHD 30 A in simulation.
 - Fresh and denied IndexedDB, unavailable Web Serial, local backup persistence across reload, complete dynamic RU/EN, light/dark theme persistence.
 - Every tab at 360/390/768/1440 px; reduced-motion mode; no page overflow; both landing URLs, calculator and application CTA.
+- Race HUD shares PAS/current/speed/cadence/range inputs; invalid input clears output; display mode and animation cannot send serial commands. Animation pauses when hidden or reduced motion is enabled.
+- Every controller field has a bilingual Penoff guide; keyboard dismissal returns focus; attributions and source links remain visible.
 - No console/runtime errors in exercised browser scenarios.
 
 ## Still required

@@ -147,14 +147,14 @@ async function toPanel(page, id) {
         : {}),
     });
     await check(
-      "fresh IndexedDB startup; light default; every tab accessible",
+      "fresh IndexedDB startup; dark default; every tab accessible",
       async () => {
         for (let i = 0; i < 3; i++) {
           const { page, context } = await newPage();
           await ready(page);
           assert.equal(
             await page.locator("html").getAttribute("data-theme"),
-            "light",
+            "dark",
           );
           assert.equal(await page.locator("#writeAll").isDisabled(), true);
           for (const id of [
@@ -199,7 +199,7 @@ async function toPanel(page, id) {
         // Preferences are asynchronous IndexedDB writes. Verify the commit,
         // not an arbitrary delay, before testing persistence across reload.
         await page.waitForFunction(
-          async () => (await BBSStore.get("prefs", "theme")) === "dark",
+          async () => (await BBSStore.get("prefs", "theme")) === "light",
         );
         await page.reload();
         await page.waitForFunction(
@@ -207,11 +207,11 @@ async function toPanel(page, id) {
         );
         assert.equal(
           await page.locator("html").getAttribute("data-theme"),
-          "dark",
+          "light",
         );
         await toPanel(page, "simulator");
         await page.screenshot({
-          path: path.join(output, "simulator-dark-en.png"),
+          path: path.join(output, "simulator-light-en.png"),
           fullPage: true,
         });
         await context.close();
@@ -250,6 +250,166 @@ async function toPanel(page, id) {
             });
           await context.close();
         }
+      },
+    );
+    await check(
+      "Penoff guide covers every controller field in RU/EN and restores keyboard focus",
+      async () => {
+        const { page, context } = await newPage();
+        await ready(page);
+        for (const panel of ["basic", "pas", "throttle"]) {
+          await toPanel(page, panel);
+          const fields = page.locator(
+            `#${panel === "basic" ? "basic" : panel}Fields .field`,
+          );
+          assert.ok((await fields.count()) > 0);
+          for (const field of await fields.all())
+            assert.equal(await field.locator(".help-button").count(), 1);
+        }
+        await toPanel(page, "basic");
+        const button = page.locator('[data-help="bas.LC"]');
+        await button.focus();
+        await page.keyboard.press("Enter");
+        assert.equal(await page.locator("#guideDialog").isVisible(), true);
+        assert.match(await page.locator("#guideDetail").innerText(), /General/);
+        await page.keyboard.press("Escape");
+        assert.equal(
+          await button.evaluate((el) => el === document.activeElement),
+          true,
+        );
+        for (const language of ["ru", "en"]) {
+          await page.locator("#language").selectOption(language);
+          await page.locator("#openGuide").click();
+          assert.match(
+            await page.locator("#guideAbout").innerText(),
+            /Bafang.*Stefan Penov \(Penoff\)/s,
+          );
+          const keys = await page
+            .locator("#guideSelect option")
+            .evaluateAll((options) =>
+              options.map((o) => o.value).filter(Boolean),
+            );
+          assert.equal(keys.length, 23);
+          for (const key of keys) {
+            await page.locator("#guideSelect").selectOption(key);
+            const text = await page.locator("#guideDetail").innerText();
+            assert.ok(text.length > 140, key);
+            assert.equal(await page.locator("#guideDetail section").count(), 3);
+            if (language === "en") assert.ok(!/[А-Яа-яЁё]/.test(text), key);
+          }
+          await page.locator("#closeGuide").click();
+          if (language === "en")
+            assert.ok(
+              !/[А-Яа-яЁё]/.test(await page.locator("#raceHud").innerText()),
+            );
+        }
+        await context.close();
+      },
+    );
+    await check(
+      "race HUD follows estimates, clears invalid input and never sends motor commands",
+      async () => {
+        const { page, context } = await newPage();
+        await mock(page);
+        await ready(page);
+        await connectRead(page);
+        const count = await page.evaluate(() => __motor.sent.length);
+        await toPanel(page, "simulator");
+        await page.locator('[data-hud-pas="2"]').click();
+        assert.equal(await page.locator("#sim-level").inputValue(), "2");
+        assert.equal(
+          await page.locator("#hudRange").innerText(),
+          await page.locator("#rangeKm").innerText(),
+        );
+        assert.equal(
+          await page.locator("#hudCurrent").innerText(),
+          await page.locator("#levelCurrent").innerText(),
+        );
+        const climb = Number(await page.locator("#hudSpeed").innerText());
+        await page.locator('button[data-terrain="flat"]').click();
+        const flat = Number(await page.locator("#hudSpeed").innerText());
+        assert.ok(flat >= climb);
+        assert.ok(
+          Math.abs(
+            Number(await page.locator("#hudCadence").innerText()) -
+              ((flat / 3.6) * 60 * 11) / (32 * 2.194),
+          ) < 1,
+        );
+        await page.locator('[data-hud-pas="0"]').click();
+        assert.equal(
+          await page
+            .locator('button[data-terrain="flat"]')
+            .getAttribute("aria-pressed"),
+          "true",
+        );
+        assert.equal(
+          await page
+            .locator('button[data-terrain="climb"]')
+            .getAttribute("aria-pressed"),
+          "false",
+        );
+        assert.equal(await page.locator("#hudSpeed").innerText(), "0.0");
+        assert.equal(await page.locator("#hudRange").innerText(), "—");
+        await page.locator('[data-hud-pas="9"]').click();
+        await page.locator("#sim-cog").fill("");
+        for (const id of ["hudSpeed", "hudRange", "hudCurrent", "hudCadence"])
+          assert.equal(await page.locator("#" + id).innerText(), "—");
+        assert.equal(
+          await page.locator("#raceHud").getAttribute("data-running"),
+          "false",
+        );
+        assert.equal(await page.evaluate(() => __motor.sent.length), count);
+        await context.close();
+      },
+    );
+    await check(
+      "ride animation is opt-in and pauses for zero speed, visibility and reduced motion",
+      async () => {
+        const { page, context } = await newPage({
+          reducedMotion: "no-preference",
+        });
+        await ready(page);
+        const hud = page.locator("#raceHud"),
+          wheel = page.locator(".rear-wheel");
+        assert.equal(await hud.getAttribute("data-running"), "false");
+        assert.equal(
+          await wheel.evaluate((el) => getComputedStyle(el).animationPlayState),
+          "paused",
+        );
+        await page.locator("#previewToggle").click();
+        assert.equal(await hud.getAttribute("data-running"), "true");
+        assert.equal(
+          await wheel.evaluate((el) => getComputedStyle(el).animationPlayState),
+          "running",
+        );
+        await page.locator('[data-hud-pas="0"]').click();
+        assert.equal(await hud.getAttribute("data-running"), "false");
+        await page.locator('[data-hud-pas="9"]').click();
+        // Model browser visibility signals independently of headless window focus.
+        await page.evaluate(() => {
+          Object.defineProperty(document, "hidden", {
+            value: true,
+            configurable: true,
+          });
+          document.dispatchEvent(new Event("visibilitychange"));
+        });
+        assert.equal(await hud.getAttribute("data-running"), "false");
+        await page.evaluate(() => {
+          delete document.hidden;
+          document.dispatchEvent(new Event("visibilitychange"));
+        });
+        await page.waitForFunction(
+          () => document.getElementById("raceHud").dataset.running === "true",
+        );
+        await page.emulateMedia({ reducedMotion: "reduce" });
+        await page.waitForFunction(
+          () => document.getElementById("raceHud").dataset.running === "false",
+        );
+        assert.equal(
+          await wheel.evaluate((el) => getComputedStyle(el).animationName),
+          "none",
+        );
+        await context.close();
       },
     );
     await check(
@@ -317,13 +477,11 @@ async function toPanel(page, id) {
         assert.equal(await page.locator("#pas-SSM").inputValue(), "6");
         assert.equal(await page.locator("#pas-WM").inputValue(), "10");
         assert.equal(await page.locator("#thr-SL").inputValue(), "17");
-        await page
-          .locator("#importFile")
-          .setInputFiles({
-            name: "bad.el",
-            mimeType: "text/plain",
-            buffer: Buffer.from("[Basic]\nLC=NaN"),
-          });
+        await page.locator("#importFile").setInputFiles({
+          name: "bad.el",
+          mimeType: "text/plain",
+          buffer: Buffer.from("[Basic]\nLC=NaN"),
+        });
         await page.waitForFunction(() =>
           document.getElementById("status").classList.contains("error"),
         );
@@ -491,7 +649,7 @@ async function toPanel(page, id) {
         assert.equal(await page.locator("#readAll").isDisabled(), true);
         assert.match(
           await page.locator("#connectionState").innerText(),
-          /Не подключено/,
+          /Не подключено/i,
         );
         await context.close();
       },
