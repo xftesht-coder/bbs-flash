@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.1 — 2026-09-17
+
+- Preserve the space between the two Russian landing headline sentences when initializing or switching language. Race Garage behavior and safety policy are unchanged.
+
 ## 3.2.0 — 2026-09-17 · Race Garage
 
 - Compact garage layout with numbered navigation, dense controls, a side-by-side Basic/PAS editor and dark/day themes. Self-hosted Russo One and original SVG bicycle artwork.

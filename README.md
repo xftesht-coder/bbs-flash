@@ -1,4 +1,4 @@
-# BBS Flash 3.2.0
+# BBS Flash 3.2.1
 
 [Открыть конфигуратор](https://xftesht-coder.github.io/bbs-flash/bbs-flash.html) · [Главная](https://xftesht-coder.github.io/bbs-flash/) · [Изменения](CHANGELOG.md) · [Roadmap](ROADMAP.md)
 
