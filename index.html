@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru" data-theme="light">
+<html lang="ru" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -15,6 +15,7 @@
     <link rel="canonical" href="https://xftesht-coder.github.io/bbs-flash/" />
     <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./src/styles.css" />
+    <link rel="stylesheet" href="./src/garage.css" />
     <script defer src="./src/core.js"></script>
     <script defer src="./src/landing.js"></script>
   </head>
@@ -22,7 +23,10 @@
     <header>
       <div class="top">
         <a class="brand" href="./"
-          >BBS Flash<span class="version">3.1.0</span></a
+          ><span class="brand-stripes" aria-hidden="true"></span>BBS<span
+            class="brand-slash"
+            >//</span
+          >FLASH<span class="version">3.2.0</span></a
         >
         <div class="tools">
           <a href="https://github.com/xftesht-coder/bbs-flash">GitHub ↗</a
@@ -230,8 +234,28 @@
           >
         </div>
       </section>
+      <section class="landing-credit">
+        <p class="eyebrow">BAFANG → PENOFF → BBS FLASH</p>
+        <h2 data-t="creditsTitle">На плечах BafangConfigTool</h2>
+        <p data-t="creditsText">
+          Основа BBS Flash — параметры, формат .el и работа с BBS UART из
+          BafangConfigTool. Исходную программу Bafang доработал Stefan Penov
+          (Penoff): его приложение, исходники и справочник стали отправной
+          точкой нашей браузерной версии.
+        </p>
+        <p class="muted" data-t="creditsOurs">
+          Наш вклад — интерфейс гаража, расчёты и сравнение профилей, проверки
+          записи и локальные копии. Это независимая переработка, без заявления
+          об одобрении со стороны Bafang или Penoff.
+        </p>
+        <a
+          href="https://penoff.me/2016/01/13/e-bike-conversion-software/"
+          data-t="creditsLink"
+          >Оригинальное приложение и описание Penoff ↗</a
+        >
+      </section>
       <footer class="foot">
-        <span>© 2026 BBS Flash · 3.1.0</span
+        <span>© 2026 BBS Flash · 3.2.0</span
         ><a href="./bbs-flash.html" data-t="open">Открыть конфигуратор →</a>
       </footer>
     </main>

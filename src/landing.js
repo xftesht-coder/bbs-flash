@@ -2,8 +2,14 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   let lang = "ru",
-    dark = false;
+    dark = true;
   const english = {
+    creditsTitle: "Built on BafangConfigTool",
+    creditsText:
+      "BBS Flash builds on BafangConfigTool's parameters, .el format and BBS UART behavior. Stefan Penov (Penoff) improved the original Bafang application; his application, source code and guide were the starting point for our browser version.",
+    creditsOurs:
+      "Our contribution is the garage interface, estimates and profile comparison, write checks and local backups. This is an independent adaptation; no endorsement by Bafang or Penoff is claimed.",
+    creditsLink: "Penoff's original application and description ↗",
     dark: "Dark theme",
     light: "Light theme",
     eyebrow: "An open tool for Bafang UART",
@@ -106,5 +112,5 @@
   ["cFront", "cRear", "cCirc", "cRpm"].forEach((id) =>
     $(id).addEventListener("input", calc),
   );
-  calc();
+  apply();
 })();

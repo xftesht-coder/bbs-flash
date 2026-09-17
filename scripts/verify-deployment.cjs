@@ -17,14 +17,26 @@ const files = [
   "src/presets.js",
   "src/styles.css",
   "src/landing.js",
+  "src/garage.css",
+  "src/guide.js",
+  "src/dash.js",
   "assets/icon.svg",
+  "assets/RussoOne-Regular.ttf",
+  "assets/OFL-RussoOne.txt",
 ];
-const hash = (text) =>
-  crypto.createHash("sha256").update(text.replace(/\r\n/g, "\n")).digest("hex");
+const hash = (bytes, file) =>
+  crypto
+    .createHash("sha256")
+    .update(
+      file.endsWith(".ttf")
+        ? bytes
+        : bytes.toString("utf8").replace(/\r\n/g, "\n"),
+    )
+    .digest("hex");
 const attempts = Number(process.env.BBS_DEPLOY_ATTEMPTS || 24),
   pause = Number(process.env.BBS_DEPLOY_PAUSE_MS || 25000),
   expected = Object.fromEntries(
-    files.map((f) => [f, hash(fs.readFileSync(path.join(root, f), "utf8"))]),
+    files.map((f) => [f, hash(fs.readFileSync(path.join(root, f)), f)]),
   );
 (async () => {
   let matched = false,
@@ -37,7 +49,7 @@ const attempts = Number(process.env.BBS_DEPLOY_ATTEMPTS || 24),
             new URL(file + "?release=" + Date.now(), base),
             { signal: AbortSignal.timeout(15000), cache: "no-store" },
           );
-          const actual = hash(await response.text());
+          const actual = hash(Buffer.from(await response.arrayBuffer()), file);
           return {
             file,
             status: response.status,
@@ -93,6 +105,12 @@ const attempts = Number(process.env.BBS_DEPLOY_ATTEMPTS || 24),
     await page.locator('[data-panel="simulator"]').click();
     if ((await page.locator("#gearLimit").innerText()) !== "46.0")
       throw Error("Simulator gearing regression");
+    if ((await page.locator("#hudCurrent").innerText()) !== "18.0")
+      throw Error("Garage HUD did not render the draft scenario");
+    await page.locator("#openGuide").click();
+    if (!(await page.locator("#guideAbout").innerText()).includes("Penoff"))
+      throw Error("Missing source acknowledgement");
+    await page.locator("#closeGuide").click();
     await page.locator("#language").selectOption("en");
     if ((await page.locator("html").getAttribute("lang")) !== "en")
       throw Error("Language failed");

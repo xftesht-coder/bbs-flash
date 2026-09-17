@@ -1,12 +1,12 @@
 {
   "name": "bbs-flash",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "private": true,
   "description": "Bafang UART settings workbench",
   "scripts": {
     "test": "node --test tests/core.test.cjs tests/site.test.cjs",
     "test:browser": "node tests/browser.cjs",
-    "check": "node --check src/core.js && node --check src/app.js && node --check src/storage.js && node --check src/landing.js"
+    "check": "node --check src/core.js && node --check src/app.js && node --check src/storage.js && node --check src/landing.js && node --check src/guide.js && node --check src/dash.js"
   },
   "devDependencies": {
     "playwright": "1.62.1"

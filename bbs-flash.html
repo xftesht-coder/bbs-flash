@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru" data-theme="light">
+<html lang="ru" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -11,280 +11,479 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
     />
-    <title>BBS Flash 3.1.0 · Configurator</title>
+    <title>BBS Flash 3.2.0 · Configurator</title>
     <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./src/styles.css" />
+    <link rel="stylesheet" href="./src/garage.css" />
     <script defer src="./src/core.js"></script>
     <script defer src="./src/storage.js"></script>
     <script defer src="./src/presets.js"></script>
+    <script defer src="./src/guide.js"></script>
+    <script defer src="./src/dash.js"></script>
     <script defer src="./src/app.js"></script>
   </head>
-  <body>
+  <body class="garage" data-active-panel="connection">
     <header>
       <div class="top">
         <a class="brand" href="./"
-          >BBS Flash<span class="version">3.1.0</span></a
+          ><span class="brand-stripes" aria-hidden="true"></span>BBS<span
+            class="brand-slash"
+            >//</span
+          >FLASH<span class="version">3.2.0</span></a
         >
         <div class="tools">
+          <button
+            id="openGuide"
+            class="guide-link"
+            data-t="guideButton"
+          ></button>
           <span id="connectionState" class="badge" data-t="offline"></span
           ><label
             ><span class="muted" data-t="language"></span>
             <select id="language" aria-label="Language">
-              <option value="ru">Русский</option>
-              <option value="en">English</option>
+              <option value="ru">RU</option>
+              <option value="en">EN</option>
             </select></label
           ><button id="theme" data-t="dark"></button>
         </div>
       </div>
     </header>
-    <main>
+    <main class="garage-shell">
       <noscript
         >Для работы приложения включите JavaScript. / Enable JavaScript to use
         this application.</noscript
       >
-      <div class="intro">
+      <div class="intro garage-intro">
         <div>
           <p class="eyebrow" data-t="eyebrow"></p>
           <h1 data-t="title"></h1>
           <p class="muted" data-t="subtitle"></p>
         </div>
-        <a
-          class="button"
-          href="https://github.com/xftesht-coder/bbs-flash/blob/main/ROADMAP.md"
-          data-t="roadmap"
-        ></a>
+        <div class="garage-number" aria-hidden="true">
+          01<span>SETUP LAB</span>
+        </div>
       </div>
-      <div class="notice warning" data-t="experimental"></div>
-      <nav class="tabs" aria-label="Sections" id="tabs">
-        <button
-          data-panel="connection"
-          aria-selected="true"
-          data-t="connection"
-        ></button
-        ><button
-          data-panel="basic"
-          aria-selected="false"
-          data-t="basic"
-        ></button
-        ><button data-panel="pas" aria-selected="false" data-t="pas"></button
-        ><button
-          data-panel="throttle"
-          aria-selected="false"
-          data-t="throttle"
-        ></button
-        ><button
-          data-panel="presets"
-          aria-selected="false"
-          data-t="presets"
-        ></button
-        ><button
-          data-panel="simulator"
-          aria-selected="false"
-          data-t="simulator"
-        ></button>
-      </nav>
-      <p id="status" class="status" role="status" aria-live="polite"></p>
-      <section id="panel-connection">
-        <div class="cols">
-          <div class="card">
-            <h2 data-t="connection"></h2>
-            <p data-t="connectHelp"></p>
-            <div id="capability" class="notice"></div>
-            <div class="actions">
-              <button id="connect" class="primary" data-t="connect"></button
-              ><button id="disconnect" disabled data-t="disconnect"></button
-              ><button id="readAll" disabled data-t="readAll"></button>
+      <div class="notice warning race-notice" data-t="experimental"></div>
+      <div class="garage-workspace">
+        <nav class="tabs" aria-label="Sections" id="tabs">
+          <button
+            data-panel="connection"
+            aria-selected="true"
+            data-t="connection"
+          ></button
+          ><button
+            data-panel="basic"
+            aria-selected="false"
+            data-t="basic"
+          ></button
+          ><button data-panel="pas" aria-selected="false" data-t="pas"></button
+          ><button
+            data-panel="throttle"
+            aria-selected="false"
+            data-t="throttle"
+          ></button
+          ><button
+            data-panel="presets"
+            aria-selected="false"
+            data-t="presets"
+          ></button
+          ><button
+            data-panel="simulator"
+            aria-selected="false"
+            data-t="simulator"
+          ></button>
+        </nav>
+        <div class="garage-content">
+          <p id="status" class="status" role="status" aria-live="polite"></p>
+          <section id="panel-connection">
+            <div class="cols">
+              <div class="card">
+                <h2 data-t="connection"></h2>
+                <p data-t="connectHelp"></p>
+                <div id="capability" class="notice"></div>
+                <div class="actions">
+                  <button id="connect" class="primary" data-t="connect"></button
+                  ><button id="disconnect" disabled data-t="disconnect"></button
+                  ><button id="readAll" disabled data-t="readAll"></button>
+                </div>
+                <div id="device" class="device" data-t="noDevice"></div>
+                <div
+                  class="notice"
+                  id="writeEligibility"
+                  data-t="readOnly"
+                ></div>
+                <label class="check"
+                  ><input id="bench" type="checkbox" disabled /><span
+                    data-t="bench"
+                  ></span></label
+                ><button
+                  id="writeAll"
+                  class="primary"
+                  disabled
+                  data-t="writeAll"
+                ></button>
+              </div>
+              <div class="card">
+                <h2 data-t="files"></h2>
+                <p data-t="filesHelp"></p>
+                <p id="source" class="notice"></p>
+                <div class="actions">
+                  <button id="import" data-t="import"></button
+                  ><button id="export" data-t="export"></button
+                  ><input id="importFile" type="file" accept=".el" hidden />
+                </div>
+                <h3 class="spaced" data-t="backup"></h3>
+                <p id="storageStatus" class="muted"></p>
+                <p id="backupInfo" class="muted" data-t="noBackup"></p>
+                <div class="actions">
+                  <button id="backupEl" disabled data-t="downloadEl"></button
+                  ><button
+                    id="backupJson"
+                    disabled
+                    data-t="downloadRaw"
+                  ></button
+                  ><button id="restore" disabled data-t="restore"></button>
+                </div>
+                <p class="muted" data-t="backupHelp"></p>
+              </div>
             </div>
-            <div id="device" class="device" data-t="noDevice"></div>
-            <div class="notice" id="writeEligibility" data-t="readOnly"></div>
-            <label class="check"
-              ><input id="bench" type="checkbox" disabled /><span
-                data-t="bench"
-              ></span></label
+            <details>
+              <summary data-t="log"></summary>
+              <div class="actions spaced">
+                <button id="exportLog" data-t="exportLog"></button
+                ><button id="clearLog" data-t="clearLog"></button>
+              </div>
+              <pre id="log" aria-label="Serial log"></pre>
+            </details>
+          </section>
+          <section id="panel-basic" hidden>
+            <div class="card">
+              <div class="subhead">
+                <h2 data-t="basic"></h2>
+                <button
+                  class="write-block"
+                  data-block="82"
+                  disabled
+                  data-t="writeBlock"
+                ></button>
+              </div>
+              <div class="setup-split">
+                <fieldset id="basicFields" class="grid"></fieldset>
+                <div class="assist-editor">
+                  <div class="subhead">
+                    <h3 data-t="assistTable"></h3>
+                    <button
+                      class="help-button"
+                      data-help="assist"
+                      aria-label="Assist help"
+                    >
+                      ?
+                    </button>
+                  </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>PAS</th>
+                          <th data-t="currentPct"></th>
+                          <th data-t="speedPct"></th>
+                          <th data-t="currentA"></th>
+                        </tr>
+                      </thead>
+                      <tbody id="assistRows"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="panel-pas" hidden>
+            <div class="card">
+              <div class="subhead">
+                <h2 data-t="pas"></h2>
+                <button
+                  class="write-block"
+                  data-block="83"
+                  disabled
+                  data-t="writeBlock"
+                ></button>
+              </div>
+              <p class="notice warning" data-t="stopPolicy"></p>
+              <fieldset id="pasFields" class="grid"></fieldset>
+            </div>
+          </section>
+          <section id="panel-throttle" hidden>
+            <div class="card">
+              <div class="subhead">
+                <h2 data-t="throttle"></h2>
+                <button
+                  class="write-block"
+                  data-block="84"
+                  disabled
+                  data-t="writeBlock"
+                ></button>
+              </div>
+              <p class="notice warning" data-t="throttleHelp"></p>
+              <fieldset id="throttleFields" class="grid"></fieldset>
+            </div>
+          </section>
+          <section id="panel-presets" hidden>
+            <div class="card">
+              <h2 data-t="presets"></h2>
+              <p class="notice" data-t="presetHelp"></p>
+              <div id="presetList" class="grid"></div>
+              <details>
+                <summary data-t="historical"></summary>
+                <p data-t="historicalHelp"></p>
+                <div class="field">
+                  <label for="historicalPreset" data-t="sample"></label
+                  ><select id="historicalPreset"></select>
+                </div>
+                <button
+                  id="applyHistorical"
+                  class="spaced"
+                  data-t="apply"
+                ></button>
+              </details>
+            </div>
+          </section>
+          <section id="panel-simulator" hidden>
+            <div class="card">
+              <h2 data-t="simulator"></h2>
+              <p class="notice" data-t="simHelp"></p>
+              <div id="scenarioFields" class="grid"></div>
+              <details>
+                <summary data-t="assumptions"></summary>
+                <p data-t="assumptionsHelp"></p>
+                <div id="advancedFields" class="grid"></div>
+              </details>
+              <div class="metrics">
+                <div class="metric">
+                  <strong id="gearLimit">—</strong
+                  ><span data-t="gearLimit"></span>
+                </div>
+                <div class="metric">
+                  <strong id="cadence">—</strong><span data-t="cadence"></span>
+                </div>
+                <div class="metric">
+                  <strong id="levelCurrent">—</strong
+                  ><span data-t="levelCurrent"></span>
+                </div>
+              </div>
+              <p id="reality" class="notice"></p>
+            </div>
+            <div class="card">
+              <div class="subhead">
+                <h2 data-t="comparison"></h2>
+                <div class="actions">
+                  <label for="compare" data-t="compareWith"></label
+                  ><select id="compare"></select>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>PAS</th>
+                      <th data-t="profile"></th>
+                      <th data-t="currentA"></th>
+                      <th data-t="electrical"></th>
+                      <th data-t="flat"></th>
+                      <th data-t="climb"></th>
+                      <th data-t="cadenceCol"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="simRows"></tbody>
+                </table>
+              </div>
+              <details>
+                <summary data-t="parameterDiff"></summary>
+                <div id="compareDiff"></div>
+              </details>
+            </div>
+            <div class="card">
+              <h2 data-t="range"></h2>
+              <p class="muted" data-t="rangeHelp"></p>
+              <div id="rangeFields" class="grid"></div>
+              <div class="metrics">
+                <div class="metric">
+                  <strong id="rangeKm">—</strong><span data-t="rangeKm"></span>
+                </div>
+                <div class="metric">
+                  <strong id="whKm">—</strong><span data-t="whKm"></span>
+                </div>
+                <div class="metric">
+                  <strong id="availableWh">—</strong
+                  ><span data-t="availableWh"></span>
+                </div>
+              </div>
+              <p class="muted" data-t="rangeLimit"></p>
+            </div>
+          </section>
+        </div>
+        <aside
+          class="race-hud"
+          id="raceHud"
+          data-running="false"
+          data-terrain="climb"
+          data-valid="true"
+          aria-label="Ride preview"
+        >
+          <div class="hud-heading">
+            <span class="eyebrow" data-t="ridePreview"></span
+            ><span class="hud-chip" data-t="estimateTag"></span>
+          </div>
+          <div class="scene-window">
+            <svg
+              class="ride-scene"
+              viewBox="0 0 480 230"
+              role="img"
+              aria-labelledby="sceneTitle"
+            >
+              <title id="sceneTitle">Electric bike preview</title>
+              <rect width="480" height="230" class="scene-sky" />
+              <path
+                d="M0 140V92h25V73h42V54h38V78h24V104h42V84h34V38h42V63h27V92h34V55h38V32h38V76h44V91h32v49Z"
+                class="scene-mountains"
+              />
+              <path
+                d="M0 162v-35h35v-23h41v23h48v-9h38v21h44v-23h58v26h49v-18h57v-23h46v23h64v38Z"
+                class="scene-hills"
+              />
+              <g class="scene-trees">
+                <path
+                  d="m50 81-26 35h14l-25 34h30v25h13v-25h29l-24-34h14zm354-9-27 36h15l-28 36h33v26h13v-26h31l-27-36h15z"
+                />
+                <path d="m334 104-21 27h12l-18 26h23v20h10v-20h22l-17-26h11z" />
+              </g>
+              <path d="M0 196 480 167v63H0Z" class="scene-dirt" />
+              <path d="M0 199 480 170" class="scene-road" />
+              <g class="track-lines">
+                <path
+                  d="m-60 217 44-3m40-2 44-3m40-2 44-3m40-2 44-3m40-2 44-3m40-2 44-3m40-2 44-3"
+                />
+              </g>
+              <g class="bike-rig">
+                <g transform="translate(139 70)">
+                  <g class="wheel rear-wheel">
+                    <circle cx="35" cy="105" r="36" />
+                    <path d="M35 69v72M-1 105h72m-61-25 50 50m-50 0 50-50" />
+                  </g>
+                  <g class="wheel front-wheel">
+                    <circle cx="172" cy="105" r="36" />
+                    <path d="M172 69v72m-36-36h72m-61-25 50 50m-50 0 50-50" />
+                  </g>
+                  <path
+                    class="bike-frame"
+                    d="m35 105 43-65 29 65H35m43-65 73 4-44 61m44-61 21 61m-99-75 7 15m-17-17h28m53 5 17-4 5 3"
+                  />
+                  <path class="bike-battery" d="m91 56 15 31 9-4-15-30z" />
+                  <circle class="bike-motor" cx="107" cy="105" r="9" />
+                  <path
+                    class="rider-leg"
+                    d="m94 36 34 26-20 38 13 7m-27-71-5 39 21 28"
+                  />
+                  <path class="rider-body" d="m89 34 23-31 33 10-16 29z" />
+                  <path class="rider-arm" d="m136 16 15 22 14-7" />
+                  <path
+                    class="rider-helmet"
+                    d="m117-4 2-14 18-6 18 10-2 17-21 1z"
+                  />
+                  <path class="rider-visor" d="m136-12 20 3-3 8-19-1z" />
+                </g>
+              </g>
+              <path
+                d="M18 16h32v4H22v22h-4m444-26h-32v4h28v22h4M18 207h32v-4H22v-18h-4m444 22h-32v-4h28v-18h4"
+                class="scene-frame"
+              />
+            </svg>
+            <div class="scene-caption">
+              <span id="hudModel">BBS02</span><span id="hudGear">32 / 11 T</span
+              ><span id="hudSlope">8%</span>
+            </div>
+          </div>
+          <div class="terrain-switch">
+            <button
+              data-terrain="flat"
+              aria-pressed="false"
+              data-t="trackFlat"
+            ></button
             ><button
-              id="writeAll"
-              class="primary"
-              disabled
-              data-t="writeAll"
+              data-terrain="climb"
+              aria-pressed="true"
+              data-t="trackClimb"
             ></button>
           </div>
-          <div class="card">
-            <h2 data-t="files"></h2>
-            <p data-t="filesHelp"></p>
-            <p id="source" class="notice"></p>
-            <div class="actions">
-              <button id="import" data-t="import"></button
-              ><button id="export" data-t="export"></button
-              ><input id="importFile" type="file" accept=".el" hidden />
-            </div>
-            <h3 class="spaced" data-t="backup"></h3>
-            <p id="storageStatus" class="muted"></p>
-            <p id="backupInfo" class="muted" data-t="noBackup"></p>
-            <div class="actions">
-              <button id="backupEl" disabled data-t="downloadEl"></button
-              ><button id="backupJson" disabled data-t="downloadRaw"></button
-              ><button id="restore" disabled data-t="restore"></button>
-            </div>
-            <p class="muted" data-t="backupHelp"></p>
-          </div>
-        </div>
-        <details>
-          <summary data-t="log"></summary>
-          <div class="actions spaced">
-            <button id="exportLog" data-t="exportLog"></button
-            ><button id="clearLog" data-t="clearLog"></button>
-          </div>
-          <pre id="log" aria-label="Serial log"></pre>
-        </details>
-      </section>
-      <section id="panel-basic" hidden>
-        <div class="card">
-          <div class="subhead">
-            <h2 data-t="basic"></h2>
-            <button
-              class="write-block"
-              data-block="82"
-              disabled
-              data-t="writeBlock"
-            ></button>
-          </div>
-          <fieldset id="basicFields" class="grid"></fieldset>
-          <h3 class="spaced" data-t="assistTable"></h3>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>PAS</th>
-                  <th data-t="currentPct"></th>
-                  <th data-t="speedPct"></th>
-                  <th data-t="currentA"></th>
-                </tr>
-              </thead>
-              <tbody id="assistRows"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-      <section id="panel-pas" hidden>
-        <div class="card">
-          <div class="subhead">
-            <h2 data-t="pas"></h2>
-            <button
-              class="write-block"
-              data-block="83"
-              disabled
-              data-t="writeBlock"
-            ></button>
-          </div>
-          <p class="notice warning" data-t="stopPolicy"></p>
-          <fieldset id="pasFields" class="grid"></fieldset>
-        </div>
-      </section>
-      <section id="panel-throttle" hidden>
-        <div class="card">
-          <div class="subhead">
-            <h2 data-t="throttle"></h2>
-            <button
-              class="write-block"
-              data-block="84"
-              disabled
-              data-t="writeBlock"
-            ></button>
-          </div>
-          <p class="notice warning" data-t="throttleHelp"></p>
-          <fieldset id="throttleFields" class="grid"></fieldset>
-        </div>
-      </section>
-      <section id="panel-presets" hidden>
-        <div class="card">
-          <h2 data-t="presets"></h2>
-          <p class="notice" data-t="presetHelp"></p>
-          <div id="presetList" class="grid"></div>
-          <details>
-            <summary data-t="historical"></summary>
-            <p data-t="historicalHelp"></p>
-            <div class="field">
-              <label for="historicalPreset" data-t="sample"></label
-              ><select id="historicalPreset"></select>
-            </div>
-            <button id="applyHistorical" class="spaced" data-t="apply"></button>
-          </details>
-        </div>
-      </section>
-      <section id="panel-simulator" hidden>
-        <div class="card">
-          <h2 data-t="simulator"></h2>
-          <p class="notice" data-t="simHelp"></p>
-          <div id="scenarioFields" class="grid"></div>
-          <details>
-            <summary data-t="assumptions"></summary>
-            <p data-t="assumptionsHelp"></p>
-            <div id="advancedFields" class="grid"></div>
-          </details>
-          <div class="metrics">
-            <div class="metric">
-              <strong id="gearLimit">—</strong><span data-t="gearLimit"></span>
-            </div>
-            <div class="metric">
-              <strong id="cadence">—</strong><span data-t="cadence"></span>
-            </div>
-            <div class="metric">
-              <strong id="levelCurrent">—</strong
-              ><span data-t="levelCurrent"></span>
+          <div class="speed-cluster">
+            <svg viewBox="0 0 240 152" aria-hidden="true">
+              <path class="gauge-track" d="M39 131A88 88 0 1 1 201 131" />
+              <path class="gauge-hot" d="M192 49A88 88 0 0 1 201 131" />
+              <path
+                class="gauge-ticks"
+                d="M43 126l9-4m-20-26h10m-5-29 10 4m5-29 8 7m13-28 5 10m22-16 2 10m28-10-2 10m26-2-5 10m24 8-8 7m22 18-10 4m15 25h-10m1 30-9-4"
+              />
+              <g id="hudNeedle" transform="rotate(-115 120 100)">
+                <path class="needle" d="m118 39 2-8 2 8v22h-4Z" />
+              </g>
+              <text x="29" y="146">0</text>
+              <text x="109" y="9">30</text>
+              <text x="196" y="146">60</text>
+            </svg>
+            <div class="speed-value">
+              <strong id="hudSpeed">—</strong><span data-t="speedUnit"></span>
             </div>
           </div>
-          <p id="reality" class="notice"></p>
-        </div>
-        <div class="card">
-          <div class="subhead">
-            <h2 data-t="comparison"></h2>
-            <div class="actions">
-              <label for="compare" data-t="compareWith"></label
-              ><select id="compare"></select>
+          <div class="hud-stats">
+            <div>
+              <span data-t="hudCurrent"></span
+              ><strong><b id="hudCurrent">—</b><small>A</small></strong
+              ><progress
+                id="hudCurrentBar"
+                max="30"
+                value="18"
+                aria-label="Current"
+              ></progress>
+            </div>
+            <div>
+              <span data-t="hudCadence"></span
+              ><strong><b id="hudCadence">—</b><small>RPM</small></strong
+              ><progress
+                id="hudCadenceBar"
+                max="180"
+                value="55"
+                aria-label="Cadence"
+              ></progress>
+            </div>
+            <div>
+              <span data-t="hudRange"></span
+              ><strong
+                ><b id="hudRange">—</b><small data-t="kmUnit"></small></strong
+              ><span class="hud-reserve" data-t="reserveTag"></span>
             </div>
           </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>PAS</th>
-                  <th data-t="profile"></th>
-                  <th data-t="currentA"></th>
-                  <th data-t="electrical"></th>
-                  <th data-t="flat"></th>
-                  <th data-t="climb"></th>
-                  <th data-t="cadenceCol"></th>
-                </tr>
-              </thead>
-              <tbody id="simRows"></tbody>
-            </table>
+          <div class="hud-pas-heading">
+            <span data-t="selectPas"></span><span>00—09</span>
           </div>
-          <details>
-            <summary data-t="parameterDiff"></summary>
-            <div id="compareDiff"></div>
-          </details>
-        </div>
-        <div class="card">
-          <h2 data-t="range"></h2>
-          <p class="muted" data-t="rangeHelp"></p>
-          <div id="rangeFields" class="grid"></div>
-          <div class="metrics">
-            <div class="metric">
-              <strong id="rangeKm">—</strong><span data-t="rangeKm"></span>
-            </div>
-            <div class="metric">
-              <strong id="whKm">—</strong><span data-t="whKm"></span>
-            </div>
-            <div class="metric">
-              <strong id="availableWh">—</strong
-              ><span data-t="availableWh"></span>
-            </div>
-          </div>
-          <p class="muted" data-t="rangeLimit"></p>
-        </div>
-      </section>
+          <div class="hud-pas" id="hudPas"></div>
+          <p class="hud-risk" id="hudRisk" hidden data-t="hudRisk"></p>
+          <button
+            id="previewToggle"
+            class="preview-button"
+            aria-pressed="false"
+          >
+            <span class="play-icon" aria-hidden="true"></span
+            ><span data-t="animatePreview"></span>
+          </button>
+          <p class="hud-disclaimer" data-t="hudDisclaimer"></p>
+        </aside>
+      </div>
+
       <footer class="foot">
-        <span data-t="footer"></span
+        <span class="credit-line"
+          ><span data-t="basedOn"></span>
+          <a href="https://penoff.me/2016/01/13/e-bike-conversion-software/"
+            >Penoff · Stefan Penov</a
+          ><span data-t="footer"></span></span
         ><span
           ><a
             href="https://github.com/xftesht-coder/bbs-flash/blob/main/docs/SAFETY.md"
@@ -298,6 +497,37 @@
         ></span>
       </footer>
     </main>
+    <dialog id="guideDialog" aria-labelledby="guideTitle">
+      <div class="subhead">
+        <div>
+          <p class="eyebrow">BBS / FIELD GUIDE</p>
+          <h2 id="guideTitle" data-t="guide"></h2>
+        </div>
+        <button id="closeGuide" data-t="close"></button>
+      </div>
+      <div class="guide-about" id="guideAbout">
+        <h3 data-t="creditTitle"></h3>
+        <p data-t="creditText"></p>
+        <p data-t="ourPart"></p>
+        <a
+          class="button"
+          href="https://penoff.me/2016/01/13/e-bike-conversion-software/"
+          data-t="penoffSource"
+        ></a>
+        <p class="muted" data-t="guideScope"></p>
+      </div>
+      <div class="field">
+        <label for="guideSelect" data-t="guideSelect"></label
+        ><select id="guideSelect"></select>
+      </div>
+      <div id="guideDetail"></div>
+      <a
+        class="guide-source"
+        href="https://github.com/xftesht-coder/bbs-flash/blob/main/docs/CREDITS.md"
+        data-t="allCredits"
+      ></a>
+    </dialog>
+
     <dialog id="writeDialog" aria-labelledby="dialogTitle">
       <h2 id="dialogTitle" data-t="preview"></h2>
       <p class="notice warning" data-t="previewHelp"></p>
