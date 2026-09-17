@@ -1,6 +1,8 @@
-# BBS Flash 3.2.0 — Race Garage
+# BBS Flash 3.2.1 — Race Garage
 
 [Open the garage](https://xftesht-coder.github.io/bbs-flash/bbs-flash.html) · [Landing](https://xftesht-coder.github.io/bbs-flash/) · [Roadmap](https://github.com/xftesht-coder/bbs-flash/blob/main/ROADMAP.md)
+
+This patch preserves the word spacing in the Russian landing headline when switching language.
 
 A compact indie-racing garage for tuning an electric bike: numbered navigation, a dense PAS table, dark and day themes, a drawn bicycle scene and an instrument panel. Select a PAS level or flat/climb view to inspect the same estimates used by the simulator. The optional animation pauses on a hidden tab and respects reduced-motion preferences.
 
