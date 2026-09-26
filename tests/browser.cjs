@@ -693,7 +693,8 @@ async function toPanel(page, id) {
       const { page, context } = await newPage();
       await mock(page); await ready(page);
       await page.locator("#startBrowse").click();
-      assert.equal(await page.locator("#rideCards article").count(), 7);
+      assert.equal(await page.locator("#rideCards article").count(), 12);
+      assert.equal(await page.locator('[data-filter="all"]').textContent(), "Все 12");
       assert.equal(await page.locator("#sim-ah").inputValue(), "19.2");
       const before = await page.locator("#ALC-1").inputValue();
       await page.locator('[data-ride="economy"]').click();
@@ -701,7 +702,7 @@ async function toPanel(page, id) {
       assert.equal(await page.locator("#ALC-1").inputValue(), before);
       await page.locator("#rideReviewCancel").click();
       assert.equal(await page.locator("#ALC-1").inputValue(), before);
-      for (const id of ["economy","smooth","city","park","trail","forward","speed"]) {
+      for (const id of ["acceleration","climb","technical","touring","training","economy","smooth","city","park","trail","forward","speed"]) {
         await page.locator(`[data-ride="${id}"]`).click();
         await page.locator("#ridePreview").click();
         await page.locator("#rideReviewApply").click();
@@ -715,6 +716,17 @@ async function toPanel(page, id) {
       await page.locator('[data-filter="calm"]').click();
       assert.equal(await page.locator("#rideCards article").count(), 3);
       await page.locator('[data-filter="all"]').click();
+      await page.locator('[data-filter="active"]').click();
+      assert.equal(await page.locator("#rideCards article").count(), 6);
+      await page.locator('[data-filter="daily"]').click();
+      assert.equal(await page.locator("#rideCards article").count(), 3);
+      await page.locator('[data-filter="all"]').click();
+      await page.locator("#language").selectOption("en");
+      assert.equal(await page.locator('[data-filter="all"]').textContent(), "All 12");
+      await page.locator('[data-ride="acceleration"]').click();
+      assert.equal(await page.locator("#rideDetail h3").textContent(), "Come on! Acceleration");
+      await page.locator("#language").selectOption("ru");
+      assert.equal(await page.locator("#rideDetail h3").textContent(), "Камон! Ускорение");
       assert.deepEqual(await page.evaluate(() => __motor.sent), []);
       await page.screenshot({path: path.join(output, "ride-garage-desktop.png"), fullPage: true});
       await page.setViewportSize({width:390,height:844});

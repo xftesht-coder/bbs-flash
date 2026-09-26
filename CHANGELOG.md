@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.4.0 — 2026-09-26 · Specialist rides
+
+- Expand the catalogue to 12 bilingual profiles: acceleration, sustained climbing, technical trails, long-distance touring and rider workouts join the original seven.
+- Explain the concrete use case, difference from similar tunes and limitations of each new profile. Preserve existing controller eligibility, hardware fields, global current and review-before-apply behavior.
+- Derive displayed catalogue counts from profile data; update the landing page, comparison choices and release verification.
+- Extend current-ceiling/roundtrip tests to all 12 profiles, verify distinct tuning intent, and exercise all profiles plus category counts and new RU/EN details in the browser.
+
 ## 3.3.0 — 2026-09-26 · Ride Garage
 
 - Seven bilingual BBS02 ride cards with intended feel, tradeoffs, explicit untested status, qualitative character meters and exact numeric previews. Preserve global current and hardware fields; cap assistance through PAS percentages.

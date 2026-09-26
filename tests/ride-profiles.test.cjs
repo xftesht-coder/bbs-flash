@@ -6,8 +6,8 @@ const C = require("../src/core.js");
 const R = require("../src/ride-profiles.js");
 const { profile } = require("./helpers.cjs");
 
-test("all seven ride modes preserve hardware, PAS0 and throttle, and respect current ceilings", () => {
-  assert.equal(R.profiles.length, 7);
+test("all twelve ride modes preserve hardware, PAS0 and throttle, and respect current ceilings", () => {
+  assert.equal(R.profiles.length, 12);
   for (const amps of [1, 12, 18, 25, 30]) {
     const before = structuredClone(profile);
     before.bas.LC = amps; before.bas.LBP = 40; before.bas.WD = 4;
@@ -31,6 +31,30 @@ test("all seven ride modes preserve hardware, PAS0 and throttle, and respect cur
       assert.deepEqual(C.fromEl(C.toEl(p)), p);
     }
     assert.deepEqual(before, original, "input must remain immutable");
+  }
+});
+
+test("specialist modes offer distinct assistance without promising extra global current", () => {
+  const base = structuredClone(profile); base.bas.LC = 25;
+  const modes = Object.fromEntries(R.profiles.map(p => [p.id, R.apply(base, p.id)]));
+  const signatures = new Set(Object.values(modes).map(p => C.toEl(p)));
+  assert.equal(signatures.size, R.profiles.length, "no renamed duplicate tunes");
+  const peak = p => p.bas.LC * p.bas.ALC[9] / 100;
+  assert.equal(peak(modes.acceleration), 22);
+  assert.ok(modes.acceleration.pas.KC < modes.forward.pas.KC);
+  assert.equal(modes.acceleration.pas.SDN, modes.forward.pas.SDN);
+  assert.equal(modes.acceleration.pas.SSM, modes.forward.pas.SSM);
+  assert.ok(peak(modes.climb) < peak(modes.trail));
+  assert.ok(modes.climb.pas.KC > modes.trail.pas.KC);
+  assert.ok(modes.technical.bas.ALC[1] < modes.trail.bas.ALC[1]);
+  assert.ok(modes.technical.pas.SDN < modes.trail.pas.SDN);
+  assert.ok(modes.technical.pas.SSM > modes.trail.pas.SSM);
+  assert.ok(peak(modes.touring) > peak(modes.economy));
+  assert.ok(peak(modes.training) < peak(modes.economy));
+  assert.ok(modes.training.pas.KC < modes.economy.pas.KC);
+  for (const id of ["climb", "touring", "training"]) {
+    assert.deepEqual(modes[id].bas.ALBP.slice(1), Array(9).fill(100));
+    assert.equal(modes[id].pas.SL, base.pas.SL);
   }
 });
 

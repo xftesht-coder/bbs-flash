@@ -7,9 +7,9 @@ globalThis.BBSRideGarage = (() => {
   let pending = null, saved = [], backups = [], external = null, storage = false, lastMessage = null, opener = null;
   const words = {
     rides: ["ВЫБЕРИ ХАРАКТЕР ПОЕЗДКИ", "CHOOSE YOUR RIDE"],
-    title: ["Семь профилей. Твой BBS02.", "Seven profiles. Your BBS02."],
+    title: ["{count} профилей. Твой BBS02.", "{count} profiles. Your BBS02."],
     intro: ["Сначала посмотри, что изменится. Затем примени к черновику. Приборка показывает текущий черновик. В мотор ничего не отправляется автоматически.", "Preview the changes, then apply to a draft. The dashboard shows the current draft. Nothing is sent to the motor automatically."],
-    all: ["Все 7", "All 7"], calm: ["Спокойно", "Relaxed"], daily: ["На каждый день", "Everyday"], active: ["Активно", "Active"],
+    all: ["Все {count}", "All {count}"], calm: ["Спокойно", "Relaxed"], daily: ["На каждый день", "Everyday"], active: ["Активно", "Active"],
     learn: ["Разобрать профиль", "Explore profile"],
     experiment: ["Стартовый шаблон · без проверки на моторе", "Starting point · not motor-tested"],
     effect: ["Как задумано", "Intended feel"], compromise: ["Что учесть", "Tradeoff"],
@@ -57,7 +57,7 @@ globalThis.BBSRideGarage = (() => {
     details: ["Описание профиля поездки", "Ride profile details"],
     archive: ["Скачать весь гараж JSON", "Download full garage JSON"],
   };
-  const t = (k) => words[k][api.lang() === "en" ? 1 : 0];
+  const t = (k) => words[k][api.lang() === "en" ? 1 : 0].replace("{count}", R.profiles.length);
   const local = (arr) => arr[api.lang() === "en" ? 1 : 0];
   const el = (tag, text, cls) => {
     const n = document.createElement(tag);
@@ -196,6 +196,7 @@ globalThis.BBSRideGarage = (() => {
     if (locale !== api.lang()) {
       locale = api.lang();
       document.querySelectorAll("[data-g]").forEach((n) => n.textContent = t(n.dataset.g));
+      document.querySelector(".ride-hero-number").textContent = String(R.profiles.length).padStart(2, "0");
       $("garageName").placeholder = t("placeholder");
       $("rideFilters").setAttribute("aria-label", t("categories"));
       $("rideDetail").setAttribute("aria-label", t("details"));
