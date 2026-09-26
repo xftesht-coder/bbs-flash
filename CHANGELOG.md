@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.3.0 — 2026-09-26 · Ride Garage
+
+- Seven bilingual BBS02 ride cards with intended feel, tradeoffs, explicit untested status, qualitative character meters and exact numeric previews. Preserve global current and hardware fields; cap assistance through PAS percentages.
+- Start paths for exploring profiles, opening .el and connecting; owner-supplied Roscoe kit with 19.2 Ah capacity and clearly labeled calculation assumptions.
+- Named local draft snapshots and notes, previewed loading, one-step undo, .el downloads, full controller backup history and raw JSON export. IndexedDB v1 → v2 migration preserves existing data.
+- PAS current comparison graph and a second user-supplied .el for A/B comparison without mutating the draft.
+- Real Penoff.el archive fixture, profile current/field-preservation tests, browser coverage for preview/cancel/apply, persistence, storage migration, file comparison and no serial traffic from profile browsing.
+- Added profile rationale and a concrete bench/calibration protocol. Physical motor validation and calibrated prediction accuracy remain outstanding; experimental write eligibility is unchanged.
+
 ## 3.2.1 — 2026-09-17
 
 - Preserve the space between the two Russian landing headline sentences when initializing or switching language. Race Garage behavior and safety policy are unchanged.

@@ -4,6 +4,11 @@
   let lang = "ru",
     dark = true;
   const english = {
+    rideOpen: "Choose a ride profile →",
+    rideEyebrow: "NEW · BBS02 750 W GARAGE",
+    rideTitle: "From a relaxed cruise to Full ahead",
+    rideText: "Seven ride characters: economy, super smooth, city, park, trail, energetic pickup and a shared speed ceiling across PAS levels. Each includes an explanation, tradeoffs and an exact preview before applying.",
+    rideLocal: "Save your own variants with notes, compare .el files and revisit controller backups. Everything stays in this browser. Profiles are starting points for testing, not tunes verified on your motor.",
     creditsTitle: "Built on BafangConfigTool",
     creditsText:
       "BBS Flash builds on BafangConfigTool's parameters, .el format and BBS UART behavior. Stefan Penov (Penoff) improved the original Bafang application; his application, source code and guide were the starting point for our browser version.",

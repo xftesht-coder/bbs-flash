@@ -1,4 +1,8 @@
-# Verification of 3.2.0
+# Verification of 3.3.0
+
+Additional coverage: seven ride profiles preserve hardware/PAS0/throttle fields and current ceilings at 1/12/18/25/30 A; switching economy → full ahead; actual supplied Penoff.el indices and roundtrip; browser preview/cancel/apply/undo, category filters, no profile-driven UART commands, local named drafts and escaping, downloads, read-only file comparison, rejected malformed comparison and IndexedDB v1 migration with existing backups/preferences.
+
+Profile meters describe design intent, not measured tuning quality. Default battery capacity is 19.2 Ah as supplied by the owner. No physical qualification was performed in this release.
 
 Baseline audited: `8e0495904e566757f40a52427861c5d3990dc677`. Tests do not access a physical serial port.
 

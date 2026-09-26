@@ -16,15 +16,16 @@
     };
     const timer = setTimeout(() => finish(null), 4000);
     try {
-      request = indexedDB.open("bbsflash-release", 1);
+      request = indexedDB.open("bbsflash-release", 2);
     } catch {
       finish(null);
       return;
     }
     request.onupgradeneeded = () => {
       const db = request.result;
-      db.createObjectStore("prefs");
-      db.createObjectStore("backups", { keyPath: "id" });
+      if (!db.objectStoreNames.contains("prefs")) db.createObjectStore("prefs");
+      if (!db.objectStoreNames.contains("backups")) db.createObjectStore("backups", { keyPath: "id" });
+      if (!db.objectStoreNames.contains("profiles")) db.createObjectStore("profiles", { keyPath: "id" });
     };
     request.onsuccess = () => {
       const db = request.result;
@@ -67,6 +68,18 @@
     get,
     put,
     saveBackup,
+    async list(store) {
+      if (!["profiles", "backups"].includes(store)) throw new Error("STORE");
+      const items = await transaction(store, "readonly", (s) => s.getAll());
+      return items.sort((a, b) => b.at.localeCompare(a.at));
+    },
+    async saveProfile(item) {
+      root.BBSCore.validate(item.profile);
+      await put("profiles", item);
+      const saved = await get("profiles", item.id);
+      if (!root.BBSCore.eq(item, saved)) throw new Error("STORAGE");
+      return saved;
+    },
     async latest() {
       const id = await get("prefs", "latestBackup");
       return id ? get("backups", id) : null;
