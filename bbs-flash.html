@@ -11,15 +11,18 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
     />
-    <title>BBS Flash 3.2.1 · Configurator</title>
+    <title>BBS Flash 3.3.0 · Configurator</title>
     <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./src/styles.css" />
     <link rel="stylesheet" href="./src/garage.css" />
+    <link rel="stylesheet" href="./src/ride-garage.css" />
     <script defer src="./src/core.js"></script>
     <script defer src="./src/storage.js"></script>
     <script defer src="./src/presets.js"></script>
     <script defer src="./src/guide.js"></script>
     <script defer src="./src/dash.js"></script>
+    <script defer src="./src/ride-profiles.js"></script>
+    <script defer src="./src/ride-garage.js"></script>
     <script defer src="./src/app.js"></script>
   </head>
   <body class="garage" data-active-panel="connection">
@@ -29,7 +32,7 @@
           ><span class="brand-stripes" aria-hidden="true"></span>BBS<span
             class="brand-slash"
             >//</span
-          >FLASH<span class="version">3.2.1</span></a
+          >FLASH<span class="version">3.3.0</span></a
         >
         <div class="tools">
           <button
@@ -64,6 +67,14 @@
         </div>
       </div>
       <div class="notice warning race-notice" data-t="experimental"></div>
+      <section class="garage-start" aria-labelledby="startTitle">
+        <h2 id="startTitle" data-g="welcome"></h2>
+        <div class="start-paths">
+          <button id="startBrowse" data-g="browse" class="primary" data-editable></button>
+          <button id="startImport" data-g="open" data-editable></button>
+          <button id="startConnect" data-g="connect" data-editable></button>
+        </div>
+      </section>
       <div class="garage-workspace">
         <nav class="tabs" aria-label="Sections" id="tabs">
           <button
@@ -228,6 +239,35 @@
             </div>
           </section>
           <section id="panel-presets" hidden>
+            <div class="ride-hero">
+              <div><p class="eyebrow" data-g="rides"></p><h2 data-g="title"></h2><p data-g="intro"></p></div>
+              <span class="ride-hero-number" aria-hidden="true">07</span>
+            </div>
+            <div class="bike-card">
+              <span class="ride-kicker" data-g="bike"></span><h3 data-g="bikeDetails"></h3><p data-g="kit"></p>
+              <details><summary data-t="assumptions"></summary><p data-g="assumptions"></p><button id="rideSetup" data-g="setup" data-editable></button></details>
+            </div>
+            <div id="rideFilters" class="ride-filters" role="group" aria-label="Ride categories">
+              <button data-filter="all" aria-pressed="true" data-g="all" data-editable></button>
+              <button data-filter="calm" aria-pressed="false" data-g="calm" data-editable></button>
+              <button data-filter="daily" aria-pressed="false" data-g="daily" data-editable></button>
+              <button data-filter="active" aria-pressed="false" data-g="active" data-editable></button>
+            </div>
+            <div id="rideCards" class="ride-cards"></div>
+            <p class="muted ride-ratings" data-g="ratings"></p>
+            <section id="rideDetail" class="ride-detail" tabindex="-1" aria-label="Ride profile details"></section>
+            <p id="garageMessage" role="status" aria-live="polite"></p>
+            <button id="garageUndo" data-g="undo" disabled></button>
+            <section class="card garage-library" aria-labelledby="garageLibraryTitle">
+              <h3 id="garageLibraryTitle" data-g="library"></h3><p data-g="local" class="muted"></p>
+              <label for="garageName" data-g="name"></label><input id="garageName" maxlength="80" data-editable />
+              <label for="garageNote" data-g="note"></label><textarea id="garageNote" maxlength="500" rows="2" data-editable></textarea>
+              <button id="garageSave" data-g="save" class="primary" disabled></button>
+              <button id="garageArchive" data-g="archive" disabled></button>
+              <div id="garageSaved"></div>
+              <details><summary data-g="backups"></summary><div id="garageBackups"></div></details>
+            </section>
+            <details class="legacy-templates"><summary data-t="historical"></summary>
             <div class="card">
               <h2 data-t="presets"></h2>
               <p class="notice" data-t="presetHelp"></p>
@@ -246,6 +286,7 @@
                 ></button>
               </details>
             </div>
+            </details>
           </section>
           <section id="panel-simulator" hidden>
             <div class="card">
@@ -278,8 +319,12 @@
                 <div class="actions">
                   <label for="compare" data-t="compareWith"></label
                   ><select id="compare"></select>
+                  <button id="compareFileButton" data-g="fileCompare" data-editable></button>
+                  <input id="compareFile" type="file" accept=".el" hidden />
                 </div>
               </div>
+              <p class="muted" data-g="compareHelp"></p>
+              <div id="comparisonChart"></div>
               <div class="table-wrap">
                 <table>
                   <thead>
@@ -528,6 +573,16 @@
       ></a>
     </dialog>
 
+    <dialog id="rideReviewDialog" aria-labelledby="rideReviewTitle">
+      <p class="eyebrow" data-g="delta"></p>
+      <h2 id="rideReviewTitle"></h2>
+      <p class="notice" data-g="draftOnly"></p>
+      <div id="rideReviewDiff" class="table-wrap"></div>
+      <div class="actions spaced">
+        <button id="rideReviewCancel" data-g="cancel"></button>
+        <button id="rideReviewApply" data-g="apply" class="primary" data-editable></button>
+      </div>
+    </dialog>
     <dialog id="writeDialog" aria-labelledby="dialogTitle">
       <h2 id="dialogTitle" data-t="preview"></h2>
       <p class="notice warning" data-t="previewHelp"></p>

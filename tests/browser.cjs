@@ -425,6 +425,7 @@ async function toPanel(page, id) {
         await toPanel(page, "throttle");
         await page.locator("#thr-EV").fill("42");
         await toPanel(page, "presets");
+        await page.locator(".legacy-templates > summary").click();
         for (const id of ["eco", "balanced", "torque"]) {
           await page.locator(`[data-preset=${id}]`).click();
           assert.equal(await page.locator("#bas-LBP").inputValue(), "40");
@@ -688,6 +689,114 @@ async function toPanel(page, id) {
         await context.close();
       },
     );
+    await check("ride cards preview before apply, respect limits, undo, filters and never send serial commands", async () => {
+      const { page, context } = await newPage();
+      await mock(page); await ready(page);
+      await page.locator("#startBrowse").click();
+      assert.equal(await page.locator("#rideCards article").count(), 7);
+      assert.equal(await page.locator("#sim-ah").inputValue(), "19.2");
+      const before = await page.locator("#ALC-1").inputValue();
+      await page.locator('[data-ride="economy"]').click();
+      await page.locator("#ridePreview").click();
+      assert.equal(await page.locator("#ALC-1").inputValue(), before);
+      await page.locator("#rideReviewCancel").click();
+      assert.equal(await page.locator("#ALC-1").inputValue(), before);
+      for (const id of ["economy","smooth","city","park","trail","forward","speed"]) {
+        await page.locator(`[data-ride="${id}"]`).click();
+        await page.locator("#ridePreview").click();
+        await page.locator("#rideReviewApply").click();
+        assert.equal(await page.locator("#bas-LC").inputValue(), "18");
+        assert.equal(await page.locator("#thr-EV").inputValue(), "35");
+      }
+      assert.equal(await page.locator("#ALBP-1").inputValue(), "100");
+      await page.locator("#garageUndo").click();
+      assert.equal(await page.locator("#ALBP-1").inputValue(), "65");
+      assert.equal(await page.locator("#garageUndo").isDisabled(), true);
+      await page.locator('[data-filter="calm"]').click();
+      assert.equal(await page.locator("#rideCards article").count(), 3);
+      await page.locator('[data-filter="all"]').click();
+      assert.deepEqual(await page.evaluate(() => __motor.sent), []);
+      await page.screenshot({path: path.join(output, "ride-garage-desktop.png"), fullPage: true});
+      await page.setViewportSize({width:390,height:844});
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1), true);
+      await page.screenshot({path: path.join(output, "ride-garage-mobile.png"), fullPage: true});
+      await context.close();
+    });
+    await check("named drafts persist across reload, are escaped, download and load through review", async () => {
+      const { page, context } = await newPage(); await ready(page);
+      await toPanel(page,"presets");
+      await page.waitForFunction(() => !document.getElementById("garageSave").disabled);
+      await page.locator("#garageName").fill("<b>Roscoe economy</b>");
+      await page.locator("#garageNote").fill("48 V / 19.2 Ah · test ride");
+      await page.locator("#garageSave").click();
+      await page.waitForFunction(() => document.querySelectorAll("#garageSaved article").length === 1);
+      assert.equal(await page.locator("#garageSaved b").count(), 0);
+      const downloadPromise = page.waitForEvent("download");
+      await page.locator("#garageSaved").getByRole("button", {name:"Скачать .el",exact:true}).click();
+      const downloaded = await downloadPromise;
+      assert.match(fs.readFileSync(await downloaded.path(),"utf8"), /\[Basic\]/);
+      const archivePromise = page.waitForEvent("download");
+      await page.locator("#garageArchive").click();
+      const archiveDownload = await archivePromise;
+      const archive = JSON.parse(fs.readFileSync(await archiveDownload.path(),"utf8"));
+      assert.equal(archive.format,"bbs-flash-garage");
+      assert.equal(archive.profiles.length,1);
+      assert.equal(archive.profiles[0].name,"<b>Roscoe economy</b>");
+      await page.reload(); await page.waitForFunction(() => document.querySelectorAll("#garageSaved article").length === 1);
+      await toPanel(page,"basic"); await page.locator("#bas-LC").fill("14");
+      await toPanel(page,"presets");
+      await page.locator("#garageSaved").getByRole("button", {name:"Сравнить и загрузить",exact:true}).click();
+      assert.equal(await page.locator("#bas-LC").inputValue(),"14");
+      await page.locator("#rideReviewApply").click();
+      assert.equal(await page.locator("#bas-LC").inputValue(),"18");
+      assert.match(await page.locator("#source").textContent(), /черновик из гаража/);
+      assert.equal(await page.locator("#writeAll").isDisabled(),true);
+      await context.close();
+    });
+    await check("compare a supplied Penoff file without changing the draft; malformed file leaves comparison intact", async () => {
+      const { page, context } = await newPage(); await ready(page);
+      await toPanel(page,"simulator");
+      await page.locator("#compareFile").setInputFiles(path.join(__dirname,"fixtures/penoff-supplied.el"));
+      await page.waitForFunction(() => document.getElementById("compare").value === "my-file");
+      assert.equal(await page.locator("#bas-LC").inputValue(),"18");
+      const comparison = await page.locator("#simRows").textContent();
+      assert.match(await page.locator("#compareDiff").textContent(), /25/);
+      await page.locator("#compareFile").setInputFiles({name:"broken.el",mimeType:"text/plain",buffer:Buffer.from("[Basic]\nLC=99")});
+      await page.waitForFunction(() => document.getElementById("compareFile").value === "");
+      assert.equal(await page.locator("#simRows").textContent(),comparison);
+      assert.equal(await page.locator("#bas-LC").inputValue(),"18");
+      await context.close();
+    });
+    await check("IndexedDB v1 upgrade preserves backups/preferences and exposes complete backup history", async () => {
+      const { page, context } = await newPage();
+      await page.goto(base+"/");
+      const seed = {id:"legacy-1",sessionId:"old",at:"2026-09-17T00:00:00Z",device:{manufacturer:"HZXT",model:"SZZ9",fw:"2.0.1.1",hw:"1.0",nominalCode:2,maxCurrent:25},profile:require("./helpers.cjs").profile,raw:frames};
+      await page.evaluate(async (seed) => {
+        await new Promise((resolve,reject) => {
+          const req = indexedDB.open("bbsflash-release",1);
+          req.onupgradeneeded = () => {req.result.createObjectStore("prefs");req.result.createObjectStore("backups",{keyPath:"id"});};
+          req.onerror = () => reject(req.error);
+          req.onsuccess = () => {
+            const db=req.result, tx=db.transaction(["prefs","backups"],"readwrite");
+            tx.objectStore("backups").put(seed);
+            tx.objectStore("prefs").put(seed.id,"latestBackup");
+            tx.objectStore("prefs").put("light","theme");
+            tx.oncomplete=()=>{db.close();resolve();}; tx.onerror=()=>reject(tx.error);
+          };
+        });
+      },seed);
+      await ready(page);
+      await page.waitForFunction(() => document.querySelectorAll("#garageBackups article").length === 1);
+      assert.equal(await page.locator("html").getAttribute("data-theme"),"light");
+      assert.deepEqual(await page.evaluate(async()=> (await BBSStore.latest()).profile),seed.profile);
+      assert.equal(await page.evaluate(async()=> (await BBSStore.ready).version),2);
+      await toPanel(page,"presets");
+      await page.locator(".garage-library details > summary").click();
+      await page.locator("#garageBackups").getByRole("button",{name:"Сравнить и загрузить",exact:true}).click();
+      assert.equal(await page.locator("#rideReviewDialog").isVisible(),true);
+      await page.locator("#rideReviewCancel").click();
+      await context.close();
+    });
     assert.deepEqual(errors, [], "Browser console/runtime errors");
     console.log(
       `PASS ${results.length} browser scenarios; no console/runtime errors`,

@@ -19,14 +19,14 @@
     ],
     roadmap: ["План развития ↗", "Roadmap ↗"],
     experimental: [
-      "Версия 3.2.1. Запись — экспериментальная, без проверки на физическом моторе. Доступна только для HZXT SZZ9 / FW 2.0.1.1 / 48 V после явного включения. Другие контроллеры — только чтение.",
-      "Version 3.2.1. Writes are experimental and have not been tested on a physical motor. Only HZXT SZZ9 / FW 2.0.1.1 / 48 V can be enabled explicitly. Other controllers are read-only.",
+      "Версия 3.3.0. Запись — экспериментальная, без проверки на физическом моторе. Доступна только для HZXT SZZ9 / FW 2.0.1.1 / 48 V после явного включения. Другие контроллеры — только чтение.",
+      "Version 3.3.0. Writes are experimental and have not been tested on a physical motor. Only HZXT SZZ9 / FW 2.0.1.1 / 48 V can be enabled explicitly. Other controllers are read-only.",
     ],
     connection: ["Подключение", "Connection"],
     basic: ["Основные", "Basic"],
     pas: ["Помощь педалей", "Pedal assist"],
     throttle: ["Ручка газа", "Throttle"],
-    presets: ["Пресеты", "Presets"],
+    presets: ["Профили поездки", "Ride profiles"],
     simulator: ["Симулятор", "Simulator"],
     connectHelp: [
       "Нужен совместимый кабель программирования Bafang UART и настольный Chrome или Edge. Перед подключением проверь распиновку своего контроллера. CAN не поддерживается.",
@@ -109,6 +109,7 @@
       "Источник: черновик с применённым шаблоном.",
       "Source: draft with a template applied.",
     ],
+    sourceLibrary: ["Источник: сохранённый черновик из гаража; не чтение контроллера.", "Source: saved garage draft; not a controller read."],
     sourceBackup: [
       "Источник: сохранённая копия. Проверь параметры батареи, колеса и газа перед восстановлением.",
       "Source: saved backup. Check battery, wheel and throttle settings before restoring.",
@@ -199,7 +200,7 @@
       "Reality Check: high current at low cadence. Reduce load and choose a lower gear. This flags operating conditions; it does not measure heat.",
     ],
     noRisk: [
-      "Reality Check: в выбранной строке нет сочетания ≥22 A и <60 об/мин. Это не гарантия отсутствия перегрева.",
+      "Проверка нагрузки: в выбранной строке нет сочетания ≥22 A и <60 об/мин. Это не гарантия отсутствия перегрева.",
       "Reality Check: the selected row does not combine ≥22 A with <60 rpm. This does not guarantee freedom from overheating.",
     ],
     modelLimit: [
@@ -395,13 +396,13 @@
     "pas.DA": ["Назначенный уровень PAS", "Designated assist"],
     "pas.SL": ["Лимит скорости, км/ч", "Speed limit, km/h"],
     "pas.SC": ["Стартовый ток, %", "Start current, %"],
-    "pas.SSM": ["Slow-start, код 1–8", "Slow-start code, 1–8"],
+    "pas.SSM": ["Плавность старта, код 1–8", "Slow-start code, 1–8"],
     "pas.SDN": ["Импульсы до старта", "Start degree signals"],
-    "pas.WM": ["Work mode, код", "Work mode code"],
-    "pas.TS": ["Time of Stop, ×10 мс", "Time of Stop, ×10 ms"],
-    "pas.CD": ["Current decay, код", "Current decay code"],
-    "pas.SD": ["Stop decay, ×10 мс", "Stop decay, ×10 ms"],
-    "pas.KC": ["Keep current, %", "Keep current, %"],
+    "pas.WM": ["Режим работы, код", "Work mode code"],
+    "pas.TS": ["Задержка отключения, ×10 мс", "Time of Stop, ×10 ms"],
+    "pas.CD": ["Снижение тока, код", "Current decay code"],
+    "pas.SD": ["Время снижения тяги, ×10 мс", "Stop decay, ×10 ms"],
+    "pas.KC": ["Остаточная помощь, %", "Keep current, %"],
     "thr.SV": ["Начальное напряжение, ×0.1 V", "Start voltage, ×0.1 V"],
     "thr.EV": ["Конечное напряжение, ×0.1 V", "End voltage, ×0.1 V"],
     "thr.MODE": ["Режим ручки газа", "Throttle mode"],
@@ -588,7 +589,7 @@
     ["cda", 0.2, 1.5, 0.65, 0.01],
   ];
   const rangeFields = [
-    ["ah", 0, 100, 10, 0.1],
+    ["ah", 0, 100, 19.2, 0.1],
     ["hillShare", 0, 100, 35, 1],
     ["rangeGrade", 0, 25, 8, 0.5],
   ];
@@ -950,7 +951,8 @@
       const profile = pull(),
         p = getScenario();
       state = profile;
-      const other = C.ridingPreset(profile, presets[$("compare").value]);
+      const other = BBSRideGarage.comparison(profile, $("compare").value) || C.ridingPreset(profile, presets[$("compare").value]);
+      $("comparisonChart").replaceChildren(BBSRideGarage.chart(profile, other));
       const rows = C.profileRows(profile, p),
         comparison = C.profileRows(other, p),
         selected = rows[p.level];
@@ -1020,10 +1022,12 @@
       ])
         $(id).textContent = "—";
       $("simRows").replaceChildren();
+      $("comparisonChart").replaceChildren();
       $("reality").textContent =
         t(error.code || "invalid") + " · " + t(error.detail || "");
       $("reality").className = "notice warning";
     }
+    BBSRideGarage.sync();
   }
   function applyPreset(preset) {
     if (busy) return;
@@ -1052,6 +1056,7 @@
   async function saveBackup(snapshot) {
     try {
       backup = await S.saveBackup(snapshot);
+      await BBSRideGarage.reloadLibrary();
       refresh();
     } catch {
       storageReady = false;
@@ -1158,6 +1163,7 @@
     run(async () => {
       if (!connected()) throw new C.Fault("DISCONNECTED");
       const snap = await session.exclusive(() => session.readAll());
+      BBSRideGarage.resetUndo();
       loadedSession = session.id;
       push(snap.profile, "sourceRead");
       renderCalculations();
@@ -1203,6 +1209,7 @@
         if (!file) return;
         if (file.size > 65536) throw new C.Fault("PROFILE");
         const imported = C.fromEl(await file.text());
+        BBSRideGarage.resetUndo();
         push(imported, "sourceImport");
         renderCalculations();
         setStatus("loaded");
@@ -1281,7 +1288,14 @@
     .forEach(
       (button) => (button.onclick = () => openGuide(button.dataset.help)),
     );
+  BBSRideGarage.init({
+    lang: () => lang, busy: () => busy, source: () => source,
+    pull, push, calculate: renderCalculations, diffTable: changesTable,
+    download, error: report,
+    panel: (name) => document.querySelector(`[data-panel="${name}"]`).click(),
+  });
   BBSDash.init(renderCalculations);
+  if (location.hash === "#presets") document.querySelector('[data-panel="presets"]').click();
   applyLanguage();
   $("storageStatus").textContent = t("storageWaiting");
   (async () => {

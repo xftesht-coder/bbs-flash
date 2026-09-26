@@ -1,13 +1,13 @@
-# BBS Flash 3.2.1 — Race Garage
+# BBS Flash 3.3.0 — Ride Garage
 
-[Open the garage](https://xftesht-coder.github.io/bbs-flash/bbs-flash.html) · [Landing](https://xftesht-coder.github.io/bbs-flash/) · [Roadmap](https://github.com/xftesht-coder/bbs-flash/blob/main/ROADMAP.md)
+[Открыть профили](https://xftesht-coder.github.io/bbs-flash/bbs-flash.html#presets)
 
-This patch preserves the word spacing in the Russian landing headline when switching language.
+Семь профилей поездки для BBS02 750 Вт: экономия, суперплавный, город, парк, бездорожье, «Полный вперёд» и «Максимальная скорость». Русские и английские карточки показывают задуманный характер, компромиссы, график тока по PAS и точные изменения до применения к черновику.
 
-A compact indie-racing garage for tuning an electric bike: numbered navigation, a dense PAS table, dark and day themes, a drawn bicycle scene and an instrument panel. Select a PAS level or flat/climb view to inspect the same estimates used by the simulator. The optional animation pauses on a hidden tab and respects reduced-motion preferences.
+Добавлены стартовые действия, сохранение собственных профилей с заметками, загрузка через сравнение, отмена последнего применения, полная история резервных копий контроллера и сравнение со вторым собственным .el. Миграция IndexedDB сохраняет прежние копии и настройки. Пример учитывает комплект владельца Roscoe / BBS02 / 48 В / 19,2 А·ч / 32T / 860C; неизвестные параметры расчёта явно помечены как допущения.
 
-Every controller field now has a RU/EN guide explaining its purpose, effects and limits. **BBS Flash builds on BafangConfigTool, improved by Stefan Penov (Penoff).** His application, source and manual are the foundation; our contribution is the browser interface, estimates, comparisons and validation/backup workflow. See [Penoff’s original project](https://penoff.me/2016/01/13/e-bike-conversion-software/) and [credits](https://github.com/xftesht-coder/bbs-flash/blob/main/docs/CREDITS.md).
+Настройки опираются на значения и объяснения BafangConfigTool / Stefan Penov (Penoff). Новые комбинации — авторские отправные точки, **не оптимизированные на стенде и не проверенные на физическом моторе**. Шкалы характера не являются измерениями. Общий ток и параметры батареи, датчиков, ручки газа автоматически не подменяются. Общая таблица PAS может влиять на газ, если тот использует соответствующий уровень.
 
-The 3.1.0 write safeguards are retained: controller-derived limits, strict frames/checksums, durable verified backup, change preview, stale-data protection and readback. The HUD is an estimate, not telemetry or motor control. **Physical hardware qualification is outstanding:** experimental writes stay off by default and limited to the recognized HZXT SZZ9 / FW 2.0.1.1 / 48 V signature. Unknown controllers remain read-only.
+Сохраняются экспериментальный допуск только известной SZZ9-сигнатуры, свежая проверенная копия перед записью, подтверждение дельты и повторное чтение. Просмотр и применение карточек меняют только редактор. Название «Максимальная скорость» не снимает общий предел скорости; «Максимальная экономия» не обещает определённый прирост дальности.
 
-Validation covers protocol/codec/physics regression tests, synthetic Web Serial write paths, the new guide and HUD, responsive RU/EN layouts, storage failures and deployed file hashes/browser behavior. Next: hardware fixtures and read/write/restore qualification, calibrated estimates and backup history. Details in the roadmap.
+Проверки: протокол и все пути записи с имитацией порта, реальные индексы файла Penoff из архива владельца, ограничение токов всех семи профилей, RU/EN, мобильная раскладка, сохранение/загрузка, сравнение файлов, миграция старых копий и отсутствие команд мотору при работе с карточками. Аппаратный этап и калибровка описаны в [плане испытаний](https://github.com/xftesht-coder/bbs-flash/blob/main/docs/BENCH-VALIDATION.md).

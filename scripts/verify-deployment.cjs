@@ -20,6 +20,9 @@ const files = [
   "src/garage.css",
   "src/guide.js",
   "src/dash.js",
+  "src/ride-profiles.js",
+  "src/ride-garage.js",
+  "src/ride-garage.css",
   "assets/icon.svg",
   "assets/RussoOne-Regular.ttf",
   "assets/OFL-RussoOne.txt",
@@ -111,6 +114,12 @@ const attempts = Number(process.env.BBS_DEPLOY_ATTEMPTS || 24),
     if (!(await page.locator("#guideAbout").innerText()).includes("Penoff"))
       throw Error("Missing source acknowledgement");
     await page.locator("#closeGuide").click();
+    await page.locator('[data-panel="presets"]').click();
+    if ((await page.locator("#rideCards article").count()) !== 7) throw Error("Ride catalogue missing");
+    await page.locator('[data-ride="forward"]').click();
+    await page.locator("#ridePreview").click();
+    await page.locator("#rideReviewCancel").click();
+    if ((await page.locator("#bas-LC").inputValue()) !== "18") throw Error("Preview mutated draft");
     await page.locator("#language").selectOption("en");
     if ((await page.locator("html").getAttribute("lang")) !== "en")
       throw Error("Language failed");
