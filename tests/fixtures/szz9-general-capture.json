@@ -1,0 +1,5 @@
+{
+  "source": "Owner-supplied physical UART log, 2026-09-26T12:17:53.326Z; not a settings or write capture",
+  "request": [17, 81, 4, 176, 5],
+  "chunks": [[81], [16, 72, 90, 88, 84, 83, 90, 90, 57, 49, 49, 50, 48, 49, 49, 2, 25, 34]]
+}

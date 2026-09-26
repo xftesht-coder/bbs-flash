@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.4.1 — 2026-09-26 · Physical General compatibility
+
+- Fix connection rejection for the owner's exact HZXT SZZ9 HW 1.1 General capture (trailer 0x22, additive expectation 0x30). Match all 19 bytes and require a second identical reply; do not generalize an unknown checksum rule.
+- Label capture-based compatibility in device information and preserve raw capture in backups. Basic/PAS/Throttle validation and write gates remain unchanged.
+- Add physical-capture regression tests, fragmentation at every boundary, bit corruption and unstable second reply checks, plus browser connection/read coverage.
+
 ## 3.4.0 — 2026-09-26 · Specialist rides
 
 - Expand the catalogue to 12 bilingual profiles: acceleration, sustained climbing, technical trails, long-distance touring and rider workouts join the original seven.

@@ -1,6 +1,8 @@
-# Safety / Ограничения 3.1.0
+# Safety / Ограничения 3.4.1
 
 **This release has no physical motor validation.** Software tests use synthetic serial streams. Never treat them as proof that a particular controller, battery or drivetrain is safe.
+
+3.4.1: получен реальный ответ General SZZ9 HW 1.1 с хвостом 0x22. Поддерживается точное совпадение всего пакета с повторным идентичным чтением, не произвольное игнорирование checksum. Полное чтение настроек, запись и восстановление на физическом моторе ещё не подтверждены. Подробности — [PROTOCOL](PROTOCOL.md).
 
 ## Допуск записи
 

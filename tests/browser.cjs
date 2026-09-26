@@ -41,7 +41,7 @@ async function ready(page) {
     document.getElementById("storageStatus").textContent.includes("готово"),
   );
 }
-async function mock(page, { unknown = false } = {}) {
+async function mock(page, { unknown = false, initial = frames } = {}) {
   await page.addInitScript(
     ({ initial, unknown }) => {
       const checksum = (bytes) => [
@@ -99,7 +99,7 @@ async function mock(page, { unknown = false } = {}) {
       });
       window.__motor = motor;
     },
-    { initial: frames, unknown },
+    { initial, unknown },
   );
 }
 async function connectRead(page) {
@@ -689,6 +689,27 @@ async function toPanel(page, id) {
         await context.close();
       },
     );
+    await check("owner General capture connects with two reads, displays identity and keeps writes gated", async () => {
+      const {page, context} = await newPage();
+      const initial = structuredClone(frames);
+      initial[81] = require("./fixtures/szz9-general-capture.json").chunks.flat();
+      await mock(page, {initial}); await ready(page);
+      await page.locator("#connect").click();
+      await page.waitForFunction(() => !document.getElementById("readAll").disabled);
+      assert.match(await page.locator("#device").textContent(), /HW 1\.1 · FW 2\.0\.1\.1/);
+      assert.match(await page.locator("#device").textContent(), /General: 48 V · 25 A/);
+      assert.match(await page.locator("#device").textContent(), /двумя чтениями/);
+      assert.equal(await page.locator("#writeAll").isDisabled(), true);
+      assert.equal(await page.locator("#bench").isChecked(), false);
+      assert.deepEqual(await page.evaluate(() => __motor.sent.map(f => f[1])), [81,81]);
+      await page.locator("#readAll").click();
+      await page.waitForFunction(() => document.getElementById("source").textContent.includes("контроллер"));
+      assert.equal(await page.locator("#writeAll").isDisabled(), true);
+      assert.ok((await page.evaluate(() => __motor.sent)).every(f => f[0] === 17));
+      await page.locator("#language").selectOption("en");
+      assert.match(await page.locator("#device").textContent(), /confirmed twice/);
+      await context.close();
+    });
     await check("ride cards preview before apply, respect limits, undo, filters and never send serial commands", async () => {
       const { page, context } = await newPage();
       await mock(page); await ready(page);

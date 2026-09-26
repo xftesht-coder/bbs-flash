@@ -10,6 +10,15 @@
   const BLOCK = { GEN: 81, BAS: 82, PAS: 83, THR: 84 };
   const LENGTH = { 81: 16, 82: 24, 83: 11, 84: 6 };
   const KEYS = { 82: "bas", 83: "pas", 84: "thr" };
+  // Owner's physical General capture, 2026-09-26. The trailing 0x22 is NOT
+  // an additive checksum (that would be 0x30). Match the entire known reply;
+  // do not infer a checksum rule or accept arbitrary unchecked General data.
+  const CAPTURED_SZZ9_GENERAL = [
+    0x51,0x10,0x48,0x5a,0x58,0x54,0x53,0x5a,0x5a,0x39,
+    0x31,0x31,0x32,0x30,0x31,0x31,0x02,0x19,0x22,
+  ];
+  const isCapturedGeneral = (frame) => frame.length === CAPTURED_SZZ9_GENERAL.length &&
+    frame.every((byte, i) => byte === CAPTURED_SZZ9_GENERAL[i]);
   const WHEELS = [
     16,
     17,
@@ -184,7 +193,9 @@
       frame[1] !== LENGTH[block]
     )
       throw new Fault("FRAME");
-    if (sum(frame.slice(0, -1)) !== frame.at(-1)) throw new Fault("CHECKSUM");
+    if (sum(frame.slice(0, -1)) !== frame.at(-1) &&
+        !(block === BLOCK.GEN && isCapturedGeneral(frame)))
+      throw new Fault("CHECKSUM", `block ${block.toString(16)}: received ${frame.at(-1).toString(16)}, expected ${sum(frame.slice(0, -1)).toString(16)}`);
     return frame;
   }
   function decode(block, frame) {
@@ -204,6 +215,7 @@
           nominalCode: d[14],
           maxCurrent: d[15],
           raw: [...frame],
+          ...(isCapturedGeneral(frame) ? { generalFormat: "captured-szz9" } : {}),
         };
       }
       case 82: {
@@ -439,7 +451,14 @@
       this.reader = this.port.readable.getReader();
       this.loopPromise = this.loop();
       try {
-        this.device = decode(81, await this.request(81, "read"));
+        const general = await this.request(81, "read");
+        const device = decode(81, general);
+        if (device.generalFormat === "captured-szz9") {
+          const repeated = await this.request(81, "read");
+          if (!eq(general, repeated)) throw new Fault("UNSTABLE_READ");
+          this.onLog("INFO", "General matched captured SZZ9 response twice; no checksum rule inferred.");
+        }
+        this.device = device;
         return this.device;
       } catch (e) {
         await this.close();
