@@ -115,7 +115,7 @@ const attempts = Number(process.env.BBS_DEPLOY_ATTEMPTS || 24),
       throw Error("Missing source acknowledgement");
     await page.locator("#closeGuide").click();
     await page.locator('[data-panel="presets"]').click();
-    if ((await page.locator("#rideCards article").count()) !== 7) throw Error("Ride catalogue missing");
+    if ((await page.locator("#rideCards article").count()) !== 12) throw Error("Ride catalogue missing");
     await page.locator('[data-ride="forward"]').click();
     await page.locator("#ridePreview").click();
     await page.locator("#rideReviewCancel").click();
