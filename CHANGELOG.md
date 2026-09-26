@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.4.2 — 2026-09-26 · Legacy UART read checksums
+
+- Replace the exact General exception with a session-pinned legacy RX rule, inferred from owner General/Basic captures and independent examples of all four response blocks.
+- Verify block + 2 + payload on legacy reads; keep outgoing write and ACK rules unchanged. Never switch convention to accept an invalid settings/readback frame.
+- Add independent capture fixtures, bit-corruption and mixed-convention rejection, fragmented streams, legacy backup/write/readback and browser regression showing the real 24 A Basic setting.
+- Physical complete read/write/restore remains unverified; no controller setting is changed by connecting or reading.
+
 ## 3.4.1 — 2026-09-26 · Physical General compatibility
 
 - Fix connection rejection for the owner's exact HZXT SZZ9 HW 1.1 General capture (trailer 0x22, additive expectation 0x30). Match all 19 bytes and require a second identical reply; do not generalize an unknown checksum rule.

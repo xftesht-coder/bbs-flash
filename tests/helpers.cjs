@@ -35,9 +35,10 @@ const frames = {
   83: [83, 11, 3, 255, 255, 10, 4, 4, 255, 25, 8, 0, 60, 205],
   84: [84, 6, 11, 35, 1, 255, 255, 10, 145],
 };
-function checksumFrame(bytes) {
+function checksumFrame(bytes, format = "additive") {
   let total = 0;
   for (const byte of bytes) total = (total + byte) % 256;
+  if (format === "legacy") total = (total - bytes[1] + 2 + 256) % 256;
   return [...bytes, total];
 }
 class FakePort {
@@ -47,6 +48,7 @@ class FakePort {
     this.options = null;
     this.intercept = null;
     this.ack3 = false;
+    this.readChecksum = "additive";
     this.closed = false;
   }
   async open(options) {
@@ -69,7 +71,7 @@ class FakePort {
             bytes[1],
             bytes[2],
             ...bytes.slice(3, -1),
-          ]);
+          ], this.readChecksum);
           reply = this.ack3
             ? checksumFrame([bytes[1], bytes[2]])
             : [bytes[1], bytes[2]];

@@ -691,8 +691,10 @@ async function toPanel(page, id) {
     );
     await check("owner General capture connects with two reads, displays identity and keeps writes gated", async () => {
       const {page, context} = await newPage();
-      const initial = structuredClone(frames);
+      const { checksumFrame } = require("./helpers.cjs");
+      const initial = Object.fromEntries(Object.entries(frames).map(([b, f]) => [b, checksumFrame(f.slice(0, -1), "legacy")]));
       initial[81] = require("./fixtures/szz9-general-capture.json").chunks.flat();
+      initial[82] = require("./fixtures/legacy-rx.json").ownerBasic.split(" ").map(b => parseInt(b, 16));
       await mock(page, {initial}); await ready(page);
       await page.locator("#connect").click();
       await page.waitForFunction(() => !document.getElementById("readAll").disabled);
@@ -704,6 +706,7 @@ async function toPanel(page, id) {
       assert.deepEqual(await page.evaluate(() => __motor.sent.map(f => f[1])), [81,81]);
       await page.locator("#readAll").click();
       await page.waitForFunction(() => document.getElementById("source").textContent.includes("контроллер"));
+      assert.equal(await page.locator("#bas-LC").inputValue(), "24");
       assert.equal(await page.locator("#writeAll").isDisabled(), true);
       assert.ok((await page.evaluate(() => __motor.sent)).every(f => f[0] === 17));
       await page.locator("#language").selectOption("en");

@@ -19,8 +19,8 @@
     ],
     roadmap: ["План развития ↗", "Roadmap ↗"],
     experimental: [
-      "Версия 3.4.1. Запись — экспериментальная, без проверки на физическом моторе. Доступна только для HZXT SZZ9 / FW 2.0.1.1 / 48 V после явного включения. Другие контроллеры — только чтение.",
-      "Version 3.4.1. Writes are experimental and have not been tested on a physical motor. Only HZXT SZZ9 / FW 2.0.1.1 / 48 V can be enabled explicitly. Other controllers are read-only.",
+      "Версия 3.4.2. Запись — экспериментальная, без проверки на физическом моторе. Доступна только для HZXT SZZ9 / FW 2.0.1.1 / 48 V после явного включения. Другие контроллеры — только чтение.",
+      "Version 3.4.2. Writes are experimental and have not been tested on a physical motor. Only HZXT SZZ9 / FW 2.0.1.1 / 48 V can be enabled explicitly. Other controllers are read-only.",
     ],
     connection: ["Подключение", "Connection"],
     basic: ["Основные", "Basic"],
@@ -865,8 +865,8 @@
       : t("noBackup");
   }
   function describeDevice(d) {
-    const compatibility = d.generalFormat === "captured-szz9"
-      ? (lang === "en" ? "\nGeneral: captured SZZ9 reply, confirmed twice." : "\nGeneral: известный ответ SZZ9, подтверждён двумя чтениями.") : "";
+    const compatibility = d.readChecksum === "legacy"
+      ? (lang === "en" ? "\nUART: legacy checksum, confirmed twice." : "\nUART: формат checksum подтверждён двумя чтениями.") : "";
     return `${d.manufacturer} ${d.model}\nHW ${d.hw} · FW ${d.fw}\nGeneral: ${[24, 36, 48, 60, "24–48", "24–60"][d.nominalCode]} V · ${d.maxCurrent} A${compatibility}`;
   }
   function remember(key, value) {

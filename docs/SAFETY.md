@@ -1,8 +1,8 @@
-# Safety / Ограничения 3.4.1
+# Safety / Ограничения 3.4.2
 
 **This release has no physical motor validation.** Software tests use synthetic serial streams. Never treat them as proof that a particular controller, battery or drivetrain is safe.
 
-3.4.1: получен реальный ответ General SZZ9 HW 1.1 с хвостом 0x22. Поддерживается точное совпадение всего пакета с повторным идентичным чтением, не произвольное игнорирование checksum. Полное чтение настроек, запись и восстановление на физическом моторе ещё не подтверждены. Подробности — [PROTOCOL](PROTOCOL.md).
+3.4.2: реальные ответы General и Basic владельца и независимые примеры всех четырёх блоков подтверждают правило RX checksum = block + 2 + payload (mod 256). Формат определяется по General, legacy требует двух одинаковых ответов, затем правило фиксируется для всего сеанса. Полное чтение, запись и восстановление на физическом моторе ещё не подтверждены. Подробности — [PROTOCOL](PROTOCOL.md).
 
 ## Допуск записи
 

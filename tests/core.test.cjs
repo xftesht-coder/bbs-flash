@@ -6,32 +6,41 @@ const C = require("../src/core.js"),
 const copy = () => structuredClone(profile);
 const capture = require("./fixtures/szz9-general-capture.json");
 const capturedGeneral = capture.chunks.flat();
+const legacy = require("./fixtures/legacy-rx.json");
+const hex = (s) => s.split(" ").map(b => parseInt(b, 16));
+function legacyPort() {
+  const port = new FakePort();
+  port.readChecksum = "legacy";
+  for (const b of [81, 82, 83, 84]) port.frames[b] = checksumFrame(frames[b].slice(0, -1), "legacy");
+  port.frames[81] = [...capturedGeneral];
+  port.frames[82] = hex(legacy.ownerBasic);
+  return port;
+}
 
 test("physical SZZ9 General capture decodes; altered bytes are not exempt from validation", () => {
-  const d = C.decode(81, capturedGeneral);
+  const d = C.decode(81, capturedGeneral, "legacy");
   assert.equal(d.manufacturer, "HZXT");
   assert.equal(d.model, "SZZ9");
   assert.equal(d.hw, "1.1");
   assert.equal(d.fw, "2.0.1.1");
   assert.equal(d.nominalCode, 2);
   assert.equal(d.maxCurrent, 25);
-  assert.equal(d.generalFormat, "captured-szz9");
+  assert.equal(d.readChecksum, "legacy");
   for (let i = 0; i < capturedGeneral.length; i++) {
     for (let bit = 0; bit < 8; bit++) {
       const damaged = [...capturedGeneral]; damaged[i] ^= 1 << bit;
-      assert.throws(() => C.decode(81, damaged), `byte ${i}, bit ${bit}`);
+      assert.throws(() => C.decode(81, damaged, "legacy"), `byte ${i}, bit ${bit}`);
     }
   }
   assert.throws(() => C.decode(81, capturedGeneral.slice(0, -1)));
   assert.throws(() => C.decode(81, [...capturedGeneral, 0]));
   assert.throws(() => C.decode(82, capturedGeneral));
-  const unknownVariant = [...capturedGeneral]; unknownVariant[9] = 0x36; unknownVariant[18] = 0x1f;
-  assert.throws(() => C.decode(81, unknownVariant));
+  assert.throws(() => C.decode(81, capturedGeneral, "additive"), /CHECKSUM/);
 });
 
 test("captured General opens only after two identical replies at every fragmentation boundary", async () => {
-  for (let split = 1; split < capturedGeneral.length; split++) {
-    const port = new FakePort(); port.frames[81] = [...capturedGeneral];
+  for (let split = 1; split < 27; split++) {
+    const port = legacyPort();
     port.emit = function(bytes) {
       queueMicrotask(() => {
         if (this.closed) return;
@@ -44,7 +53,9 @@ test("captured General opens only after two identical replies at every fragmenta
     assert.deepEqual(port.sent, [capture.request, capture.request]);
     assert.equal(session.device.maxCurrent, 25);
     const snapshot = await session.readAll();
-    assert.deepEqual(snapshot.profile, profile);
+    assert.equal(session.readChecksum, "legacy");
+    assert.deepEqual(snapshot.profile, {...profile, bas: C.decode(82, hex(legacy.ownerBasic), "legacy")});
+    assert.equal(snapshot.profile.bas.LC, 24);
     assert.deepEqual(snapshot.raw.general, capturedGeneral);
     assert.ok(port.sent.every(f => f[0] === 17), "connecting and reading must not write");
     await session.close();
@@ -53,11 +64,11 @@ test("captured General opens only after two identical replies at every fragmenta
 
 test("a changed, corrupt or missing second General closes the session without writes", async () => {
   for (const mode of ["changed", "corrupt", "missing"]) {
-    const port = new FakePort(); port.frames[81] = [...capturedGeneral];
+    const port = legacyPort();
     port.intercept = (sent, reply) => {
       if (port.sent.length !== 2) return reply;
       if (mode === "missing") return null;
-      if (mode === "changed") return frames[81];
+      if (mode === "changed") return checksumFrame(frames[81].slice(0, -1), "legacy");
       const bad = [...reply]; bad[18] ^= 1; return bad;
     };
     const session = new C.SerialSession(port, {timeout: 100});
@@ -66,6 +77,60 @@ test("a changed, corrupt or missing second General closes the session without wr
     assert.equal(session.device, null);
     assert.ok(port.sent.every(f => f[0] === 17));
   }
+});
+
+test("independent legacy RX captures from all four blocks validate and reject every bit mutation", () => {
+  for (const [block, text] of Object.entries(legacy.referenceFrames)) {
+    const frame = hex(text), b = Number(block);
+    assert.deepEqual(C.checkFrame(frame, b, "legacy"), frame);
+    assert.doesNotThrow(() => C.decode(b, frame, "legacy"));
+    for (let i = 0; i < frame.length; i++) for (let bit = 0; bit < 8; bit++) {
+      const damaged = [...frame]; damaged[i] ^= 1 << bit;
+      assert.throws(() => C.checkFrame(damaged, b, "legacy"));
+    }
+    assert.throws(() => C.checkFrame(frame.slice(0, -1), b, "legacy"));
+    assert.throws(() => C.checkFrame([...frame, 0], b, "legacy"));
+    assert.throws(() => C.checkFrame(frame, b, "additive"), /CHECKSUM/);
+  }
+  assert.equal(C.decode(82, hex(legacy.ownerBasic), "legacy").LC, 24);
+});
+
+test("checksum convention stays pinned: settings cannot switch it after General", async () => {
+  for (const format of ["legacy", "additive"]) for (const block of [81, 82, 83, 84]) {
+    const port = format === "legacy" ? legacyPort() : new FakePort();
+    const session = new C.SerialSession(port, {timeout: 150});
+    await session.open();
+    port.frames[block] = checksumFrame(port.frames[block].slice(0, -1), format === "legacy" ? "additive" : "legacy");
+    await assert.rejects(session.request(block, "read"), /CHECKSUM/);
+    assert.equal(session.closed, true);
+    assert.equal(session.device, null);
+    assert.ok(port.sent.every(f => f[0] === 17));
+    await session.close();
+  }
+});
+
+test("legacy full backup and write/readback keep RX and TX checksum rules separate", async () => {
+  const port = legacyPort(), session = new C.SerialSession(port);
+  await session.open();
+  let backedUp = false;
+  const result = await C.safeWrite({
+    session, target: target(), benchEnabled: true,
+    saveBackup: async snap => {
+      assert.equal(snap.profile.bas.LC, 24);
+      assert.deepEqual(snap.raw.bas, hex(legacy.ownerBasic));
+      assert.equal(snap.device.readChecksum, "legacy");
+      assert.equal(port.sent.filter(f => f[0] === 22).length, 0);
+      backedUp = true;
+    },
+    confirm: async () => { assert.ok(backedUp); return true; },
+  });
+  assert.equal(result.status, "written");
+  assert.deepEqual(result.profile, target());
+  for (const f of port.sent.filter(f => f[0] === 22)) {
+    assert.deepEqual(f, C.writeFrame(f[1], target()));
+    assert.notEqual(f.at(-1), port.frames[f[1]].at(-1));
+  }
+  await session.close();
 });
 test("fixed reference frames decode, with independent write golden vectors", () => {
   for (const block of [81, 82, 83, 84])
