@@ -9,25 +9,34 @@ Settings protocol only, 1200 baud, 8 data bits, no parity, 1 stop bit, no flow c
 - [OpenBafangTool at 56403517](https://github.com/andrey-pr/OpenBafangTool/blob/564035177ac0f1b89b5502c4965b16c8b991dbff/src/device/high-level/BafangUartMotor.ts): additive response checksum, short ACK parsing and outgoing checksum. See also its `docs/Bafang UART protocol.md`.
 - [Chrome Web Serial documentation](https://developer.chrome.com/docs/capabilities/serial): secure contexts, port permission, readable/writable streams and disconnect behavior.
 
-These sources disagree on some firmware behavior. Regular frames use the additive check described below. Version 3.4.1 adds one exact General capture described next; it does not infer or accept an alternate checksum algorithm for arbitrary General replies.
+## Legacy RX checksum (3.4.2)
 
-## Physical General capture (3.4.1)
+The owner's General capture is preserved in tests/fixtures/szz9-general-capture.json. The subsequent screenshot supplied the Basic frame ending in 0x62, preserved in tests/fixtures/legacy-rx.json. General reports HZXT / SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / maximum 25 A; Basic contains a configured current limit of 24 A. Neither response is a write or a physical readback test.
 
-The owner supplied this log at 2026-09-26T12:17:53.326Z, immediately after Connect:
+[philippsandhaus/bafang-python's protocol notes](https://github.com/philippsandhaus/bafang-python/blob/master/README.md) independently publish General, Basic, PAS and Throttle response examples. Their bytes are retained as fixed test fixtures. All six distinct packets satisfy this inferred rule:
 
-`51 10 48 5a 58 54 53 5a 5a 39 31 31 32 30 31 31 02 19 22`
+RX checksum = (block + 2 + sum(payload)) modulo 256.
 
-It arrived as `[51]` followed by the remaining 18 bytes. The payload describes HZXT / SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / 25 A. Its trailer is 0x22; the additive checksum would be 0x30. Penoff's original General decoder and this repository's pre-3.1 parser did not validate this trailer. This explains why strict General validation can regress connection compatibility.
+The length byte is checked against the exact block length, but contributes the constant 2 to this checksum. This is an inference from the captured packets, not an official firmware specification or a guarantee for other controllers. The observed versus old additive checksums (hex) are:
 
-`tests/fixtures/szz9-general-capture.json` preserves the owner's unmodified chunks. The exception matches **all 19 bytes**, only for General, and requires a second byte-identical General reply before assigning `session.device`. Any different non-additive reply, missing reply, truncation or extension still fails closed. The device carries `generalFormat: captured-szz9`; the UI and log report capture matching rather than claiming an additive checksum passed. No byte is corrected or discarded. Basic/PAS/Throttle and write ACK rules are unchanged, as are all existing write eligibility/backup/readback gates.
+| Packet | Observed / legacy | Old block + length + payload |
+| --- | --- | --- |
+| Owner General | 22 | 30 |
+| Owner Basic | 62 | 78 |
+| Reference General | 1b | 29 |
+| Reference Basic | df | f5 |
+| Reference PAS | 27 | 30 |
+| Reference Throttle | ac | b0 |
 
-This is a narrow compatibility observation, not proof of a general checksum algorithm, unique controller identity or physical write safety. No real settings-block or write/restore captures have yet been supplied. Other non-additive General variants need their own evidence and review.
+The exact-byte General exception from 3.4.1 is removed. The first General chooses legacy or additive checksum; legacy requires a second identical General before exposing device identity. The chosen rule is pinned for every read in that session, including backup and write readback. A settings packet cannot change checksum convention to pass validation. No byte is ignored, corrected or discarded. General still requires printable identity and valid voltage/current fields. Unknown device identities remain read-only.
+
+The additive convention from OpenBafangTool is retained for controllers using it. Public decode/checkFrame functions keep additive as their default for API compatibility; session reads always supply the detected convention explicitly. Outgoing write checksums and ACK handling are unchanged.
 
 ## Frames
 
 Read General request: `11 51 04 B0 05`. Basic/PAS/Throttle read requests: `11 52`, `11 53`, `11 54` (hex).
 
-Regular RX: `[block, payloadLength, payload..., checksum]`, checksum = sum of all preceding bytes modulo 256. Exact expected payload lengths: General 16, Basic 24, PAS 11, Throttle 6. Total General response is 19 bytes. The parser requires the currently requested block, exact length and checksum. It accumulates fragmented streams; extra bytes, malformed frames and timeout invalidate the session. No attempt is made to silently resynchronize an ambiguous response and continue writing.
+RX: `[block, payloadLength, payload..., checksum]`, using the session-pinned checksum convention above. Exact expected payload lengths: General 16, Basic 24, PAS 11, Throttle 6. Total General response is 19 bytes. The parser requires the currently requested block, exact length and checksum. It accumulates fragmented streams; extra bytes, malformed frames and timeout invalidate the session. No attempt is made to silently resynchronize an ambiguous response and continue writing.
 
 Write TX: `[16, block, payloadLength, payload..., checksum]` in hex notation for the `16` command; checksum excludes that command byte and includes block, length and payload. The test golden PAS vector ends in `CD` (205 decimal). All fields are validated before Uint8Array conversion.
 
@@ -47,4 +56,4 @@ Basic speed sensor type occupies the top two bits and signals the lower six; int
 
 ## Evidence boundary
 
-`tests/helpers.cjs` frames are manually specified, reference-shaped **synthetic vectors**, not hardware captures. They provide independent expected bytes for corruption and serializer tests. The separate SZZ9 General fixture above is the first owner-supplied hardware capture; replaying it in tests is not a fresh physical connection test. Other General/ACK variants, settings reads, Time of Stop behavior, RPM and restore compatibility remain open in the roadmap.
+`tests/helpers.cjs` frames are manually specified, reference-shaped **synthetic vectors**, not hardware captures. They provide independent expected bytes for corruption and serializer tests. Separate fixtures preserve owner General/Basic captures and independent reference responses for all four blocks. Replaying them is not a fresh physical connection test. Owner PAS/Throttle and ACK captures, complete read/write/restore, Time of Stop behavior and RPM remain open in the roadmap.

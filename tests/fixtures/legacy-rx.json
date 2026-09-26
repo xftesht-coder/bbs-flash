@@ -1,0 +1,11 @@
+{
+  "ownerSource": "Owner screenshot, 2026-09-26T12:41:02.763Z, Basic read after two identical General replies",
+  "ownerBasic": "52 18 28 18 00 19 1e 28 32 3a 41 4b 58 64 00 64 64 64 64 64 64 64 64 64 36 01 62",
+  "referenceSource": "https://github.com/philippsandhaus/bafang-python/blob/master/README.md",
+  "referenceFrames": {
+    "81": "51 10 48 5a 58 54 53 5a 5a 36 32 32 32 30 31 31 01 14 1b",
+    "82": "52 18 1f 0f 00 1c 25 2e 37 40 49 52 5b 64 64 64 64 64 64 64 64 64 64 64 34 01 df",
+    "83": "53 0b 03 ff ff 64 06 14 0a 19 08 14 14 27",
+    "84": "54 06 0b 23 00 03 11 14 ac"
+  }
+}
