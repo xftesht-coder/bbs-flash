@@ -4,6 +4,69 @@ const { test } = require("node:test"),
 const C = require("../src/core.js"),
   { profile, frames, FakePort, checksumFrame } = require("./helpers.cjs");
 const copy = () => structuredClone(profile);
+const capture = require("./fixtures/szz9-general-capture.json");
+const capturedGeneral = capture.chunks.flat();
+
+test("physical SZZ9 General capture decodes; altered bytes are not exempt from validation", () => {
+  const d = C.decode(81, capturedGeneral);
+  assert.equal(d.manufacturer, "HZXT");
+  assert.equal(d.model, "SZZ9");
+  assert.equal(d.hw, "1.1");
+  assert.equal(d.fw, "2.0.1.1");
+  assert.equal(d.nominalCode, 2);
+  assert.equal(d.maxCurrent, 25);
+  assert.equal(d.generalFormat, "captured-szz9");
+  for (let i = 0; i < capturedGeneral.length; i++) {
+    for (let bit = 0; bit < 8; bit++) {
+      const damaged = [...capturedGeneral]; damaged[i] ^= 1 << bit;
+      assert.throws(() => C.decode(81, damaged), `byte ${i}, bit ${bit}`);
+    }
+  }
+  assert.throws(() => C.decode(81, capturedGeneral.slice(0, -1)));
+  assert.throws(() => C.decode(81, [...capturedGeneral, 0]));
+  assert.throws(() => C.decode(82, capturedGeneral));
+  const unknownVariant = [...capturedGeneral]; unknownVariant[9] = 0x36; unknownVariant[18] = 0x1f;
+  assert.throws(() => C.decode(81, unknownVariant));
+});
+
+test("captured General opens only after two identical replies at every fragmentation boundary", async () => {
+  for (let split = 1; split < capturedGeneral.length; split++) {
+    const port = new FakePort(); port.frames[81] = [...capturedGeneral];
+    port.emit = function(bytes) {
+      queueMicrotask(() => {
+        if (this.closed) return;
+        this.controller.enqueue(new Uint8Array(bytes.slice(0, split)));
+        this.controller.enqueue(new Uint8Array(bytes.slice(split)));
+      });
+    };
+    const session = new C.SerialSession(port);
+    await session.open();
+    assert.deepEqual(port.sent, [capture.request, capture.request]);
+    assert.equal(session.device.maxCurrent, 25);
+    const snapshot = await session.readAll();
+    assert.deepEqual(snapshot.profile, profile);
+    assert.deepEqual(snapshot.raw.general, capturedGeneral);
+    assert.ok(port.sent.every(f => f[0] === 17), "connecting and reading must not write");
+    await session.close();
+  }
+});
+
+test("a changed, corrupt or missing second General closes the session without writes", async () => {
+  for (const mode of ["changed", "corrupt", "missing"]) {
+    const port = new FakePort(); port.frames[81] = [...capturedGeneral];
+    port.intercept = (sent, reply) => {
+      if (port.sent.length !== 2) return reply;
+      if (mode === "missing") return null;
+      if (mode === "changed") return frames[81];
+      const bad = [...reply]; bad[18] ^= 1; return bad;
+    };
+    const session = new C.SerialSession(port, {timeout: 100});
+    await assert.rejects(session.open(), /UNSTABLE_READ|CHECKSUM|TIMEOUT/);
+    assert.equal(session.closed, true);
+    assert.equal(session.device, null);
+    assert.ok(port.sent.every(f => f[0] === 17));
+  }
+});
 test("fixed reference frames decode, with independent write golden vectors", () => {
   for (const block of [81, 82, 83, 84])
     assert.deepEqual(C.checkFrame(frames[block], block), frames[block]);
