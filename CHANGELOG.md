@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.4.3 — 2026-09-30 · Foundation workflow repairs
+
+- Audit the current module/dependency boundaries; prioritize Audit → Cleanup → Core → Safety → Tests → UI without adding ride features.
+- Keep one landing page with a legacy redirect. Preserve original Penoff sources and protective old entry points.
+- Require a stable, backed-up read before exposing controller data for editing. Core owns connection-bound write readiness and rejects stale editing baselines or unauthorized low-level writes.
+- Core closes uncertain write sessions; callbacks receive copies; successful full verification advances the baseline.
+- Confirm replacement of modified drafts on Read All. Preserve unsent changes when writing one block.
+- Replay all four owner response blocks through the full workflow; add storage, stale-edit, bypass and UI regressions. Physical write/restore remains unverified.
+
 ## 3.4.2 — 2026-09-26 · Legacy UART read checksums
 
 - Replace the exact General exception with a session-pinned legacy RX rule, inferred from owner General/Basic captures and independent examples of all four response blocks.

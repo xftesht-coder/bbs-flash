@@ -112,6 +112,7 @@ test("checksum convention stays pinned: settings cannot switch it after General"
 test("legacy full backup and write/readback keep RX and TX checksum rules separate", async () => {
   const port = legacyPort(), session = new C.SerialSession(port);
   await session.open();
+  await C.readAndBackup({session, saveBackup: async () => {}});
   let backedUp = false;
   const result = await C.safeWrite({
     session, target: target(), benchEnabled: true,
@@ -329,6 +330,7 @@ async function opened(options = {}) {
   Object.assign(port, options);
   const session = new C.SerialSession(port, { timeout: 150 });
   await session.open();
+  await C.readAndBackup({session, saveBackup: async () => {}});
   return { port, session };
 }
 test("transport uses 1200 8N1; fragmented read frames are assembled and no command crosses transactions", async () => {
@@ -529,6 +531,8 @@ test("ACK success without persistence fails readback and stops subsequent blocks
     failure = e;
   }
   assert.equal(failure.code, "VERIFY");
+  assert.equal(session.closed, true);
+  assert.equal(C.isWriteReady(session), false);
   assert.equal(failure.attempted, 82);
   assert.deepEqual(failure.written, [82]);
   assert.deepEqual(
@@ -560,6 +564,7 @@ test("rejected, malformed or timed-out ACK stops without retry", async () => {
       }),
     );
     assert.equal(port.sent.filter((f) => f[0] === 22).length, 1);
+    assert.equal(session.closed, true);
     await session.close();
   }
 });
