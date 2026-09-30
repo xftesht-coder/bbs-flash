@@ -2,7 +2,7 @@
 
 Canonical site: https://xftesht-coder.github.io/bbs-flash/ (landing), `/bbs-flash.html` (app). HTTPS is required for hardware access; localhost is suitable for development. The app loads no CDN scripts, has no service worker and does not send profiles to a backend.
 
-GitHub Pages serves the repository root from `main`. `.nojekyll` disables Jekyll processing. `index.html` and `landing.html` must be identical; `npm test` checks this and local asset references. Legacy configurator URLs redirect to the current app. The previous VPS scripts are retired because they modified unrelated server configuration and omitted the new modules.
+GitHub Pages serves the repository root from `main`. `.nojekyll` disables Jekyll processing. `index.html` is the canonical landing page; `landing.html` redirects to it. Tests check the redirect, current app link and local asset references. Legacy configurator URLs redirect to the current app. The previous VPS scripts are retired because they modified unrelated server configuration and omitted the new modules.
 
 ## Release procedure
 

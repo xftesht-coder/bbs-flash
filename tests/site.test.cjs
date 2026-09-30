@@ -4,8 +4,9 @@ const { test } = require("node:test"),
   path = require("node:path");
 const root = path.resolve(__dirname, ".."),
   read = (p) => fs.readFileSync(path.join(root, p), "utf8");
-test("root landing is tracked, identical to legacy landing, and opens current app", () => {
-  assert.equal(read("index.html"), read("landing.html"));
+test("one canonical landing page; legacy URL redirects and current app is linked", () => {
+  assert.match(read("landing.html"), /url=\.\/index.html/);
+  assert.ok(!/<script/.test(read("landing.html")));
   assert.ok(!read(".gitignore").split(/\r?\n/).includes("index.html"));
   assert.match(read("index.html"), /href="\.\/bbs-flash.html"/);
 });

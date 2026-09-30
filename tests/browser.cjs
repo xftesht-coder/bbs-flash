@@ -41,12 +41,12 @@ async function ready(page) {
     document.getElementById("storageStatus").textContent.includes("готово"),
   );
 }
-async function mock(page, { unknown = false, initial = frames } = {}) {
+async function mock(page, { unknown = false, initial = frames, format = "additive" } = {}) {
   await page.addInitScript(
-    ({ initial, unknown }) => {
-      const checksum = (bytes) => [
+    ({ initial, unknown, format }) => {
+      const checksum = (bytes, reading = false) => [
         ...bytes,
-        bytes.reduce((n, b) => (n + b) % 256, 0),
+        (bytes.reduce((n, b) => (n + b) % 256, 0) + (reading && format === "legacy" ? 258 - bytes[1] : 0)) % 256,
       ];
       const motor = {
         frames: structuredClone(initial),
@@ -57,7 +57,7 @@ async function mock(page, { unknown = false, initial = frames } = {}) {
       if (unknown) {
         const gen = motor.frames[81].slice(0, -1);
         gen[6] = 88;
-        motor.frames[81] = checksum(gen);
+        motor.frames[81] = checksum(gen, true);
       }
       const port = {
         async open() {
@@ -73,7 +73,7 @@ async function mock(page, { unknown = false, initial = frames } = {}) {
               let response;
               if (f[0] === 17) response = motor.frames[f[1]];
               else {
-                motor.frames[f[1]] = checksum([f[1], f[2], ...f.slice(3, -1)]);
+                if (motor.fault !== "noPersist") motor.frames[f[1]] = checksum([f[1], f[2], ...f.slice(3, -1)], true);
                 response = checksum([f[1], f[2]]);
               }
               if (motor.fault === "checksum") {
@@ -99,7 +99,7 @@ async function mock(page, { unknown = false, initial = frames } = {}) {
       });
       window.__motor = motor;
     },
-    { initial, unknown },
+    { initial, unknown, format },
   );
 }
 async function connectRead(page) {
@@ -112,6 +112,8 @@ async function connectRead(page) {
   await page.waitForFunction(() =>
     document.getElementById("status").textContent.includes("считаны"),
   );
+  assert.equal(await page.locator("#backupEl").isDisabled(), false);
+  assert.equal(await page.evaluate(async () => !!(await BBSStore.latest())?.el), true);
 }
 async function toPanel(page, id) {
   await page.locator(`[data-panel="${id}"]`).click();
@@ -689,13 +691,108 @@ async function toPanel(page, id) {
         await context.close();
       },
     );
+    await check("initial backup failure cannot expose new controller data as an editable baseline", async () => {
+      const {page, context} = await newPage();
+      const initial = structuredClone(frames); initial[82][3] = 16;
+      initial[82] = require("./helpers.cjs").checksumFrame(initial[82].slice(0,-1));
+      await mock(page,{initial}); await ready(page);
+      await page.evaluate(() => { BBSStore.saveBackup = async () => { throw Error("STORAGE"); }; });
+      await page.locator("#connect").click();
+      await page.waitForFunction(() => !document.getElementById("readAll").disabled);
+      await page.locator("#readAll").click();
+      await page.waitForFunction(() => document.getElementById("status").textContent.includes("сохранить"));
+      assert.equal(await page.locator("#bas-LC").inputValue(), "18");
+      assert.equal(await page.locator("#backupEl").isDisabled(), true);
+      assert.equal(await page.locator("#writeAll").isDisabled(), true);
+      assert.equal(await page.evaluate(() => BBSCore.isWriteReady(null)), false);
+      assert.ok((await page.evaluate(() => __motor.sent)).every(f => f[0] === 17));
+      await context.close();
+    });
+    await check("Read All cannot silently discard a ride draft; cancel sends no UART commands", async () => {
+      const {page, context} = await newPage(); await mock(page); await ready(page); await connectRead(page);
+      await toPanel(page,"presets"); await page.locator('[data-ride="forward"]').click();
+      await page.locator("#ridePreview").click(); await page.locator("#rideReviewApply").click();
+      const draft = await page.locator("#ALC-2").inputValue();
+      await toPanel(page,"connection");
+      const count = await page.evaluate(() => __motor.sent.length);
+      page.once("dialog", dialog => dialog.dismiss()); await page.locator("#readAll").click();
+      await page.waitForFunction(() => !document.getElementById("readAll").disabled);
+      assert.equal(await page.locator("#ALC-2").inputValue(), draft);
+      assert.equal(await page.evaluate(() => __motor.sent.length), count);
+      page.once("dialog", dialog => dialog.accept()); await page.locator("#readAll").click();
+      await page.waitForFunction(() => document.getElementById("status").textContent.includes("считаны"));
+      assert.equal(await page.locator("#ALC-2").inputValue(), "22");
+      assert.equal(await page.evaluate(() => __motor.sent.filter(f => f[0] === 22).length),0);
+      await context.close();
+    });
+    await check("single-block write preserves other draft edits; a subsequent write uses verified baseline", async () => {
+      const {page, context} = await newPage(); await mock(page); await ready(page); await connectRead(page);
+      await page.locator("#bench").check();
+      await toPanel(page,"pas"); await page.locator("#pas-KC").fill("55");
+      await toPanel(page,"basic"); await page.locator("#bas-LC").fill("17");
+      await page.locator('[data-block="82"]').click();
+      await page.waitForFunction(() => document.getElementById("writeDialog").open);
+      await page.locator("#confirmSafety").check(); await page.locator("#confirmWrite").click();
+      await page.waitForFunction(() => document.getElementById("status").textContent.includes("подтверждена"));
+      assert.equal(await page.locator("#pas-KC").inputValue(),"55");
+      assert.equal(await page.evaluate(() => __motor.frames[83][12]),60);
+      assert.match(await page.locator("#source").textContent(), /ещё не записанные/);
+      await toPanel(page,"connection"); await page.locator("#writeAll").click();
+      await page.waitForFunction(() => document.getElementById("writeDialog").open);
+      await page.locator("#confirmSafety").check(); await page.locator("#confirmWrite").click();
+      await page.waitForFunction(() => document.getElementById("status").textContent.includes("подтверждена"));
+      assert.deepEqual(await page.evaluate(() => __motor.sent.filter(f=>f[0]===22).map(f=>f[1])),[82,83]);
+      assert.equal(await page.evaluate(() => __motor.frames[83][12]),55);
+      await context.close();
+    });
+    await check("ACK without persistence closes the session and reports an unverified partial write", async () => {
+      const {page, context} = await newPage(); await mock(page); await ready(page); await connectRead(page);
+      await page.locator("#bench").check(); await toPanel(page,"basic"); await page.locator("#bas-LC").fill("17");
+      await page.evaluate(() => { __motor.fault = "noPersist"; });
+      await page.locator('[data-block="82"]').click();
+      await page.waitForFunction(() => document.getElementById("writeDialog").open);
+      await page.locator("#confirmSafety").check(); await page.locator("#confirmWrite").click();
+      await page.waitForFunction(() => document.getElementById("connect").disabled === false);
+      assert.equal(await page.locator("#writeAll").isDisabled(),true);
+      assert.equal(await page.locator("#readAll").isDisabled(),true);
+      assert.equal(await page.evaluate(() => __motor.sent.filter(f=>f[0]===22).length),1);
+      assert.ok(!(await page.locator("#status").textContent()).includes("Запись подтверждена"));
+      assert.equal(await page.locator("#backupEl").isDisabled(),false);
+      await context.close();
+    });
+    await check("owner full legacy capture: backup, apply Full ahead, write and verify; throttle remains unchanged", async () => {
+      const {page, context} = await newPage();
+      const cap = require("./fixtures/legacy-rx.json");
+      const hex = s => s.split(" ").map(b=>parseInt(b,16));
+      const initial = {81:require("./fixtures/szz9-general-capture.json").chunks.flat(),82:hex(cap.ownerBasic),83:hex(cap.ownerPAS),84:hex(cap.ownerThrottle)};
+      await mock(page,{initial,format:"legacy"}); await ready(page); await connectRead(page);
+      assert.equal(await page.locator("#bas-LC").inputValue(),"24");
+      await page.locator("#bench").check(); await toPanel(page,"presets");
+      await page.locator('[data-ride="forward"]').click(); await page.locator("#ridePreview").click(); await page.locator("#rideReviewApply").click();
+      await toPanel(page,"connection"); await page.locator("#writeAll").click();
+      await page.waitForFunction(() => document.getElementById("writeDialog").open);
+      assert.equal(await page.evaluate(() => __motor.sent.filter(f=>f[0]===22).length),0);
+      assert.deepEqual(await page.evaluate(async () => (await BBSStore.latest()).raw.thr), initial[84]);
+      await page.locator("#confirmSafety").check(); await page.locator("#confirmWrite").click();
+      await page.waitForFunction(() => document.getElementById("status").textContent.includes("подтверждена"));
+      assert.deepEqual(await page.evaluate(() => __motor.sent.filter(f=>f[0]===22).map(f=>f[1])),[82,83]);
+      assert.deepEqual(await page.evaluate(() => __motor.frames[84]),initial[84]);
+      assert.deepEqual(await page.evaluate(() => __motor.frames[83].slice(2,-1)),[3,255,255,20,3,3,255,20,7,0,70]);
+      await toPanel(page,"presets"); await page.locator('[data-ride="acceleration"]').click();
+      await page.locator("#ridePreview").click(); await page.locator("#rideReviewApply").click();
+      assert.match(await page.locator("#status").textContent(), /ещё не записаны/);
+      assert.equal(await page.evaluate(() => __motor.sent.filter(f=>f[0]===22).length),2);
+      await toPanel(page,"basic"); await page.locator("#bas-LC").fill("23");
+      assert.match(await page.locator("#status").textContent(), /ещё не записаны/);
+      await context.close();
+    });
     await check("owner General capture connects with two reads, displays identity and keeps writes gated", async () => {
       const {page, context} = await newPage();
       const { checksumFrame } = require("./helpers.cjs");
       const initial = Object.fromEntries(Object.entries(frames).map(([b, f]) => [b, checksumFrame(f.slice(0, -1), "legacy")]));
       initial[81] = require("./fixtures/szz9-general-capture.json").chunks.flat();
       initial[82] = require("./fixtures/legacy-rx.json").ownerBasic.split(" ").map(b => parseInt(b, 16));
-      await mock(page, {initial}); await ready(page);
+      await mock(page, {initial, format:"legacy"}); await ready(page);
       await page.locator("#connect").click();
       await page.waitForFunction(() => !document.getElementById("readAll").disabled);
       assert.match(await page.locator("#device").textContent(), /HW 1\.1 · FW 2\.0\.1\.1/);
