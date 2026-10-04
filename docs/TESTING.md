@@ -1,10 +1,10 @@
-# Verification of 3.4.2
+# Verification of 3.4.3
 
 Additional coverage: twelve ride profiles preserve hardware/PAS0/throttle fields and current ceilings at 1/12/18/25/30 A; switching economy → full ahead; actual supplied Penoff.el indices and roundtrip; browser preview/cancel/apply/undo for all twelve modes, category counts and new RU/EN descriptions, no profile-driven UART commands, local named drafts and escaping, downloads, read-only file comparison, rejected malformed comparison and IndexedDB v1 migration with existing backups/preferences.
 
-Profile meters describe design intent, not measured tuning quality. Default battery capacity is 19.2 Ah as supplied by the owner. No physical qualification was performed in this release.
+Profile meters describe design intent, not measured tuning quality. Default battery capacity is 19.2 Ah as supplied by the owner. The owner reported a verified write and ride on 3.4.2; the 3.4.3 changes have software test coverage only. See BENCH-VALIDATION.md for the exact limits of this evidence.
 
-Baseline audited: `8e0495904e566757f40a52427861c5d3990dc677`. Tests do not access a physical serial port.
+Baseline audited: `ad3aed5` (3.4.2). Tests do not access a physical serial port.
 
 ## Reproduce
 
@@ -17,6 +17,18 @@ npm run test:browser
 ```
 
 `BROWSER_CHANNEL=msedge` selects installed Edge; omit it for Playwright Chromium. `BBS_ARTIFACT_DIR` can redirect screenshots and `browser-results.json`; defaults to ignored `test-results/`. Browser tests start their own loopback server and replace Web Serial with a synthetic stream before loading the app. Never treat these as motor test results.
+
+## Foundation regressions
+
+41 Node tests and 25 Edge browser scenarios passed locally on 2026-09-30. Syntax checks passed; npm audit reported zero known vulnerabilities. These counts include the existing regression suite.
+
+- Core requires backed-up read in the current connection, rejects direct writes, and revokes readiness on reconnect or stale data.
+- Backup completes before editor baseline is exposed; storage failure and unstable reads cannot enable writing.
+- Changes during EDIT or confirmation cannot overwrite a changed controller; callback objects cannot mutate the trusted baseline or reviewed target.
+- Failed ACK/readback invalidates the core session; ACK without persistence is rejected in both unit and browser tests.
+- Read All cancellation preserves the chosen ride draft and sends no UART commands. Single-block writes retain unsent edits elsewhere. Applying/editing a new draft clears the previous write-success banner.
+- All four owner capture blocks replay through Penoff .el roundtrip, Full ahead application, backup, write and verification; throttle bytes remain unchanged. Writes in this test are simulated, not physical.
+- Legacy landing URL redirects to the single canonical page.
 
 ## Covered
 
@@ -36,4 +48,4 @@ npm run test:browser
 
 ## Still required
 
-Physical complete read/write/restore, owner PAS/Throttle and write/ACK captures, SZZ9 RPM (V1) and Time of Stop behavior (V2), actual sensor/throttle behavior, Safari/Firefox read-only coverage and screen-reader evaluation. Original v3.0 DoD is intentionally not reported as fully complete. Hardware acceptance criteria are in `ROADMAP.md`.
+Physical restore, independent Penoff verification and write/ACK captures, SZZ9 RPM (V1) and Time of Stop behavior (V2), actual sensor/throttle behavior, Safari/Firefox read-only coverage and screen-reader evaluation. Original v3.0 DoD is intentionally not reported as fully complete. Hardware acceptance criteria are in `ROADMAP.md`.

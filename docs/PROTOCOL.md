@@ -56,4 +56,10 @@ Basic speed sensor type occupies the top two bits and signals the lower six; int
 
 ## Evidence boundary
 
-`tests/helpers.cjs` frames are manually specified, reference-shaped **synthetic vectors**, not hardware captures. They provide independent expected bytes for corruption and serializer tests. Separate fixtures preserve owner General/Basic captures and independent reference responses for all four blocks. Replaying them is not a fresh physical connection test. Owner PAS/Throttle and ACK captures, complete read/write/restore, Time of Stop behavior and RPM remain open in the roadmap.
+`tests/helpers.cjs` frames are manually specified, reference-shaped **synthetic vectors**, not hardware captures. They provide independent expected bytes for corruption and serializer tests. Separate fixtures preserve owner General/Basic/PAS/Throttle captures and independent reference responses for all four blocks. Replaying them is not a fresh physical connection test. The owner reported a complete successful read on 2026-09-26, then confirmed a verified write and a ride on 3.4.2 on 2026-09-30. No write/ACK capture or independent Penoff comparison was supplied. Physical write/ACK captures and restore, Time of Stop behavior and RPM remain open in the roadmap.
+
+## Transaction boundary (3.4.3)
+
+readAndBackup owns the initial stable double read and awaits the verified storage callback before establishing a private, connection-bound baseline. The UI loads controller data only after that succeeds. safeWrite requires that baseline and a confirmation callback; it compares fresh stable data with the baseline before asking for confirmation, persists a fresh pre-write backup, then rechecks after confirmation. Only safeWrite can authorize low-level write requests. Callback inputs are copies.
+
+A verified full readback advances the editing baseline; the original pre-write backup remains available. Partial/uncertain writes close and invalidate the session in core, independently of UI handling. A reconnect requires a new backed-up read. This prevents accidental application-code bypass, not malicious same-origin code running with the same browser privileges.

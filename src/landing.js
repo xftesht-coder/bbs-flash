@@ -23,7 +23,7 @@
     open: "Open configurator →",
     howLink: "How it works",
     experimental:
-      "Writes are experimental: covered by software tests, but not tested on a physical motor. Explicit opt-in is required for the known SZZ9 signature. Unknown controllers are read-only.",
+      "For BBS02 750 W: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / controller maximum 25 A. Writes require reading, a saved backup and explicit opt-in. Other controllers are read-only.",
     backup: "Backup before writing",
     backupText:
       "Two matching reads, a saved original and a change preview. After writing, settings are read again. This reduces risk; it does not eliminate it.",
@@ -41,7 +41,7 @@
     step3:
       "Read all blocks. The controller supplies its maximum current and voltage class.",
     step4:
-      "Experimental writes are limited to HZXT SZZ9 / FW 2.0.1.1 / 48 V. Secure the bike and keep the driven wheel clear.",
+      "Writes are limited to HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / controller maximum 25 A. Secure the bike and keep the driven wheel clear.",
     step5:
       "Download a backup and review the exact changes before writing. After a connection failure, read the controller again: multi-block writes are not atomic.",
     calcTitle: "Gearing speed ceiling",
@@ -59,10 +59,10 @@
       "Editing and calculations adapt to a phone screen. This release does not provide a motor connection in mobile browsers.",
     safe: "How safe are writes?",
     safeText:
-      "Checksums, backups, limits and readback do not guarantee hardware safety. Incorrect current or calibration may cause overheating or unexpected motion. This version has not yet been verified on physical hardware.",
+      "Checksums, backups, limits and readback do not guarantee hardware safety. Incorrect current or calibration may cause overheating or unexpected motion. The owner reported a verified write and a ride with Full ahead on version 3.4.2. Changes in 3.4.3 have software test coverage; a physical restore remains unconfirmed.",
     support: "Which controllers are supported?",
     supportText:
-      "Standard BBS UART General, Basic, PAS and Throttle reads with length and checksum validation. Experimental writes are limited to one known signature; BBS01, BBSHD and unknown firmware remain read-only. Selecting a simulated model does not extend compatibility.",
+      "BBS UART General, Basic, PAS and Throttle reads with length and checksum validation. Writes are limited to the exact HZXT SZZ9 configuration listed above; BBS01, BBSHD and other hardware or firmware revisions remain read-only. Selecting a simulated model does not extend compatibility.",
     feedback: "Found a problem or ready for a bench test?",
     feedbackText:
       "Use GitHub Issues to share the model, firmware version, reproduction steps and serial log. Do not post personal information.",

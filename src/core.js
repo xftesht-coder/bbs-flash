@@ -1,4 +1,4 @@
-/* BBS Flash 3.1.0. No browser dependencies: shared by the app and node:test.
+/* BBS Flash core. No browser dependencies: shared by the app and node:test.
  * Protocol sources: docs/PROTOCOL.md. Settings only, not firmware flashing.
  */
 (function (root, factory) {
@@ -256,14 +256,15 @@
     }
   }
   function identify(device) {
-    // Project owner's documented controller. This is identification, NOT a claim
-    // of bench qualification. Every write also requires explicit bench opt-in.
+    // Match only the owner's captured hardware revision and ratings. An owner-
+    // reported write/ride does not qualify other revisions or every profile.
     return device &&
       device.manufacturer === "HZXT" &&
       device.model === "SZZ9" &&
+      device.hw === "1.1" &&
       device.fw === "2.0.1.1" &&
       device.nominalCode === 2 &&
-      device.maxCurrent <= 25
+      device.maxCurrent === 25
       ? "BBS02"
       : null;
   }
@@ -425,6 +426,14 @@
     return changes;
   }
   const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+  // A trusted editing baseline belongs to one connection. UI flags or imported
+  // files cannot establish it; only a backed-up read or verified write can.
+  const baselines = new WeakMap();
+  const WRITE_AUTH = Symbol("validated write transaction");
+  function isWriteReady(session) {
+    return !!(session && !session.closed && session.device &&
+      baselines.get(session)?.sessionId === session.id);
+  }
   class SerialSession {
     constructor(
       port,
@@ -443,6 +452,7 @@
       this.busy = false;
     }
     async open() {
+      baselines.delete(this);
       this.readChecksum = null;
       await this.port.open({
         baudRate: 1200,
@@ -492,6 +502,7 @@
     }
     fail(error) {
       if (this.closed) return;
+      baselines.delete(this);
       this.closed = true;
       this.device = null;
       this.id = null;
@@ -550,8 +561,9 @@
         p.reject(new Fault("REJECTED", `${p.block}/${frame[1]}`));
       else p.resolve(frame);
     }
-    async request(block, mode, profile) {
+    async request(block, mode, profile, authorization) {
       if (this.closed) throw new Fault("DISCONNECTED");
+      if (mode === "write" && authorization !== WRITE_AUTH) throw new Fault("WRITE_GUARD");
       if (this.pending) throw new Fault("BUSY");
       if (
         !LENGTH[block] ||
@@ -608,6 +620,7 @@
       };
     }
     async close() {
+      baselines.delete(this);
       this.closed = true;
       this.device = null;
       this.readChecksum = null;
@@ -636,6 +649,27 @@
       this.reader = null;
     }
   }
+  async function stableRead(session) {
+    const snapshot = await session.readAll();
+    const second = await session.readAll();
+    if (!eq(snapshot.raw, second.raw)) throw new Fault("UNSTABLE_READ");
+    return snapshot;
+  }
+  async function persistSnapshot(snapshot, saveBackup) {
+    if (typeof saveBackup !== "function") throw new Fault("STORAGE");
+    await saveBackup({ ...clone(snapshot), el: toEl(snapshot.profile) });
+  }
+  async function readAndBackup({ session, saveBackup }) {
+    return session.exclusive(async () => {
+      baselines.delete(session);
+      const sessionId = session.id;
+      const snapshot = await stableRead(session);
+      await persistSnapshot(snapshot, saveBackup);
+      if (session.closed || session.id !== sessionId) throw new Fault("DISCONNECTED");
+      baselines.set(session, clone(snapshot));
+      return snapshot;
+    });
+  }
   async function safeWrite({
     session,
     target,
@@ -648,6 +682,8 @@
       if (!benchEnabled) throw new Fault("BENCH_REQUIRED");
       const family = identify(session.device);
       if (!family) throw new Fault("UNKNOWN_DEVICE");
+      if (!isWriteReady(session)) throw new Fault("READ_REQUIRED");
+      if (typeof confirm !== "function") throw new Fault("CONFIRM_REQUIRED");
       if (
         !Array.isArray(blocks) ||
         !blocks.length ||
@@ -658,9 +694,14 @@
       const draft = clone(target);
       validate(draft, session.device, family);
       const sessionId = session.id;
-      const snapshot = await session.readAll();
-      const second = await session.readAll();
-      if (!eq(snapshot.raw, second.raw)) throw new Fault("UNSTABLE_READ");
+      let snapshot;
+      try {
+        snapshot = await stableRead(session);
+        if (!eq(snapshot.raw, baselines.get(session)?.raw)) throw new Fault("STALE_BACKUP");
+      } catch (error) {
+        baselines.delete(session);
+        throw error;
+      }
       const desired = clone(snapshot.profile);
       for (const block of blocks)
         desired[KEYS[block]] = clone(draft[KEYS[block]]);
@@ -679,22 +720,25 @@
         return { status: "unchanged", snapshot, profile: desired };
       // Persist verified controller data, never the form. A download alone is not
       // considered durable. saveBackup must resolve only after durable completion.
-      await saveBackup({ ...snapshot, el: toEl(snapshot.profile) });
-      if (!(await confirm({ changes, snapshot, target: clone(desired) })))
+      await persistSnapshot(snapshot, saveBackup);
+      if (!(await confirm({ changes: clone(changes), snapshot: clone(snapshot), target: clone(desired) })))
         return { status: "cancelled", snapshot };
       if (session.closed || session.id !== sessionId)
         throw new Fault("DISCONNECTED");
       // Recheck after the dialog; never overwrite a controller that changed while
       // the operator was looking at the preview.
       const fresh = await session.readAll();
-      if (!eq(fresh.raw, snapshot.raw)) throw new Fault("STALE_BACKUP");
+      if (!eq(fresh.raw, snapshot.raw)) {
+        baselines.delete(session);
+        throw new Fault("STALE_BACKUP");
+      }
       const written = [];
       let attempted = null;
       try {
         for (const block of blocks) {
           if (eq(snapshot.profile[KEYS[block]], desired[KEYS[block]])) continue;
           attempted = block;
-          await session.request(block, "write", desired);
+          await session.request(block, "write", desired, WRITE_AUTH);
           written.push(block);
           const readback = await session.request(block, "read");
           if (!eq(readback.slice(2, -1), payload(block, desired)))
@@ -702,11 +746,14 @@
         }
         const final = await session.readAll();
         if (!eq(final.profile, desired)) throw new Fault("VERIFY", "all");
+        // Keep the original backup; advance the baseline only after full verify.
+        baselines.set(session, clone(final));
         return { status: "written", profile: final.profile, snapshot, written };
       } catch (e) {
         e.written = written;
         e.attempted = attempted;
         e.backup = snapshot;
+        await session.close();
         throw e;
       }
     });
@@ -846,6 +893,8 @@
     ridingPreset,
     diff,
     SerialSession,
+    isWriteReady,
+    readAndBackup,
     safeWrite,
     scenario,
     gearLimit,

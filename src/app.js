@@ -19,8 +19,8 @@
     ],
     roadmap: ["План развития ↗", "Roadmap ↗"],
     experimental: [
-      "Версия 3.4.2. Запись — экспериментальная, без проверки на физическом моторе. Доступна только для HZXT SZZ9 / FW 2.0.1.1 / 48 V после явного включения. Другие контроллеры — только чтение.",
-      "Version 3.4.2. Writes are experimental and have not been tested on a physical motor. Only HZXT SZZ9 / FW 2.0.1.1 / 48 V can be enabled explicitly. Other controllers are read-only.",
+      "Версия 3.4.3 для BBS02 750 Вт: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 В / предел контроллера 25 А. Сначала считай и сохрани исходные настройки, затем выбери профиль и запиши изменения. Другие контроллеры — только чтение.",
+      "Version 3.4.3 for BBS02 750 W: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / controller maximum 25 A. Read and back up the original settings, then choose a profile and write the changes. Other controllers are read-only.",
     ],
     connection: ["Подключение", "Connection"],
     basic: ["Основные", "Basic"],
@@ -35,6 +35,14 @@
     connect: ["Подключить", "Connect"],
     disconnect: ["Отключить", "Disconnect"],
     readAll: ["Считать все блоки", "Read all blocks"],
+    replaceDraft: [
+      "Чтение заменит несохранённые изменения и выбранный профиль данными мотора. Продолжить? Чтобы сохранить черновик, нажми «Отмена» и экспортируй .el. Чтение ничего не записывает в мотор.",
+      "Reading will replace unsaved edits and the selected profile with motor data. Continue? To keep the draft, cancel and export .el. Reading does not write settings to the motor.",
+    ],
+    sourceEdited: ["В редакторе остались изменения, ещё не записанные в мотор.", "The editor contains changes not yet written to the motor."],
+    READ_REQUIRED: ["Сначала считай все блоки и сохрани проверенную копию.", "Read all blocks and save a verified backup first."],
+    WRITE_GUARD: ["Запись доступна только через проверку и подтверждение изменений.", "Writes require the validated confirmation workflow."],
+    CONFIRM_REQUIRED: ["Для записи требуется подтверждение изменений.", "Writing requires confirmation of the changes."],
     writeAll: ["Проверить и записать всё", "Review and write all"],
     writeBlock: ["Проверить и записать блок", "Review and write block"],
     noDevice: [
@@ -46,12 +54,12 @@
       "Writing is blocked until identification and a full read succeed.",
     ],
     bench: [
-      "Включить экспериментальную запись для этого сеанса. Понимаю, что совместимость на физическом моторе ещё не подтверждена.",
-      "Enable experimental writes for this session. I understand physical motor compatibility has not been verified.",
+      "Разрешить запись для этого подключения. Перед записью я проверю список изменений; велосипед закреплён, ведущее колесо свободно.",
+      "Allow writes for this connection. I will review the changes before writing; the bike is secured and the driven wheel is clear.",
     ],
     eligible: [
-      "Сигнатура SZZ9 распознана. Это не подтверждение совместимости; для записи нужно включить экспериментальный режим.",
-      "SZZ9 signature recognized. This is not a compatibility certification; writes require experimental mode.",
+      "Контроллер соответствует конфигурации этого выпуска. Считай все блоки, скачай резервную копию и отдельно разреши запись.",
+      "Controller matches this release's configuration. Read all blocks, download a backup and enable writing separately.",
     ],
     unknown: [
       "Неизвестная сигнатура контроллера. Разрешено только чтение.",
@@ -285,8 +293,8 @@
     noChanges: ["Изменений нет.", "No changes."],
     busy: ["Операция выполняется…", "Operation in progress…"],
     readDone: [
-      "Все блоки считаны и проверены.",
-      "All blocks read and checked.",
+      "Все блоки считаны и проверены. Резервная копия сохранена. Теперь можно редактировать; чтение не записывает изменения в мотор.",
+      "All blocks read and checked. Backup saved. Ready to edit; reading does not write changes to the motor.",
     ],
     connected: [
       "Контроллер определён. Выполни полное чтение.",
@@ -302,8 +310,8 @@
     ],
     cancelled: ["Запись отменена.", "Write cancelled."],
     loaded: [
-      "Черновик обновлён. В контроллер ничего не записано.",
-      "Draft updated. Nothing has been written to the controller.",
+      "Черновик обновлён. Эти изменения ещё не записаны в контроллер.",
+      "Draft updated. These changes have not been written to the controller.",
     ],
     invalid: ["Проверь значения: ", "Check values: "],
     partial: [
@@ -348,8 +356,8 @@
     REJECTED: ["Контроллер отклонил запись", "Controller rejected the write"],
     WRITE_IO: ["Ошибка передачи", "Write I/O error"],
     BENCH_REQUIRED: [
-      "Экспериментальная запись не включена",
-      "Experimental writes are not enabled",
+      "Запись для этого подключения не разрешена",
+      "Writing is not enabled for this connection",
     ],
     UNKNOWN_DEVICE: [
       "Для этого контроллера разрешено только чтение",
@@ -466,7 +474,6 @@
     session = null,
     busy = false,
     storageReady = false,
-    loadedSession = null,
     backup = null,
     source = "sourceDemo",
     lastStatus = null;
@@ -497,6 +504,7 @@
     thr: { SV: 11, EV: 35, MODE: 1, DA: 255, SL: 255, SC: 10 },
   };
   let state = C.clone(initial);
+  let editorBase = C.clone(initial);
   const presets = {
     eco: {
       ...C.clone(BBSPresets.eco),
@@ -780,13 +788,19 @@
   function push(profile, newSource) {
     state = C.clone(profile);
     if (newSource) source = newSource;
+    if (newSource === "sourceRead") editorBase = C.clone(profile);
     for (const f of fields) {
       const [part, key] = f[0].split(".");
       $(fieldId(f[0])).value = state[part][key] ?? 255;
     }
     for (const k of ["ALC", "ALBP"])
       for (let i = 0; i < 10; i++) $(`${k}-${i}`).value = state.bas[k][i];
+    if (newSource && !["sourceRead", "sourceEdited"].includes(newSource)) setStatus("loaded");
     refresh();
+  }
+  function draftDirty() {
+    try { return !C.eq(pull(), editorBase); }
+    catch { return true; }
   }
   function setStatus(key, error = false, detail = "") {
     lastStatus = { key, error, detail };
@@ -834,7 +848,7 @@
     const writeOk =
       device &&
       known &&
-      loadedSession === session.id &&
+      C.isWriteReady(session) &&
       $("bench").checked &&
       storageReady &&
       !busy;
@@ -853,7 +867,7 @@
       storageReady ? "storageReady" : "storageUnavailable",
     );
     $("writeEligibility").textContent = t(
-      device ? (known ? "eligible" : "unknown") : "readOnly",
+      device ? (known ? (C.isWriteReady(session) ? "eligible" : "READ_REQUIRED") : "unknown") : "readOnly",
     );
     $("device").textContent = device ? describeDevice(device) : t("noDevice");
     $("backupInfo").textContent = backup
@@ -1101,8 +1115,8 @@
   }
   async function doWrite(blocks) {
     await run(async () => {
-      if (!connected() || loadedSession !== session.id)
-        throw new C.Fault("DISCONNECTED");
+      if (!connected()) throw new C.Fault("DISCONNECTED");
+      if (!C.isWriteReady(session)) throw new C.Fault("READ_REQUIRED");
       const target = pull();
       try {
         const result = await C.safeWrite({
@@ -1114,7 +1128,11 @@
           benchEnabled: $("bench").checked,
         });
         if (result.profile) {
-          push(result.profile, "sourceRead");
+          // A single-block write must not erase unsent edits to other blocks.
+          const remaining = C.clone(target);
+          for (const block of blocks) remaining[C.KEYS[block]] = C.clone(result.profile[C.KEYS[block]]);
+          editorBase = C.clone(result.profile);
+          push(remaining, C.eq(remaining, result.profile) ? "sourceRead" : "sourceEdited");
           renderCalculations();
         }
         setStatus(
@@ -1128,7 +1146,6 @@
         if (error.attempted !== undefined && error.attempted !== null) {
           await session.close();
           session = null;
-          loadedSession = null;
           $("bench").checked = false;
           setStatus("partial", true, t(error.code || "VERIFY"));
         } else throw error;
@@ -1136,7 +1153,6 @@
     });
   }
   function lost(error) {
-    loadedSession = null;
     $("bench").checked = false;
     if ($("writeDialog").open) $("writeDialog").close("cancel");
     report(error);
@@ -1146,7 +1162,6 @@
     run(async () => {
       if (session) await session.close();
       session = null;
-      loadedSession = null;
       $("bench").checked = false;
       const port = await navigator.serial.requestPort();
       session = new C.SerialSession(port, { onLog: log, onFault: lost });
@@ -1157,16 +1172,18 @@
     run(async () => {
       await session?.close();
       session = null;
-      loadedSession = null;
       $("bench").checked = false;
       setStatus("disconnected");
     });
   $("readAll").onclick = () =>
     run(async () => {
       if (!connected()) throw new C.Fault("DISCONNECTED");
-      const snap = await session.exclusive(() => session.readAll());
+      if (draftDirty() && !window.confirm(t("replaceDraft"))) {
+        setStatus("cancelled");
+        return;
+      }
+      const snap = await C.readAndBackup({session, saveBackup});
       BBSRideGarage.resetUndo();
-      loadedSession = session.id;
       push(snap.profile, "sourceRead");
       renderCalculations();
       setStatus("readDone");
@@ -1264,6 +1281,11 @@
       control.addEventListener("input", () => {
         if (control.id === "sim-model")
           $("sim-rpm").value = C.MODELS[control.value].maxRpm;
+        if (!control.id.startsWith("sim-")) {
+          source = "sourceEdited";
+          setStatus("loaded");
+          refresh();
+        }
         renderCalculations();
       }),
     );
