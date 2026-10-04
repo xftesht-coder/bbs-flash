@@ -68,7 +68,11 @@ test("a changed, corrupt or missing second General closes the session without wr
     port.intercept = (sent, reply) => {
       if (port.sent.length !== 2) return reply;
       if (mode === "missing") return null;
-      if (mode === "changed") return checksumFrame(frames[81].slice(0, -1), "legacy");
+      if (mode === "changed") {
+        const changed = reply.slice(0, -1);
+        changed[17] = 24;
+        return checksumFrame(changed, "legacy");
+      }
       const bad = [...reply]; bad[18] ^= 1; return bad;
     };
     const session = new C.SerialSession(port, {timeout: 100});
@@ -196,6 +200,11 @@ test("General current and voltage are binding; unknown devices do not inherit BB
   assert.equal(C.identify(dev), "BBS02");
   assert.equal(C.identify({ ...dev, model: "ZZZZ" }), null);
   assert.equal(C.identify({ ...dev, fw: "2.0.1.2" }), null);
+  for (const mismatch of [
+    { hw: "1.0" }, { hw: undefined }, { hw: "1.2" },
+    { maxCurrent: 18 }, { maxCurrent: 24 }, { maxCurrent: 30 },
+    { nominalCode: 1 }, { manufacturer: "BAFANG" },
+  ]) assert.equal(C.identify({ ...dev, ...mismatch }), null);
   const p = copy();
   p.bas.LC = 24;
   assert.throws(
@@ -441,21 +450,23 @@ test("failed storage, cancellation, no opt-in, invalid values and low stop delay
     await session.close();
   }
 });
-test("unknown firmware cannot write even with explicit opt-in", async () => {
-  const { port, session } = await opened();
-  session.device.fw = "9.9.9.9";
-  await assert.rejects(
-    C.safeWrite({
-      session,
-      target: target(),
-      benchEnabled: true,
-      saveBackup: async () => {},
-      confirm: async () => true,
-    }),
-    /UNKNOWN_DEVICE/,
-  );
-  assert.equal(port.sent.filter((f) => f[0] === 22).length, 0);
-  await session.close();
+test("other hardware, firmware or current ratings cannot write even with explicit opt-in", async () => {
+  for (const mismatch of [{fw: "9.9.9.9"}, {hw: "1.0"}, {maxCurrent: 24}]) {
+    const { port, session } = await opened();
+    Object.assign(session.device, mismatch);
+    await assert.rejects(
+      C.safeWrite({
+        session,
+        target: target(),
+        benchEnabled: true,
+        saveBackup: async () => {},
+        confirm: async () => true,
+      }),
+      /UNKNOWN_DEVICE/,
+    );
+    assert.equal(port.sent.filter((f) => f[0] === 22).length, 0);
+    await session.close();
+  }
 });
 test("changed controller after confirmation aborts without a write", async () => {
   const { port, session } = await opened();

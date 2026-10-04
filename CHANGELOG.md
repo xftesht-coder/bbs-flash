@@ -1,13 +1,15 @@
 # Changelog
 
-## 3.4.3 — 2026-09-30 · Foundation workflow repairs
+## 3.4.3 — 2026-10-04 · Foundation workflow repairs
 
 - Audit the current module/dependency boundaries; prioritize Audit → Cleanup → Core → Safety → Tests → UI without adding ride features.
 - Keep one landing page with a legacy redirect. Preserve original Penoff sources and protective old entry points.
 - Require a stable, backed-up read before exposing controller data for editing. Core owns connection-bound write readiness and rejects stale editing baselines or unauthorized low-level writes.
 - Core closes uncertain write sessions; callbacks receive copies; successful full verification advances the baseline.
 - Confirm replacement of modified drafts on Read All. Preserve unsent changes when writing one block.
-- Replay all four owner response blocks through the full workflow; add storage, stale-edit, bypass and UI regressions. Physical write/restore remains unverified.
+- Replay all four owner response blocks through the full workflow; add storage, stale-edit, bypass and UI regressions.
+- Restrict writes to the owner's exact HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / maximum 25 A configuration; reject other revisions and current ratings.
+- Record the owner's confirmation of a verified write and ride with Full ahead on 3.4.2. The 3.4.3 changes are software-tested; physical restore and independent Penoff verification remain outstanding.
 
 ## 3.4.2 — 2026-09-26 · Legacy UART read checksums
 

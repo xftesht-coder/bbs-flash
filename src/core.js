@@ -256,14 +256,15 @@
     }
   }
   function identify(device) {
-    // Project owner's documented controller. This is identification, NOT a claim
-    // of bench qualification. Every write also requires explicit bench opt-in.
+    // Match only the owner's captured hardware revision and ratings. An owner-
+    // reported write/ride does not qualify other revisions or every profile.
     return device &&
       device.manufacturer === "HZXT" &&
       device.model === "SZZ9" &&
+      device.hw === "1.1" &&
       device.fw === "2.0.1.1" &&
       device.nominalCode === 2 &&
-      device.maxCurrent <= 25
+      device.maxCurrent === 25
       ? "BBS02"
       : null;
   }

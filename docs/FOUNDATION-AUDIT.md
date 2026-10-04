@@ -23,12 +23,12 @@ Baseline: ad3aed5 (3.4.2). Scope: Audit → Cleanup → Core → Safety → Test
 
 ## Preserved protocol contracts
 
-1200/8N1; exact General/Basic/PAS/Throttle lengths; session-pinned legacy/additive RX checksum; distinct TX checksum; strict fragmented framing; Penoff .el offsets; unknown identities read-only; explicit experimental write opt-in; backup before writes; final confirmation; per-block and full readback. No physical motor access from automated tests.
+1200/8N1; exact General/Basic/PAS/Throttle lengths; session-pinned legacy/additive RX checksum; distinct TX checksum; strict fragmented framing; Penoff .el offsets; unknown identities read-only; explicit session write opt-in; backup before writes; final confirmation; per-block and full readback. No physical motor access from automated tests.
 
 ## Evidence
 
 - Baseline: 35 Node tests passed on 2026-09-30. Existing tests do not cover findings 1–5 completely.
-- Owner supplied General, Basic, PAS and Throttle responses and reported a complete successful read on 2026-09-26. Successful physical write/restore and ride validation are still unconfirmed.
+- Owner supplied General, Basic, PAS and Throttle responses and reported a complete successful read on 2026-09-26. On 2026-09-30 the owner also confirmed a verified write and ride with Full ahead on 3.4.2. This is an owner report; physical restore, independent Penoff verification and write/ACK captures remain outstanding. The 3.4.3 changes have software test coverage only.
 - Final verification: 41 Node tests and 25 Edge browser scenarios passed; syntax checks passed; npm audit reports 0 known vulnerabilities. Passing tests cannot establish physical motor qualification.
 
 ## Resolution
@@ -43,4 +43,4 @@ Baseline: ad3aed5 (3.4.2). Scope: Audit → Cleanup → Core → Safety → Test
 | Stale success banner | Applying or editing controller draft clears old write-success status | Full owner replay followed by another ride draft and manual edit |
 | Duplicate landing | One index.html plus legacy redirect | Static site tests and browser checks of both URLs |
 
-No runtime dependencies were added. No UART wire values, checksum rules, Penoff field offsets or ride-profile definitions changed. Existing archives and historical examples remain available because they are references or still-used UI data, not proven dead code. The owner packets are now recorded for all four blocks. Physical write/restore acceptance remains open and must precede broader compatibility claims or new tuning features.
+No runtime dependencies were added. No UART wire values, checksum rules, Penoff field offsets or ride-profile definitions changed. Existing archives and historical examples remain available because they are references or still-used UI data, not proven dead code. The owner packets are now recorded for all four blocks. The release gate was narrowed to HW 1.1 and maximum 25 A after the owner's write/ride confirmation. Physical restore and independent hardware validation remain open before broader compatibility claims.

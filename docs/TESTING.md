@@ -2,7 +2,7 @@
 
 Additional coverage: twelve ride profiles preserve hardware/PAS0/throttle fields and current ceilings at 1/12/18/25/30 A; switching economy → full ahead; actual supplied Penoff.el indices and roundtrip; browser preview/cancel/apply/undo for all twelve modes, category counts and new RU/EN descriptions, no profile-driven UART commands, local named drafts and escaping, downloads, read-only file comparison, rejected malformed comparison and IndexedDB v1 migration with existing backups/preferences.
 
-Profile meters describe design intent, not measured tuning quality. Default battery capacity is 19.2 Ah as supplied by the owner. No physical qualification was performed in this release.
+Profile meters describe design intent, not measured tuning quality. Default battery capacity is 19.2 Ah as supplied by the owner. The owner reported a verified write and ride on 3.4.2; the 3.4.3 changes have software test coverage only. See BENCH-VALIDATION.md for the exact limits of this evidence.
 
 Baseline audited: `ad3aed5` (3.4.2). Tests do not access a physical serial port.
 
@@ -48,4 +48,4 @@ npm run test:browser
 
 ## Still required
 
-Physical write/restore and write/ACK captures, SZZ9 RPM (V1) and Time of Stop behavior (V2), actual sensor/throttle behavior, Safari/Firefox read-only coverage and screen-reader evaluation. Original v3.0 DoD is intentionally not reported as fully complete. Hardware acceptance criteria are in `ROADMAP.md`.
+Physical restore, independent Penoff verification and write/ACK captures, SZZ9 RPM (V1) and Time of Stop behavior (V2), actual sensor/throttle behavior, Safari/Firefox read-only coverage and screen-reader evaluation. Original v3.0 DoD is intentionally not reported as fully complete. Hardware acceptance criteria are in `ROADMAP.md`.

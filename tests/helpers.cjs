@@ -26,7 +26,7 @@ const profile = {
 // Independently specified reference-shaped frames, NOT real hardware captures.
 const frames = {
   81: [
-    81, 16, 72, 90, 88, 84, 83, 90, 90, 57, 49, 48, 50, 48, 49, 49, 2, 25, 47,
+    81, 16, 72, 90, 88, 84, 83, 90, 90, 57, 49, 49, 50, 48, 49, 49, 2, 25, 48,
   ],
   82: [
     82, 24, 41, 18, 0, 15, 22, 30, 40, 50, 60, 72, 86, 100, 0, 30, 40, 52, 64,

@@ -56,7 +56,7 @@ Basic speed sensor type occupies the top two bits and signals the lower six; int
 
 ## Evidence boundary
 
-`tests/helpers.cjs` frames are manually specified, reference-shaped **synthetic vectors**, not hardware captures. They provide independent expected bytes for corruption and serializer tests. Separate fixtures preserve owner General/Basic/PAS/Throttle captures and independent reference responses for all four blocks. Replaying them is not a fresh physical connection test. The owner reported a complete successful read on 2026-09-26. Physical write/ACK captures and restore, Time of Stop behavior and RPM remain open in the roadmap.
+`tests/helpers.cjs` frames are manually specified, reference-shaped **synthetic vectors**, not hardware captures. They provide independent expected bytes for corruption and serializer tests. Separate fixtures preserve owner General/Basic/PAS/Throttle captures and independent reference responses for all four blocks. Replaying them is not a fresh physical connection test. The owner reported a complete successful read on 2026-09-26, then confirmed a verified write and a ride on 3.4.2 on 2026-09-30. No write/ACK capture or independent Penoff comparison was supplied. Physical write/ACK captures and restore, Time of Stop behavior and RPM remain open in the roadmap.
 
 ## Transaction boundary (3.4.3)
 

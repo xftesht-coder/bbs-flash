@@ -19,8 +19,8 @@
     ],
     roadmap: ["План развития ↗", "Roadmap ↗"],
     experimental: [
-      "Версия 3.4.3. Запись — экспериментальная, без проверки на физическом моторе. Доступна только для HZXT SZZ9 / FW 2.0.1.1 / 48 V после явного включения. Другие контроллеры — только чтение.",
-      "Version 3.4.3. Writes are experimental and have not been tested on a physical motor. Only HZXT SZZ9 / FW 2.0.1.1 / 48 V can be enabled explicitly. Other controllers are read-only.",
+      "Версия 3.4.3 для BBS02 750 Вт: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 В / предел контроллера 25 А. Сначала считай и сохрани исходные настройки, затем выбери профиль и запиши изменения. Другие контроллеры — только чтение.",
+      "Version 3.4.3 for BBS02 750 W: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / controller maximum 25 A. Read and back up the original settings, then choose a profile and write the changes. Other controllers are read-only.",
     ],
     connection: ["Подключение", "Connection"],
     basic: ["Основные", "Basic"],
@@ -54,12 +54,12 @@
       "Writing is blocked until identification and a full read succeed.",
     ],
     bench: [
-      "Включить экспериментальную запись для этого сеанса. Понимаю, что совместимость на физическом моторе ещё не подтверждена.",
-      "Enable experimental writes for this session. I understand physical motor compatibility has not been verified.",
+      "Разрешить запись для этого подключения. Перед записью я проверю список изменений; велосипед закреплён, ведущее колесо свободно.",
+      "Allow writes for this connection. I will review the changes before writing; the bike is secured and the driven wheel is clear.",
     ],
     eligible: [
-      "Сигнатура SZZ9 распознана. Это не подтверждение совместимости; для записи нужно включить экспериментальный режим.",
-      "SZZ9 signature recognized. This is not a compatibility certification; writes require experimental mode.",
+      "Контроллер соответствует конфигурации этого выпуска. Считай все блоки, скачай резервную копию и отдельно разреши запись.",
+      "Controller matches this release's configuration. Read all blocks, download a backup and enable writing separately.",
     ],
     unknown: [
       "Неизвестная сигнатура контроллера. Разрешено только чтение.",
@@ -356,8 +356,8 @@
     REJECTED: ["Контроллер отклонил запись", "Controller rejected the write"],
     WRITE_IO: ["Ошибка передачи", "Write I/O error"],
     BENCH_REQUIRED: [
-      "Экспериментальная запись не включена",
-      "Experimental writes are not enabled",
+      "Запись для этого подключения не разрешена",
+      "Writing is not enabled for this connection",
     ],
     UNKNOWN_DEVICE: [
       "Для этого контроллера разрешено только чтение",
