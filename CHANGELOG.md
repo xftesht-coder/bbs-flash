@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.4.6 — 2026-10-05 · Browser cache compatibility
+
+- Version every runtime script and stylesheet URL so an updated page bypasses modules retained from an older release.
+- Check every asset cache key against the release version and reproduce an incompatible module cached in the same browser context.
+- Retain the guided setup and verified-write workflow from 3.4.5.
+
 ## 3.4.5 — 2026-10-05 · Guided motor setup
 
 - Show connection, backed-up reading, draft editing and verified writing as separate setup steps with contextual next actions.

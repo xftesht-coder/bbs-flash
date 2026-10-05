@@ -13,7 +13,7 @@ test("one canonical landing page; legacy URL redirects and current app is linked
 test("release pages reference existing local assets and have no inline script or stale production domains", () => {
   for (const file of ["index.html", "landing.html", "bbs-flash.html"]) {
     const html = read(file);
-    for (const match of html.matchAll(/(?:src|href)="(\.\/[^"?#]+)"/g))
+    for (const match of html.matchAll(/(?:src|href)="(\.\/[^"?#]+)(?:[?#][^"]*)?"/g))
       assert.ok(
         fs.existsSync(path.join(root, match[1])),
         `${file}: ${match[1]}`,
@@ -55,4 +55,17 @@ test("version labels and release documentation agree", () => {
     read("ROADMAP.md"),
     /\[ \] Чтение\/запись каждого блока на физическом/,
   );
+});
+
+test("all runtime scripts and styles have this release's cache key", () => {
+  const version = JSON.parse(read("package.json")).version;
+  for (const file of ["index.html", "bbs-flash.html"]) {
+    const assets = [...read(file).matchAll(/(?:src|href)="(\.\/src\/[^\"]+)"/g)];
+    assert.ok(assets.length > 0);
+    for (const [,ref] of assets) {
+      const url = new URL(ref, "https://example.test/");
+      assert.equal(url.searchParams.get("v"), version, `${file}: ${ref}`);
+      assert.ok(fs.existsSync(path.join(root, url.pathname.slice(1))), ref);
+    }
+  }
 });

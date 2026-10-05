@@ -7,6 +7,7 @@ GitHub Pages serves the repository root from `main`. `.nojekyll` disables Jekyll
 ## Release procedure
 
 1. Work in a branch and open a PR. `CI and release` runs syntax, protocol, site and headless Chromium checks. Review the diff and known hardware limits.
+   Bump the `?v=` key on every runtime script and stylesheet in both entry pages with the package version. Tests reject missing or stale keys and exercise an old module retained in the browser cache.
 2. Merge only after successful checks. GitHub Pages publishes `main` using its existing configuration.
 3. The main-branch workflow waits for the served application, core and landing to match the committed SHA-256 hashes and tests their basic browser behavior over HTTPS.
 4. Only after that verification, create the version tag and GitHub release from `package.json` and `docs/RELEASE.md`. Existing tags are not moved or overwritten.
