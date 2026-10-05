@@ -1,4 +1,6 @@
-# Verification of 3.4.5
+# Verification of 3.4.6
+
+42 Node tests and 29 browser scenarios include release-specific keys on all runtime assets and an actual browser context primed with an incompatible, cacheable older module before opening the current application.
 
 Guided setup coverage: 41 Node tests and 28 browser scenarios. The additional scenarios exercise navigation-only next actions, offline profile selection, reading without writing, explicit write opt-in, cancellation, confirmed readback, invalid fields, language switching, and reconnect/reload with an older saved backup. Existing failure tests also check that storage errors, unsent blocks and partial writes cannot show a completed setup. Hardware is simulated.
 

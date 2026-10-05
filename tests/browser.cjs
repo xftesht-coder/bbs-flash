@@ -11,6 +11,7 @@ fs.mkdirSync(output, { recursive: true });
 const results = [],
   errors = [];
 let browser, server, base;
+let primeLegacyCache = false;
 const types = {
   ".html": "text/html; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
@@ -121,6 +122,17 @@ async function toPanel(page, id) {
 (async () => {
   try {
     server = http.createServer((req, res) => {
+      if (primeLegacyCache && req.url === "/cache-prime.html") {
+        res.setHeader("Content-Type", "text/html");
+        res.end('<link rel="icon" href="/assets/icon.svg"><script src="/src/ride-garage.js"></script>');
+        return;
+      }
+      if (primeLegacyCache && req.url === "/src/ride-garage.js") {
+        res.setHeader("Content-Type", "text/javascript");
+        res.setHeader("Cache-Control", "public, max-age=3600");
+        res.end("window.__legacyGarageCached = true;");
+        return;
+      }
       let file;
       try {
         file = path.resolve(
@@ -147,6 +159,18 @@ async function toPanel(page, id) {
       ...(process.env.BROWSER_CHANNEL
         ? { channel: process.env.BROWSER_CHANNEL }
         : {}),
+    });
+    await check("updated app bypasses an incompatible module retained in the browser cache", async () => {
+      const {page, context} = await newPage();
+      primeLegacyCache = true;
+      try {
+        await page.goto(base + "/cache-prime.html");
+        assert.equal(await page.evaluate(() => window.__legacyGarageCached), true);
+        await ready(page);
+        assert.equal(await page.evaluate(() => window.__legacyGarageCached), undefined);
+        assert.equal(await page.evaluate(() => typeof BBSRideGarage.init), "function");
+        assert.equal(await page.locator(".garage-start").getAttribute("data-setup-state"), "offline");
+      } finally { primeLegacyCache = false; await context.close(); }
     });
     await check(
       "fresh IndexedDB startup; dark default; every tab accessible",
