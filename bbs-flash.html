@@ -11,7 +11,7 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
     />
-    <title>BBS Flash 3.4.4 · Настройка мотора</title>
+    <title>BBS Flash 3.4.5 · Настройка мотора</title>
     <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./src/styles.css" />
     <link rel="stylesheet" href="./src/garage.css" />
@@ -32,7 +32,7 @@
           ><span class="brand-stripes" aria-hidden="true"></span>BBS<span
             class="brand-slash"
             >//</span
-          >FLASH<span class="version">3.4.4</span></a
+          >FLASH<span class="version">3.4.5</span></a
         >
         <div class="tools">
           <button
@@ -68,9 +68,20 @@
       </div>
       <details class="compatibility"><summary data-t="compatibilityTitle"></summary><p data-t="experimental"></p></details>
       <section class="garage-start" aria-labelledby="startTitle">
-        <h2 id="startTitle" data-g="welcome"></h2>
+        <ol id="setupSteps" class="setup-steps">
+          <li data-setup-step="0" data-label="stepConnect"><span aria-hidden="true">01</span><b data-t="stepConnect"></b></li>
+          <li data-setup-step="1" data-label="stepRead"><span aria-hidden="true">02</span><b data-t="stepRead"></b></li>
+          <li data-setup-step="2" data-label="stepEdit"><span aria-hidden="true">03</span><b data-t="stepEdit"></b></li>
+          <li data-setup-step="3" data-label="stepVerify"><span aria-hidden="true">04</span><b data-t="stepVerify"></b></li>
+        </ol>
+        <div class="setup-summary">
+          <div role="status" aria-live="polite" aria-atomic="true">
+            <h2 id="startTitle" class="setup-title"></h2>
+            <p id="setupHint" class="muted"></p>
+          </div>
+          <button id="setupNext" class="primary" type="button"></button>
+        </div>
         <div class="start-paths">
-          <button id="startConnect" data-g="connect" class="primary" data-editable></button>
           <button id="startBrowse" data-g="browse" data-editable></button>
           <button id="startImport" data-g="open" data-editable></button>
         </div>
@@ -257,6 +268,7 @@
             <p class="muted ride-ratings" data-g="ratings"></p>
             <section id="rideDetail" class="ride-detail" tabindex="-1" aria-label="Ride profile details"></section>
             <p id="garageMessage" role="status" aria-live="polite"></p>
+            <button id="garageNext" data-g="nextStep" data-editable hidden></button>
             <button id="garageUndo" data-g="undo" disabled></button>
             <section class="card garage-library" aria-labelledby="garageLibraryTitle">
               <h3 id="garageLibraryTitle" data-g="library"></h3><p data-g="local" class="muted"></p>

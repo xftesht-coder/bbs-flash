@@ -5,6 +5,42 @@
     S = BBSStore,
     $ = (id) => document.getElementById(id);
   const TEXT = {
+    setupSteps: ["Этапы настройки мотора", "Motor setup steps"],
+    stepConnect: ["Подключение", "Connect"],
+    stepRead: ["Чтение и копия", "Read and back up"],
+    stepEdit: ["Выбор настроек", "Choose settings"],
+    stepVerify: ["Запись и проверка", "Write and verify"],
+    stepDone: [" — выполнено", " — complete"],
+    setupOffline: ["Начни с подключения мотора", "Start by connecting your motor"],
+    setupOfflineBrowser: ["Редактор работает без подключения", "Explore the editor without a connection"],
+    setupOfflineHint: ["Профили и файлы можно изучать без кабеля. Для настройки своего мотора сначала подключись и считай его исходные данные.", "Explore profiles and files without a cable. To configure your motor, connect and read its original settings first."],
+    setupDraftOffline: ["Профиль пока только в черновике", "The profile is still a draft"],
+    setupDraftOfflineHint: ["Он ещё не записан в мотор. Перед чтением скачай черновик, если хочешь сохранить его: чтение заменит редактор данными контроллера.", "It has not been written to the motor. Download the draft before reading if you want to keep it: reading replaces the editor with controller data."],
+    setupRead: ["Мотор подключён. Теперь считай настройки", "Connected. Now read the settings"],
+    setupReadHint: ["«Считать все блоки» проверит данные и сохранит резервную копию. Эта кнопка ничего не записывает в мотор.", "Read all blocks checks the data and saves a backup. This button does not write anything to the motor."],
+    setupReady: ["Настройки считаны. Копия сохранена", "Settings read. Backup saved"],
+    setupReadyHint: ["Теперь выбери профиль или измени параметры. Пока мотор работает с прежними настройками — чтение их не меняет.", "Choose a profile or edit parameters next. The motor still uses its existing settings: reading does not change them."],
+    setupDraft: ["Есть изменения для записи", "There are changes to write"],
+    setupDraftHint: ["Изменений параметров: {count}. Они пока только в черновике. Перейди к записи, разреши её для этого подключения и проверь список изменений.", "Changed parameters: {count}. They are still in the draft. Go to writing, allow it for this connection and review the changes."],
+    setupVerified: ["Запись подтверждена", "Write verified"],
+    setupVerifiedHint: ["Повторное чтение всех блоков подтвердило совпадение с черновиком. Резервная копия исходных настроек доступна для скачивания.", "Reading all blocks back confirmed they match the draft. The original-settings backup is available to download."],
+    setupPartial: ["Запись не подтверждена", "Write not verified"],
+    setupPartialHint: ["Часть изменений могла сохраниться. Подключись заново и считай все блоки, чтобы проверить фактические настройки. Исходная копия сохранена.", "Some changes may have been saved. Reconnect and read all blocks to check the actual settings. The original backup was saved."],
+    setupStorage: ["Хранилище резервных копий недоступно", "Backup storage is unavailable"],
+    setupStorageHint: ["Запись заблокирована. Проверь доступность хранилища в этом браузере; черновик можно скачать отдельным файлом.", "Writing is blocked. Check this browser's storage availability; you can download the draft as a separate file."],
+    setupReadOnly: ["Этот контроллер доступен только для чтения", "This controller is read-only"],
+    setupReadOnlyHint: ["Можно сохранить прочитанные настройки и изучить профили. Запись для этой версии контроллера не поддерживается.", "You can save the settings you read and explore profiles. Writing is not supported for this controller revision."],
+    setupInvalid: ["Проверь значения в редакторе", "Check the editor values"],
+    setupInvalidHint: ["Есть пустое поле или значение вне допустимого диапазона. Исправь его перед проверкой изменений.", "A field is empty or outside its allowed range. Correct it before reviewing changes."],
+    setupWorking: ["Действие выполняется…", "Operation in progress…"],
+    setupWorkingHint: ["Дождись результата. Если открыто окно проверки изменений, подтверди запись или отмени её там.", "Wait for the result. If the change-review dialog is open, confirm or cancel the write there."],
+    setupConnectAction: ["К подключению", "Go to connection"],
+    setupReadAction: ["К чтению настроек", "Go to reading"],
+    setupWriteAction: ["Перейти к записи", "Go to writing"],
+    setupBackupAction: ["К резервной копии", "Go to backup"],
+    setupEditAction: ["Проверить поля", "Check fields"],
+    setupBrowseAction: ["Выбрать профиль", "Choose a profile"],
+    setupExportAction: ["К скачиванию черновика", "Go to draft download"],
     compatibilityTitle: ["BBS02 750 Вт · совместимость подключения", "BBS02 750 W · connection compatibility"],
     motorRating: ["750 Вт / 48 В", "750 W / 48 V"],
     currentUnit: ["А", "A"],
@@ -24,8 +60,8 @@
     ],
     roadmap: ["План развития ↗", "Roadmap ↗"],
     experimental: [
-      "Версия 3.4.4 для BBS02 750 Вт: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 В / предел контроллера 25 А. Сначала считай и сохрани исходные настройки, затем выбери профиль и запиши изменения. Другие контроллеры — только чтение.",
-      "Version 3.4.4 for BBS02 750 W: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / controller maximum 25 A. Read and back up the original settings, then choose a profile and write the changes. Other controllers are read-only.",
+      "Версия 3.4.5 для BBS02 750 Вт: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 В / предел контроллера 25 А. Сначала считай и сохрани исходные настройки, затем выбери профиль и запиши изменения. Другие контроллеры — только чтение.",
+      "Version 3.4.5 for BBS02 750 W: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / controller maximum 25 A. Read and back up the original settings, then choose a profile and write the changes. Other controllers are read-only.",
     ],
     connection: ["Подключение", "Connection"],
     basic: ["Основные настройки", "Basic"],
@@ -51,8 +87,8 @@
     writeAll: ["Проверить и записать всё", "Review and write all"],
     writeBlock: ["Проверить и записать блок", "Review and write block"],
     noDevice: [
-      "Контроллер не подключён. Значения в редакторе — пример.",
-      "No controller connected. Editor values are an example.",
+      "Мотор не подключён. Редактор доступен; для чтения и записи нужно подключение.",
+      "No motor connected. You can use the editor; reading and writing require a connection.",
     ],
     readOnly: [
       "Запись заблокирована до определения контроллера и полного чтения.",
@@ -63,8 +99,8 @@
       "Allow writes for this connection. I will review the changes before writing; the bike is secured and the driven wheel is clear.",
     ],
     eligible: [
-      "Контроллер соответствует конфигурации этого выпуска. Считай все блоки, скачай резервную копию и отдельно разреши запись.",
-      "Controller matches this release's configuration. Read all blocks, download a backup and enable writing separately.",
+      "Контроллер поддерживается. Исходные настройки прочитаны и копия сохранена. Скачай её отдельно; запись нужно разрешить для этого подключения.",
+      "Controller supported. Original settings read and backed up. Download a separate copy; writing requires permission for this connection.",
     ],
     unknown: [
       "Эта версия контроллера пока не поддерживает запись. Доступно только чтение.",
@@ -481,6 +517,8 @@
     storageReady = false,
     backup = null,
     source = "sourceDemo",
+    verifiedWrite = false,
+    nextSetup = { panel: "connection", target: "connect" },
     lastStatus = null;
   const t = (k) => (TEXT[k] ? TEXT[k][lang === "en" ? 1 : 0] : k);
   const initial = {
@@ -791,6 +829,7 @@
     return C.validate(draft);
   }
   function push(profile, newSource) {
+    verifiedWrite = false;
     state = C.clone(profile);
     if (newSource) source = newSource;
     if (newSource === "sourceRead") editorBase = C.clone(profile);
@@ -838,6 +877,69 @@
   function connected() {
     return session && !session.closed && session.device;
   }
+  function refreshSetup() {
+    const device = connected(), read = !!device && C.isWriteReady(session);
+    let changes = [], invalid = false;
+    try { changes = C.diff(editorBase, pull()); } catch { invalid = true; }
+    const dirty = invalid || changes.length > 0;
+    let stage = !device ? 0 : !read ? 1 : dirty ? 3 : 2;
+    let mode = "offline", title = "setupOffline", hint = "setupOfflineHint";
+    let action = "setupConnectAction", panel = "connection", target = "connect";
+    const choose = (state, heading, description, button, destination, focus) => {
+      mode = state; title = heading; hint = description; action = button; panel = destination; target = focus;
+    };
+    if (lastStatus?.key === "partial") {
+      choose("partial", "setupPartial", "setupPartialHint", action, panel, target);
+    } else if (!device) {
+      if (!["sourceDemo", "sourceRead"].includes(source))
+        choose("draft-offline", "setupDraftOffline", "setupDraftOfflineHint", action, panel, target);
+      if (!("serial" in navigator) || !isSecureContext)
+        choose("offline-browser", "setupOfflineBrowser", "serialMissing", "setupBrowseAction", "presets", "ridePreview");
+    } else if (!storageReady) {
+      choose("storage", "setupStorage", "setupStorageHint", "setupExportAction", "connection", "export");
+    } else if (!read) {
+      choose("read", "setupRead", dirty ? "setupDraftOfflineHint" : "setupReadHint", "setupReadAction", "connection", "readAll");
+    } else if (!C.identify(device)) {
+      stage = 2;
+      choose("read-only", "setupReadOnly", "setupReadOnlyHint", "setupBackupAction", "connection", "backupEl");
+    } else if (invalid) {
+      stage = 2;
+      const field = [...document.querySelectorAll('input[data-editable],select[data-editable]')]
+        .find(el => !el.id.startsWith("sim-") && (!el.checkValidity() || el.value === ""));
+      choose("invalid", "setupInvalid", "setupInvalidHint", "setupEditAction", field?.closest('section[id^="panel-"]')?.id.replace("panel-", "") || "basic", field?.id || "bas-LC");
+    } else if (dirty) {
+      choose("draft", "setupDraft", "setupDraftHint", "setupWriteAction", "connection", $("bench").checked ? "writeAll" : "bench");
+    } else if (verifiedWrite) {
+      stage = 4;
+      choose("verified", "setupVerified", "setupVerifiedHint", "setupBackupAction", "connection", "backupEl");
+    } else {
+      choose("ready", "setupReady", "setupReadyHint", "setupBrowseAction", "presets", "ridePreview");
+    }
+    if (busy) { mode = "busy"; title = "setupWorking"; hint = "setupWorkingHint"; }
+    nextSetup = { panel, target };
+    $("startTitle").textContent = t(title);
+    $("setupHint").textContent = t(hint).replace("{count}", changes.length);
+    $("setupNext").textContent = t(action);
+    $("setupNext").disabled = busy;
+    $("setupSteps").setAttribute("aria-label", t("setupSteps"));
+    $("setupSteps").closest("section").dataset.setupState = mode;
+    document.querySelectorAll("[data-setup-step]").forEach(step => {
+      const i = Number(step.dataset.setupStep), done = i < stage;
+      step.dataset.complete = String(done);
+      step.setAttribute("aria-label", t(step.dataset.label) + (done ? t("stepDone") : ""));
+      if (i === stage) step.setAttribute("aria-current", "step");
+      else step.removeAttribute("aria-current");
+      step.querySelector("span").textContent = done ? "✓" : "0" + (i + 1);
+    });
+  }
+  function goToNextStep() {
+    if (busy) return;
+    refreshSetup();
+    document.querySelector(`[data-panel="${nextSetup.panel}"]`).click();
+    const target = $(nextSetup.target);
+    target?.focus();
+    target?.scrollIntoView({ block: "center", behavior: "auto" });
+  }
   function refresh() {
     const device = connected(),
       known = device && C.identify(device);
@@ -882,6 +984,7 @@
         " " +
         backup.device.model
       : t("noBackup");
+    refreshSetup();
   }
   function describeDevice(d) {
     const compatibility = d.readChecksum === "legacy"
@@ -895,7 +998,7 @@
     document.documentElement.lang = lang;
     $("language").value = lang;
     $("language").setAttribute("aria-label", t("language"));
-    document.title = lang === "en" ? "BBS Flash 3.4.4 · Configurator" : "BBS Flash 3.4.4 · Настройка мотора";
+    document.title = lang === "en" ? "BBS Flash 3.4.5 · Configurator" : "BBS Flash 3.4.5 · Настройка мотора";
     document.querySelectorAll("[data-hud-pas]").forEach(b => b.setAttribute("aria-label", t("selectPas") + " " + b.dataset.hudPas));
     document
       .querySelectorAll("[data-t]")
@@ -1123,6 +1226,7 @@
   }
   async function doWrite(blocks) {
     await run(async () => {
+      verifiedWrite = false;
       if (!connected()) throw new C.Fault("DISCONNECTED");
       if (!C.isWriteReady(session)) throw new C.Fault("READ_REQUIRED");
       const target = pull();
@@ -1136,6 +1240,7 @@
           benchEnabled: $("bench").checked,
         });
         if (result.profile) {
+          BBSRideGarage.resetUndo();
           // A single-block write must not erase unsent edits to other blocks.
           const remaining = C.clone(target);
           for (const block of blocks) remaining[C.KEYS[block]] = C.clone(result.profile[C.KEYS[block]]);
@@ -1143,6 +1248,7 @@
           push(remaining, C.eq(remaining, result.profile) ? "sourceRead" : "sourceEdited");
           renderCalculations();
         }
+        verifiedWrite = result.status === "written" && !draftDirty();
         setStatus(
           result.status === "written"
             ? "written"
@@ -1161,6 +1267,7 @@
     });
   }
   function lost(error) {
+    verifiedWrite = false;
     $("bench").checked = false;
     if ($("writeDialog").open) $("writeDialog").close("cancel");
     report(error);
@@ -1168,6 +1275,7 @@
   }
   $("connect").onclick = () =>
     run(async () => {
+      verifiedWrite = false;
       if (session) await session.close();
       session = null;
       $("bench").checked = false;
@@ -1178,6 +1286,7 @@
     });
   $("disconnect").onclick = () =>
     run(async () => {
+      verifiedWrite = false;
       await session?.close();
       session = null;
       $("bench").checked = false;
@@ -1197,6 +1306,7 @@
       setStatus("readDone");
     });
   $("bench").onchange = refresh;
+  $("setupNext").onclick = goToNextStep;
   $("writeAll").onclick = () => doWrite([82, 83, 84]);
   document
     .querySelectorAll(".write-block")
@@ -1290,6 +1400,7 @@
         if (control.id === "sim-model")
           $("sim-rpm").value = C.MODELS[control.value].maxRpm;
         if (!control.id.startsWith("sim-")) {
+          verifiedWrite = false;
           source = "sourceEdited";
           setStatus("loaded");
           refresh();
@@ -1324,6 +1435,7 @@
     lang: () => lang, busy: () => busy, source: () => source,
     pull, push, calculate: renderCalculations, diffTable: changesTable,
     download, error: report,
+    nextStep: goToNextStep,
     panel: (name) => document.querySelector(`[data-panel="${name}"]`).click(),
   });
   BBSDash.init(renderCalculations);
