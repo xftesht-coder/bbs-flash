@@ -52,7 +52,7 @@
     guideButton: ["Справочник", "? Penoff"],
     offline: ["Не подключено", "Disconnected"],
     online: ["Подключено", "Connected"],
-    eyebrow: ["Твой BBS02 · настройки под себя", "Pit garage / electric drive"],
+    previewControls: ["Условия расчёта и анимация", "Estimate settings & animation"],
     title: ["Настрой свой ритм.", "TUNE YOUR RIDE."],
     subtitle: [
       "Выбери характер поездки. Посмотри изменения. Сохрани в мотор.",
@@ -60,8 +60,8 @@
     ],
     roadmap: ["План развития ↗", "Roadmap ↗"],
     experimental: [
-      "Версия 3.4.6 для BBS02 750 Вт: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 В / предел контроллера 25 А. Сначала считай и сохрани исходные настройки, затем выбери профиль и запиши изменения. Другие контроллеры — только чтение.",
-      "Version 3.4.6 for BBS02 750 W: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / controller maximum 25 A. Read and back up the original settings, then choose a profile and write the changes. Other controllers are read-only.",
+      "Версия 3.4.7 для BBS02 750 Вт: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 В / предел контроллера 25 А. Сначала считай и сохрани исходные настройки, затем выбери профиль и запиши изменения. Другие контроллеры — только чтение.",
+      "Version 3.4.7 for BBS02 750 W: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / controller maximum 25 A. Read and back up the original settings, then choose a profile and write the changes. Other controllers are read-only.",
     ],
     connection: ["Подключение", "Connection"],
     basic: ["Основные настройки", "Basic"],
@@ -998,7 +998,7 @@
     document.documentElement.lang = lang;
     $("language").value = lang;
     $("language").setAttribute("aria-label", t("language"));
-    document.title = lang === "en" ? "BBS Flash 3.4.6 · Configurator" : "BBS Flash 3.4.6 · Настройка мотора";
+    document.title = lang === "en" ? "BBS Flash 3.4.7 · Configurator" : "BBS Flash 3.4.7 · Настройка мотора";
     document.querySelectorAll("[data-hud-pas]").forEach(b => b.setAttribute("aria-label", t("selectPas") + " " + b.dataset.hudPas));
     document
       .querySelectorAll("[data-t]")

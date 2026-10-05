@@ -11,19 +11,19 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
     />
-    <title>BBS Flash 3.4.6 · Настройка мотора</title>
+    <title>BBS Flash 3.4.7 · Настройка мотора</title>
     <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./src/styles.css?v=3.4.6" />
-    <link rel="stylesheet" href="./src/garage.css?v=3.4.6" />
-    <link rel="stylesheet" href="./src/ride-garage.css?v=3.4.6" />
-    <script defer src="./src/core.js?v=3.4.6"></script>
-    <script defer src="./src/storage.js?v=3.4.6"></script>
-    <script defer src="./src/presets.js?v=3.4.6"></script>
-    <script defer src="./src/guide.js?v=3.4.6"></script>
-    <script defer src="./src/dash.js?v=3.4.6"></script>
-    <script defer src="./src/ride-profiles.js?v=3.4.6"></script>
-    <script defer src="./src/ride-garage.js?v=3.4.6"></script>
-    <script defer src="./src/app.js?v=3.4.6"></script>
+    <link rel="stylesheet" href="./src/styles.css?v=3.4.7" />
+    <link rel="stylesheet" href="./src/garage.css?v=3.4.7" />
+    <link rel="stylesheet" href="./src/ride-garage.css?v=3.4.7" />
+    <script defer src="./src/core.js?v=3.4.7"></script>
+    <script defer src="./src/storage.js?v=3.4.7"></script>
+    <script defer src="./src/presets.js?v=3.4.7"></script>
+    <script defer src="./src/guide.js?v=3.4.7"></script>
+    <script defer src="./src/dash.js?v=3.4.7"></script>
+    <script defer src="./src/ride-profiles.js?v=3.4.7"></script>
+    <script defer src="./src/ride-garage.js?v=3.4.7"></script>
+    <script defer src="./src/app.js?v=3.4.7"></script>
   </head>
   <body class="garage" data-active-panel="connection">
     <header>
@@ -32,7 +32,7 @@
           ><span class="brand-stripes" aria-hidden="true"></span>BBS<span
             class="brand-slash"
             >//</span
-          >FLASH<span class="version">3.4.6</span></a
+          >FLASH<span class="version">3.4.7</span></a
         >
         <div class="tools">
           <button
@@ -56,17 +56,171 @@
         >Для работы приложения включите JavaScript. / Enable JavaScript to use
         this application.</noscript
       >
-      <div class="intro garage-intro">
-        <div>
-          <p class="eyebrow" data-t="eyebrow"></p>
-          <h1 data-t="title"></h1>
-          <p class="muted" data-t="subtitle"></p>
-        </div>
-        <div class="garage-number" aria-hidden="true">
-          BBS02<span data-t="motorRating">750 Вт / 48 В</span>
-        </div>
-      </div>
-      <details class="compatibility"><summary data-t="compatibilityTitle"></summary><p data-t="experimental"></p></details>
+      <h1 class="sr-only" data-t="title"></h1>
+        <aside
+          class="race-hud"
+          id="raceHud"
+          data-running="false"
+          data-terrain="climb"
+          data-valid="true"
+          aria-label="Ride preview"
+        >
+          <div class="hud-visual">
+          <div class="hud-heading">
+            <span class="eyebrow" data-t="ridePreview"></span
+            ><span class="hud-chip" data-t="estimateTag"></span>
+          </div>
+          <div class="scene-window">
+            <svg
+              class="ride-scene"
+              viewBox="0 0 480 230"
+              role="img"
+              aria-labelledby="sceneTitle"
+            >
+              <title id="sceneTitle">Electric bike preview</title>
+              <rect width="480" height="230" class="scene-sky" />
+              <path
+                d="M0 140V92h25V73h42V54h38V78h24V104h42V84h34V38h42V63h27V92h34V55h38V32h38V76h44V91h32v49Z"
+                class="scene-mountains"
+              />
+              <path
+                d="M0 162v-35h35v-23h41v23h48v-9h38v21h44v-23h58v26h49v-18h57v-23h46v23h64v38Z"
+                class="scene-hills"
+              />
+              <g class="scene-trees">
+                <path
+                  d="m50 81-26 35h14l-25 34h30v25h13v-25h29l-24-34h14zm354-9-27 36h15l-28 36h33v26h13v-26h31l-27-36h15z"
+                />
+                <path d="m334 104-21 27h12l-18 26h23v20h10v-20h22l-17-26h11z" />
+              </g>
+              <path d="M0 196 480 167v63H0Z" class="scene-dirt" />
+              <path d="M0 199 480 170" class="scene-road" />
+              <g class="track-lines">
+                <path
+                  d="m-60 217 44-3m40-2 44-3m40-2 44-3m40-2 44-3m40-2 44-3m40-2 44-3m40-2 44-3"
+                />
+              </g>
+              <g class="bike-rig">
+                <g transform="translate(139 70)">
+                  <g class="wheel rear-wheel">
+                    <circle cx="35" cy="105" r="36" />
+                    <path d="M35 69v72M-1 105h72m-61-25 50 50m-50 0 50-50" />
+                  </g>
+                  <g class="wheel front-wheel">
+                    <circle cx="172" cy="105" r="36" />
+                    <path d="M172 69v72m-36-36h72m-61-25 50 50m-50 0 50-50" />
+                  </g>
+                  <path
+                    class="bike-frame"
+                    d="m35 105 43-65 29 65H35m43-65 73 4-44 61m44-61 21 61m-99-75 7 15m-17-17h28m53 5 17-4 5 3"
+                  />
+                  <path class="bike-battery" d="m91 56 15 31 9-4-15-30z" />
+                  <circle class="bike-motor" cx="107" cy="105" r="9" />
+                  <path
+                    class="rider-leg"
+                    d="m94 36 34 26-20 38 13 7m-27-71-5 39 21 28"
+                  />
+                  <path class="rider-body" d="m89 34 23-31 33 10-16 29z" />
+                  <path class="rider-arm" d="m136 16 15 22 14-7" />
+                  <path
+                    class="rider-helmet"
+                    d="m117-4 2-14 18-6 18 10-2 17-21 1z"
+                  />
+                  <path class="rider-visor" d="m136-12 20 3-3 8-19-1z" />
+                </g>
+              </g>
+              <path
+                d="M18 16h32v4H22v22h-4m444-26h-32v4h28v22h4M18 207h32v-4H22v-18h-4m444 22h-32v-4h28v-18h4"
+                class="scene-frame"
+              />
+            </svg>
+            <div class="scene-caption">
+              <span id="hudModel">BBS02</span><span id="hudGear">32 / 11 T</span
+              ><span id="hudSlope">8%</span>
+            </div>
+          </div>
+          </div>
+          <div class="speed-cluster">
+            <svg viewBox="0 0 240 152" aria-hidden="true">
+              <path class="gauge-track" d="M39 131A88 88 0 1 1 201 131" />
+              <path class="gauge-hot" d="M192 49A88 88 0 0 1 201 131" />
+              <path
+                class="gauge-ticks"
+                d="M43 126l9-4m-20-26h10m-5-29 10 4m5-29 8 7m13-28 5 10m22-16 2 10m28-10-2 10m26-2-5 10m24 8-8 7m22 18-10 4m15 25h-10m1 30-9-4"
+              />
+              <g id="hudNeedle" transform="rotate(-115 120 100)">
+                <path class="needle" d="m118 39 2-8 2 8v22h-4Z" />
+              </g>
+              <text x="29" y="146">0</text>
+              <text x="109" y="9">30</text>
+              <text x="196" y="146">60</text>
+            </svg>
+            <div class="speed-value">
+              <strong id="hudSpeed">—</strong><span data-t="speedUnit"></span>
+            </div>
+          </div>
+          <div class="hud-readings">
+          <div class="hud-stats">
+            <div>
+              <span data-t="hudCurrent"></span
+              ><strong><b id="hudCurrent">—</b><small data-t="currentUnit">А</small></strong
+              ><progress
+                id="hudCurrentBar"
+                max="30"
+                value="18"
+                aria-label="Current"
+              ></progress>
+            </div>
+            <div>
+              <span data-t="hudCadence"></span
+              ><strong><b id="hudCadence">—</b><small data-t="cadenceUnit">об/мин</small></strong
+              ><progress
+                id="hudCadenceBar"
+                max="180"
+                value="55"
+                aria-label="Cadence"
+              ></progress>
+            </div>
+            <div>
+              <span data-t="hudRange"></span
+              ><strong
+                ><b id="hudRange">—</b><small data-t="kmUnit"></small></strong
+              ><span class="hud-reserve" data-t="reserveTag"></span>
+            </div>
+          </div>
+          <p class="hud-disclaimer" data-t="hudDisclaimer"></p>
+          <p class="hud-risk" id="hudRisk" hidden data-t="hudRisk"></p>
+          </div>
+          <details class="hud-controls">
+          <summary data-t="previewControls"></summary>
+          <div class="hud-controls-body">
+          <div class="terrain-switch">
+            <button
+              data-terrain="flat"
+              aria-pressed="false"
+              data-t="trackFlat"
+            ></button
+            ><button
+              data-terrain="climb"
+              aria-pressed="true"
+              data-t="trackClimb"
+            ></button>
+          </div>
+          <div class="hud-pas-heading">
+            <span data-t="selectPas"></span><span>00—09</span>
+          </div>
+          <div class="hud-pas" id="hudPas"></div>
+          <button
+            id="previewToggle"
+            class="preview-button"
+            aria-pressed="false"
+          >
+            <span class="play-icon" aria-hidden="true"></span
+            ><span data-t="animatePreview"></span>
+          </button>
+          </div>
+          </details>
+        </aside>
       <section class="garage-start" aria-labelledby="startTitle">
         <ol id="setupSteps" class="setup-steps">
           <li data-setup-step="0" data-label="stepConnect"><span aria-hidden="true">01</span><b data-t="stepConnect"></b></li>
@@ -79,11 +233,13 @@
             <h2 id="startTitle" class="setup-title"></h2>
             <p id="setupHint" class="muted"></p>
           </div>
+          <div class="setup-actions">
           <button id="setupNext" class="primary" type="button"></button>
-        </div>
         <div class="start-paths">
           <button id="startBrowse" data-g="browse" data-editable></button>
           <button id="startImport" data-g="open" data-editable></button>
+        </div>
+          </div>
         </div>
       </section>
       <div class="garage-workspace">
@@ -118,6 +274,7 @@
         <div class="garage-content">
           <p id="status" class="status" role="status" aria-live="polite"></p>
           <section id="panel-connection">
+            <details class="compatibility"><summary data-t="compatibilityTitle"></summary><p data-t="experimental"></p></details>
             <div class="cols">
               <div class="card">
                 <h2 data-t="connection"></h2>
@@ -251,18 +408,19 @@
           </section>
           <section id="panel-presets" hidden>
             <div class="ride-hero">
-              <div><p class="eyebrow" data-g="rides"></p><h2 data-g="title"></h2><p data-g="intro"></p></div>
-              <span class="ride-hero-number" aria-hidden="true"></span>
+              <h2 data-g="title"></h2><p data-g="intro"></p>
             </div>
-            <div class="bike-card">
-              <span class="ride-kicker" data-g="bike"></span><h3 data-g="bikeDetails"></h3><p data-g="kit"></p>
-              <details><summary data-t="assumptions"></summary><p data-g="assumptions"></p><button id="rideSetup" data-g="setup" data-editable></button></details>
-            </div>
+            <div class="ride-toolbar">
+            <details class="bike-card">
+              <summary><span data-g="bikeDetails"></span><span class="muted" data-g="kit"></span></summary>
+              <p data-g="assumptions"></p><button id="rideSetup" data-g="setup" data-editable></button>
+            </details>
             <div id="rideFilters" class="ride-filters" role="group" aria-label="Ride categories">
               <button data-filter="all" aria-pressed="true" data-g="all" data-editable></button>
               <button data-filter="calm" aria-pressed="false" data-g="calm" data-editable></button>
               <button data-filter="daily" aria-pressed="false" data-g="daily" data-editable></button>
               <button data-filter="active" aria-pressed="false" data-g="active" data-editable></button>
+            </div>
             </div>
             <div id="rideCards" class="ride-cards"></div>
             <p class="muted ride-ratings" data-g="ratings"></p>
@@ -378,161 +536,7 @@
             </div>
           </section>
         </div>
-        <aside
-          class="race-hud"
-          id="raceHud"
-          data-running="false"
-          data-terrain="climb"
-          data-valid="true"
-          aria-label="Ride preview"
-        >
-          <div class="hud-heading">
-            <span class="eyebrow" data-t="ridePreview"></span
-            ><span class="hud-chip" data-t="estimateTag"></span>
-          </div>
-          <div class="scene-window">
-            <svg
-              class="ride-scene"
-              viewBox="0 0 480 230"
-              role="img"
-              aria-labelledby="sceneTitle"
-            >
-              <title id="sceneTitle">Electric bike preview</title>
-              <rect width="480" height="230" class="scene-sky" />
-              <path
-                d="M0 140V92h25V73h42V54h38V78h24V104h42V84h34V38h42V63h27V92h34V55h38V32h38V76h44V91h32v49Z"
-                class="scene-mountains"
-              />
-              <path
-                d="M0 162v-35h35v-23h41v23h48v-9h38v21h44v-23h58v26h49v-18h57v-23h46v23h64v38Z"
-                class="scene-hills"
-              />
-              <g class="scene-trees">
-                <path
-                  d="m50 81-26 35h14l-25 34h30v25h13v-25h29l-24-34h14zm354-9-27 36h15l-28 36h33v26h13v-26h31l-27-36h15z"
-                />
-                <path d="m334 104-21 27h12l-18 26h23v20h10v-20h22l-17-26h11z" />
-              </g>
-              <path d="M0 196 480 167v63H0Z" class="scene-dirt" />
-              <path d="M0 199 480 170" class="scene-road" />
-              <g class="track-lines">
-                <path
-                  d="m-60 217 44-3m40-2 44-3m40-2 44-3m40-2 44-3m40-2 44-3m40-2 44-3m40-2 44-3"
-                />
-              </g>
-              <g class="bike-rig">
-                <g transform="translate(139 70)">
-                  <g class="wheel rear-wheel">
-                    <circle cx="35" cy="105" r="36" />
-                    <path d="M35 69v72M-1 105h72m-61-25 50 50m-50 0 50-50" />
-                  </g>
-                  <g class="wheel front-wheel">
-                    <circle cx="172" cy="105" r="36" />
-                    <path d="M172 69v72m-36-36h72m-61-25 50 50m-50 0 50-50" />
-                  </g>
-                  <path
-                    class="bike-frame"
-                    d="m35 105 43-65 29 65H35m43-65 73 4-44 61m44-61 21 61m-99-75 7 15m-17-17h28m53 5 17-4 5 3"
-                  />
-                  <path class="bike-battery" d="m91 56 15 31 9-4-15-30z" />
-                  <circle class="bike-motor" cx="107" cy="105" r="9" />
-                  <path
-                    class="rider-leg"
-                    d="m94 36 34 26-20 38 13 7m-27-71-5 39 21 28"
-                  />
-                  <path class="rider-body" d="m89 34 23-31 33 10-16 29z" />
-                  <path class="rider-arm" d="m136 16 15 22 14-7" />
-                  <path
-                    class="rider-helmet"
-                    d="m117-4 2-14 18-6 18 10-2 17-21 1z"
-                  />
-                  <path class="rider-visor" d="m136-12 20 3-3 8-19-1z" />
-                </g>
-              </g>
-              <path
-                d="M18 16h32v4H22v22h-4m444-26h-32v4h28v22h4M18 207h32v-4H22v-18h-4m444 22h-32v-4h28v-18h4"
-                class="scene-frame"
-              />
-            </svg>
-            <div class="scene-caption">
-              <span id="hudModel">BBS02</span><span id="hudGear">32 / 11 T</span
-              ><span id="hudSlope">8%</span>
-            </div>
-          </div>
-          <div class="terrain-switch">
-            <button
-              data-terrain="flat"
-              aria-pressed="false"
-              data-t="trackFlat"
-            ></button
-            ><button
-              data-terrain="climb"
-              aria-pressed="true"
-              data-t="trackClimb"
-            ></button>
-          </div>
-          <div class="speed-cluster">
-            <svg viewBox="0 0 240 152" aria-hidden="true">
-              <path class="gauge-track" d="M39 131A88 88 0 1 1 201 131" />
-              <path class="gauge-hot" d="M192 49A88 88 0 0 1 201 131" />
-              <path
-                class="gauge-ticks"
-                d="M43 126l9-4m-20-26h10m-5-29 10 4m5-29 8 7m13-28 5 10m22-16 2 10m28-10-2 10m26-2-5 10m24 8-8 7m22 18-10 4m15 25h-10m1 30-9-4"
-              />
-              <g id="hudNeedle" transform="rotate(-115 120 100)">
-                <path class="needle" d="m118 39 2-8 2 8v22h-4Z" />
-              </g>
-              <text x="29" y="146">0</text>
-              <text x="109" y="9">30</text>
-              <text x="196" y="146">60</text>
-            </svg>
-            <div class="speed-value">
-              <strong id="hudSpeed">—</strong><span data-t="speedUnit"></span>
-            </div>
-          </div>
-          <div class="hud-stats">
-            <div>
-              <span data-t="hudCurrent"></span
-              ><strong><b id="hudCurrent">—</b><small data-t="currentUnit">А</small></strong
-              ><progress
-                id="hudCurrentBar"
-                max="30"
-                value="18"
-                aria-label="Current"
-              ></progress>
-            </div>
-            <div>
-              <span data-t="hudCadence"></span
-              ><strong><b id="hudCadence">—</b><small data-t="cadenceUnit">об/мин</small></strong
-              ><progress
-                id="hudCadenceBar"
-                max="180"
-                value="55"
-                aria-label="Cadence"
-              ></progress>
-            </div>
-            <div>
-              <span data-t="hudRange"></span
-              ><strong
-                ><b id="hudRange">—</b><small data-t="kmUnit"></small></strong
-              ><span class="hud-reserve" data-t="reserveTag"></span>
-            </div>
-          </div>
-          <div class="hud-pas-heading">
-            <span data-t="selectPas"></span><span>00—09</span>
-          </div>
-          <div class="hud-pas" id="hudPas"></div>
-          <p class="hud-risk" id="hudRisk" hidden data-t="hudRisk"></p>
-          <button
-            id="previewToggle"
-            class="preview-button"
-            aria-pressed="false"
-          >
-            <span class="play-icon" aria-hidden="true"></span
-            ><span data-t="animatePreview"></span>
-          </button>
-          <p class="hud-disclaimer" data-t="hudDisclaimer"></p>
-        </aside>
+
       </div>
 
       <footer class="foot">
