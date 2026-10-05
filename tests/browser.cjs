@@ -12,6 +12,7 @@ const results = [],
   errors = [];
 let browser, server, base;
 let primeLegacyCache = false;
+let accountService = null;
 const types = {
   ".html": "text/html; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
@@ -31,6 +32,7 @@ async function newPage(options = {}) {
   return { context, page };
 }
 async function check(name, fn) {
+  if (process.env.BBS_BROWSER_FILTER && !name.includes(process.env.BBS_BROWSER_FILTER)) return;
   const start = Date.now();
   await fn();
   results.push({ name, status: "pass", ms: Date.now() - start });
@@ -122,6 +124,7 @@ async function toPanel(page, id) {
 (async () => {
   try {
     server = http.createServer((req, res) => {
+      if (accountService && req.url.startsWith('/api/')) return accountService.handle(req,res);
       if (primeLegacyCache && req.url === "/cache-prime.html") {
         res.setHeader("Content-Type", "text/html");
         res.end('<link rel="icon" href="/assets/icon.svg"><script src="/src/ride-garage.js"></script>');
@@ -141,7 +144,8 @@ async function toPanel(page, id) {
         );
         if (file === root) file = path.join(root, "index.html");
         if (!file.startsWith(root + path.sep)) throw Error("path");
-        const data = fs.readFileSync(file);
+        let data = fs.readFileSync(file);
+        if (accountService && file.endsWith('.html')) data = Buffer.from(data.toString().replace('<meta name="bbs-account-api" content="" />','<meta name="bbs-account-api" content="/api/" />'));
         res.setHeader(
           "Content-Type",
           types[path.extname(file)] || "application/octet-stream",
@@ -526,7 +530,7 @@ async function toPanel(page, id) {
         page.on('request',req=>{if(new URL(req.url()).origin!==new URL(base).origin || req.method()!=='GET') outbound.push(req.url());});
         if (pathname==='/') await page.goto(base+'/'); else await ready(page);
         const source=pathname==='/'?null:await page.locator('#pas-SC').inputValue();
-        assert.match(await page.locator('#accessDemo').innerText(),/Бессрочная/);
+        assert.match(await page.locator('#accessDemo').innerText(),/Бессрочный/);
         assert.match(await page.locator('#accessDemo').innerText(),/ДЕМО/);
         await page.locator('#openPaymentDemo').click();
         const dialog=page.locator('#paymentDemoDialog');
@@ -1245,7 +1249,8 @@ async function toPanel(page, id) {
     });
     await check("IndexedDB v1 upgrade preserves backups/preferences and exposes complete backup history", async () => {
       const { page, context } = await newPage();
-      await page.goto(base+"/");
+      await page.route(base+'/seed.html',route=>route.fulfill({contentType:'text/html',body:'<link rel="icon" href="/assets/icon.svg">'}));
+      await page.goto(base+"/seed.html");
       const seed = {id:"legacy-1",sessionId:"old",at:"2026-09-17T00:00:00Z",device:{manufacturer:"HZXT",model:"SZZ9",fw:"2.0.1.1",hw:"1.0",nominalCode:2,maxCurrent:25},profile:require("./helpers.cjs").profile,raw:frames};
       await page.evaluate(async (seed) => {
         await new Promise((resolve,reject) => {
@@ -1272,6 +1277,56 @@ async function toPanel(page, id) {
       assert.equal(await page.locator("#rideReviewDialog").isVisible(),true);
       await page.locator("#rideReviewCancel").click();
       await context.close();
+    });
+    await check("local account card persists across landing and app without modifying motor draft; RU/EN mobile account is usable", async () => {
+      const {page,context}=await newPage({viewport:{width:1280,height:900}}); await mock(page);await ready(page);
+      const original=await page.locator('#source').innerText(), sc=await page.locator('#pas-SC').inputValue();
+      await page.locator('#openAccount').click(); await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+      assert.match(await page.locator('#accountLocation').innerText(),/этом браузере/);
+      assert.equal(await page.locator('#accountLogin').isVisible(),false);
+      await page.locator('#accountEditBike').click();
+      await page.locator('#account-name').fill('Антон');await page.locator('#account-bike').fill('Trek Roscoe 8');await page.locator('#account-capacity').fill('19.2');await page.locator('#account-voltage').fill('48');await page.locator('#account-chainring').fill('32');await page.locator('#account-display').fill('860C');
+      await page.locator('#accountSave').click();await page.waitForFunction(()=>document.getElementById('accountMessage').textContent.includes('сохранена'));
+      await page.locator('#accountTab-overview').click();await page.screenshot({path:path.join(output,'account-desktop.png'),animations:'disabled'});
+      await page.keyboard.press('Escape'); assert.equal(await page.evaluate(()=>document.activeElement.id),'openAccount');
+      assert.equal(await page.locator('#source').innerText(),original);assert.equal(await page.locator('#pas-SC').inputValue(),sc);assert.deepEqual(await page.evaluate(()=>__motor.sent),[]);
+      await page.goto(base+'/');await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+      assert.equal(await page.locator('#accountBikeSummary').innerText(),'Trek Roscoe 8');
+      await page.keyboard.press('Escape');await page.locator('#language').selectOption('en');await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+      await page.locator('#accountTab-purchases').click();assert.ok(!/[А-Яа-яЁё]/.test(await page.locator('#accountPanel-purchases').innerText()));
+      await page.keyboard.press('Escape');await page.locator('#language').selectOption('ru');await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+      for(const width of [390,320]){await page.setViewportSize({width,height:844});for(const tab of ['overview','bike','library','purchases']){await page.locator('#accountTab-'+tab).click();assert.equal(await page.locator('#accountDialog').evaluate(n=>n.scrollWidth<=n.clientWidth+1),true,`${width} ${tab}`);}}
+      await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.join(output,'account-mobile.png'),animations:'disabled'});
+      await page.locator('#accountPayment').click();assert.equal(await page.locator('#paymentDemoDialog').isVisible(),true);assert.match(await page.locator('#paymentDemoDialog').innerText(),/деньги не списываются/);await page.locator('#closePaymentDemo').click();
+      await context.close();
+    });
+    await check("account uses actual saved files and exports them without UART or invented purchases",async()=>{
+      const {page,context}=await newPage();await mock(page);await ready(page);await toPanel(page,'presets');
+      await page.locator('#garageName').fill('<img src=x onerror=alert(1)>');await page.locator('#garageSave').click();await page.waitForFunction(()=>document.querySelectorAll('#garageSaved article').length===1);
+      await toPanel(page,'connection');await connectRead(page);
+      const sent=await page.evaluate(()=>__motor.sent);await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+      assert.equal(await page.locator('#accountProfileCount').innerText(),'1');assert.equal(await page.locator('#accountBackupCount').innerText(),'1');
+      await page.locator('#accountTab-library').click();assert.equal(await page.locator('#accountProfiles img').count(),0);assert.match(await page.locator('#accountProfiles').innerText(),/<img/);
+      const download=page.waitForEvent('download');await page.locator('#accountExport').click();const file=await(await download).path();const archive=JSON.parse(fs.readFileSync(file,'utf8'));assert.equal(archive.profiles.length,1);assert.equal(archive.controllerBackups.length,1);
+      await page.locator('#accountTab-purchases').click();assert.match(await page.locator('#accountOrders').innerText(),/Покупок пока нет/);
+      assert.deepEqual(await page.evaluate(()=>__motor.sent),sent);await context.close();
+    });
+    await check("email account performs a real API login, server save and logout with an in-memory mail adapter",async()=>{
+      const mail=[];accountService=require('../server/account-service.cjs').createAccountService({filename:':memory:',origin:base,secret:'browser-test-only-secret-'.repeat(3),privacyUrl:'/privacy',sendCode:async(email,code)=>mail.push({email,code})});
+      const {page,context}=await newPage();try{
+        await mock(page);await ready(page);await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+        await page.locator('#accountEmailInput').fill('rider@example.test');await page.locator('#accountConsent').check();await page.locator('#accountLogin button[type=submit]').click();await page.waitForFunction(()=>!document.getElementById('accountCodeForm').hidden);
+        assert.equal(mail.length,1);await page.locator('#accountCode').fill(mail[0].code);await page.locator('#accountCodeForm button[type=submit]').click();await page.waitForFunction(()=>!document.getElementById('accountLogout').hidden);
+        assert.equal(await page.locator('#accountEmail').innerText(),'rider@example.test');assert.equal(await page.locator('#accountAccess').innerText(),'Не куплен');
+        await page.locator('#accountTab-bike').click();await page.locator('#account-bike').fill('Account bike');await page.locator('#accountSave').click();await page.waitForFunction(()=>document.getElementById('accountMessage').textContent.includes('сохранена'));
+        assert.equal(await page.evaluate(()=>BBSStore.get('prefs','account.card.v1')),undefined);
+        await page.reload();await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);assert.equal(await page.locator('#accountBikeSummary').innerText(),'Account bike');
+        await page.locator('#accountLogout').click();await page.waitForFunction(()=>document.getElementById('accountLogout').hidden);assert.match(await page.locator('#accountBikeSummary').innerText(),/Добавь/);assert.deepEqual(await page.evaluate(()=>__motor.sent),[]);
+      }finally{await context.close();accountService.close();accountService=null;}
+    });
+    await check("account storage denial disables local save and export without affecting the editor",async()=>{
+      const {page,context}=await newPage();await page.addInitScript(()=>Object.defineProperty(window,'indexedDB',{get(){throw Error('denied');}}));await page.goto(base+'/bbs-flash.html');await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+      assert.match(await page.locator('#accountMessage').innerText(),/недоступно/);await page.locator('#accountTab-bike').click();assert.equal(await page.locator('#accountSave').isDisabled(),true);await page.locator('#accountTab-library').click();assert.equal(await page.locator('#accountExport').isDisabled(),true);await context.close();
     });
     assert.deepEqual(errors, [], "Browser console/runtime errors");
     console.log(

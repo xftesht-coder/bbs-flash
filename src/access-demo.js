@@ -1,20 +1,20 @@
-/* Presentation-only subscription draft. No payments, accounts, storage or access gates. */
+/* Presentation-only purchase draft. No payment processing or access gates. */
 globalThis.BBSAccessDemo = (() => {
   "use strict";
   const words = {
-    subscription: ["Подписка", "Subscription"],
-    lifetime: ["Бессрочная", "Lifetime"],
+    subscription: ["Доступ", "Access"],
+    lifetime: ["Бессрочный", "Lifetime"],
     demo: ["ДЕМО", "DEMO"],
     pay: ["Оплатить", "Pay"],
-    title: ["Демо-подписка", "Demo subscription"],
-    description: ["Пример будущей подписки. Сейчас можно изучать интерфейс без оплаты.", "A preview of the future subscription. You can explore the interface without payment."],
+    title: ["Бессрочный доступ", "Lifetime access"],
+    description: ["Одна покупка для одного пользователя с входом по e-mail. Без автопродления. Продажи пока не открыты.", "One purchase per user, with email sign-in. No automatic renewal. Sales are not open yet."],
     period: ["Срок действия", "Validity"],
     unlimited: ["Бессрочный", "No expiry"],
     status: ["Статус", "Status"],
     demoStatus: ["Демонстрационный", "Demo"],
     payment: ["Оплата", "Payment"],
     pending: ["Пока недоступна", "Not available yet"],
-    notice: ["Это демо-экран: платёж и реальная подписка не оформляются, деньги не списываются.", "This is a demo screen: no payment or real subscription is created and no money is charged."],
+    notice: ["Это демо-экран: покупка не оформляется, деньги не списываются.", "This is a demo screen: no purchase is made and no money is charged."],
     close: ["Понятно", "Got it"],
   };
   const root = document.getElementById("accessDemo");
@@ -50,6 +50,7 @@ globalThis.BBSAccessDemo = (() => {
   close.onclick = () => dialog.close();
   dialog.addEventListener("close", () => { if (!open.disabled) open.focus({preventScroll:true}); });
   function sync(lang) {
+    globalThis.BBSAccount?.sync(lang);
     for (const host of [root,dialog]) host.querySelectorAll("[data-access]").forEach(n => {
       n.textContent = words[n.dataset.access][lang === "en" ? 1 : 0];
     });

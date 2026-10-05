@@ -1,6 +1,10 @@
 # Verification of 3.4.8
 
-45 Node tests and 32 Edge browser scenarios cover seven computed comparison values, inverse ramp/response direction, capped/rounded PAS current at 1/12/18/24/25/30 A, imports and invalid inputs. Browser checks cover all twelve cards, live draft edits, preview without mutation, apply/undo, RU/EN, motor baseline stability until verified writing, partial block writes, failed writes and reconnect. The deployment smoke check requires 84 comparison rows and an explicitly labelled demo baseline. There are no new motor commands or numerical tuning changes.
+53 Node tests and 38 Edge browser scenarios cover seven computed comparison values, inverse ramp/response direction, capped/rounded PAS current at 1/12/18/24/25/30 A, imports and invalid inputs. Browser checks cover all twelve cards, live draft edits, preview without mutation, apply/undo, RU/EN, motor baseline stability until verified writing, partial block writes, failed writes and reconnect. The deployment smoke check requires 84 comparison rows and an explicitly labelled demo baseline. There are no new motor commands or numerical tuning changes.
+
+Account coverage: local card persistence across landing/app, unchanged motor draft, real saved-file counts/export, safe rendering of user names, storage denial, empty orders, keyboard focus, RU/EN and 320/390/1280 px. A browser signs in against the real Node account API using an in-memory mail adapter, saves a server card, reloads and logs out without uploading local motor profiles. Server tests check code reuse/expiry/replacement/attempt limits, rate limiting, cross-origin and malformed requests, session expiry/logout, separate users, revision conflicts, disabled checkout and unavailable SMTP. A child-process smoke test exercises the deployed server entry point and confirms that secrets, SQLite, git metadata and server source return 404. No real email or payment is sent. Nodemailer dependency audit reported no known vulnerabilities at preparation time.
+
+Hardware core, motor storage, editor and numeric ride profiles are unchanged. Server account storage is separate. Live SMTP, production hosting, payment confirmation, refunds and server backup restoration are not verified by these simulated tests.
 
 ## Earlier regression evidence
 

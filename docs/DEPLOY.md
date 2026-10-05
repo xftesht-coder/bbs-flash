@@ -2,6 +2,8 @@
 
 Canonical site: https://xftesht-coder.github.io/bbs-flash/ (landing), `/bbs-flash.html` (app). HTTPS is required for hardware access; localhost is suitable for development. The app loads no CDN scripts, has no service worker and does not send profiles to a backend.
 
+The optional email-account service has a separate deployment path: [Accounts and sales](ACCOUNTS-AND-SALES.md). GitHub Pages supports the local cabinet only. Do not publish server secrets or its SQLite database with static assets. The service can store the reference bike card after explicit sign-in/save; motor profiles and backups remain local.
+
 GitHub Pages serves the repository root from `main`. `.nojekyll` disables Jekyll processing. `index.html` is the canonical landing page; `landing.html` redirects to it. Tests check the redirect, current app link and local asset references. Legacy configurator URLs redirect to the current app. The previous VPS scripts are retired because they modified unrelated server configuration and omitted the new modules.
 
 ## Release procedure

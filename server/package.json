@@ -1,0 +1,8 @@
+{
+  "name": "bbs-flash-account-service",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {"node": ">=24.19.0"},
+  "scripts": {"start": "node --env-file-if-exists=.env main.cjs"},
+  "dependencies": {"nodemailer": "10.0.15"}
+}
