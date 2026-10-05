@@ -46,6 +46,8 @@
 .ride-select:hover { color: var(--accent); }
 .ride-baseline { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 16px; padding: 8px 12px; margin: 8px 0; border: 1px solid var(--line); border-radius: 10px; background: var(--soft); }
 .ride-baseline>div { display: grid; gap: 1px; }.ride-baseline strong { font-size: 12px; font-weight: 550; }.ride-baseline p { font-size: 11px; color: var(--muted); margin: 0; text-align: right; }
+.ride-draft-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.ride-draft-actions button { min-height: 36px; padding: 7px 10px; font-size: 12px; }
 .ride-traits { margin: 0; }
 .ride-traits>div { display: grid; grid-template-columns: minmax(0,1fr) 59px 79px; align-items: center; gap: 5px; }
 .ride-traits .ride-traits-heading { color: var(--muted); font-size: 10px; margin-bottom: 3px; }
@@ -65,6 +67,14 @@ meter::-moz-meter-bar { background: var(--ride-color,var(--accent)); }
 .ride-ratings { margin: 14px 0 22px; font-size: 11px; }
 .ride-detail { padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); margin: 12px 0; scroll-margin: 18px; }
 .garage .ride-detail h3 { font: 650 27px/1.2 var(--display),sans-serif; margin: 12px 0 20px; }
+.ride-detail-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin: 10px 0 16px; }
+.garage .ride-detail-heading h3 { margin: 0; }
+.ride-brief { padding: 14px 16px; background: var(--soft); border: 1px solid var(--line); border-radius: 12px; }
+.ride-brief h4 { margin: 0 0 12px; }
+.ride-brief-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
+.ride-brief h5 { font: 600 14px var(--display); margin: 0 0 6px; }
+.ride-brief p { font-size: 12px; line-height: 1.55; margin: 0; }
+.ride-brief>.muted { font-size: 11px; margin-top: 12px; }
 .ride-detail h4 { margin: 18px 0 7px; font-size: 12px; letter-spacing: .01em; color: var(--accent); }
 .ride-detail > p { line-height: 1.7; }
 .ride-comparison { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin: 14px 0; }
@@ -103,6 +113,9 @@ meter::-moz-meter-bar { background: var(--ride-color,var(--accent)); }
 @media(max-width: 1200px) { .ride-cards { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media(max-width: 1000px) { .ride-toolbar { flex-direction: column; gap: 8px; }.garage .bike-card { width: 100%; }.ride-hero { align-items: flex-start; flex-direction: column; gap: 6px; } }
 @media(max-width: 600px) {
+  .ride-brief-grid { grid-template-columns: 1fr; gap: 12px; }
+  .ride-detail-heading .primary { width: 100%; }
+  .ride-draft-actions button { flex: 1 1 auto; }
   .ride-baseline { grid-template-columns: 1fr 1fr; gap: 6px 10px; }.ride-baseline p { grid-column: 1/-1; text-align: left; }
   .ride-comparison { grid-template-columns: 1fr; }.trait-bars { width: 24px; }
   .setup-actions { flex-direction: column; align-items: stretch; }

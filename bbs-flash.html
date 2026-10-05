@@ -424,12 +424,15 @@
             </div>
             </div>
             <div id="rideBaseline" class="ride-baseline" role="status" aria-live="polite"></div>
+            <div id="rideDraftActions" class="ride-draft-actions" hidden>
+              <button id="rideRestoreMotor" data-g="restoreMotor" data-editable disabled></button>
+              <button id="garageUndo" data-g="undo" disabled></button>
+            </div>
             <div id="rideCards" class="ride-cards"></div>
             <p class="muted ride-ratings" data-g="ratings"></p>
             <section id="rideDetail" class="ride-detail" tabindex="-1" aria-label="Ride profile details"></section>
             <p id="garageMessage" role="status" aria-live="polite"></p>
             <button id="garageNext" data-g="nextStep" data-editable hidden></button>
-            <button id="garageUndo" data-g="undo" disabled></button>
             <section class="card garage-library" aria-labelledby="garageLibraryTitle">
               <h3 id="garageLibraryTitle" data-g="library"></h3><p data-g="local" class="muted"></p>
               <label for="garageName" data-g="name"></label><input id="garageName" maxlength="80" data-editable />

@@ -56,8 +56,22 @@ globalThis.BBSRideGarage = (() => {
     ceiling: ["Профиль не повышает общий лимит тока. Предел помощи рассчитывается по текущему черновику; после чтения мотора проверь его заново.", "The profile never raises the global current limit. Assistance is calculated from the current draft; review it again after reading the motor."],
     applied: ["Профиль применён к черновику. Мотор не изменён.", "Applied to the draft. Motor unchanged."],
     nextStep: ["Что дальше?", "What's next?"],
-    undo: ["Отменить последнее применение", "Undo last application"],
+    undo: ["Отменить последнее действие", "Undo last action"],
     undone: ["Предыдущий черновик восстановлен.", "Previous draft restored."],
+    restoreMotor: ["Вернуть настройки мотора в черновик", "Reset draft to motor settings"],
+    restored: ["Черновик снова совпадает со считанными настройками мотора. Запись не выполнялась.", "The draft matches the read motor settings again. Nothing was written."],
+    restoreHint: ["Отменяет правки только в редакторе. Использует последнее проверенное чтение этого подключения.", "Discards editor changes only. Uses the last verified read in this connection."],
+    briefTitle: ["Как изменится характер поездки", "How the ride settings change"],
+    briefStart: ["Со старта", "Starting off"], briefRamp: ["При разгоне", "Building assistance"], briefRide: ["На ходу", "While riding"],
+    startMore: ["Стартовая доля тока выше.", "The starting current percentage is higher."],
+    startLess: ["Стартовая доля тока ниже.", "The starting current percentage is lower."],
+    startSame: ["Стартовая доля тока та же.", "The starting current percentage stays the same."],
+    responseSame: ["Момент включения помощи тот же.", "Assistance engages at the same pedal movement."],
+    rampSame: ["Темп нарастания помощи тот же.", "The assist ramp stays the same."],
+    rampHint: ["Речь о наборе помощи мотором, а не о секундах разгона.", "This describes how assistance builds up, not acceleration in seconds."],
+    assistMore: ["выше", "higher"], assistLess: ["ниже", "lower"], assistSame: ["тот же", "unchanged"],
+    assistLevel: ["Потолок помощи на уровне {level}: {change}.", "Assistance ceiling at level {level}: {change}."],
+    briefNote: ["Сравнение по настройкам. Ощущения зависят от прошивки, передачи и нагрузки.", "Compared by settings. The feel depends on firmware, gearing and load."],
     library: ["Мой гараж", "My garage"], name: ["Название профиля", "Profile name"], note: ["Заметка о поездке", "Ride note"],
     placeholder: ["Например: Roscoe · на работу", "For example: Roscoe · commute"],
     save: ["Сохранить текущий черновик", "Save current draft"],
@@ -241,9 +255,16 @@ globalThis.BBSRideGarage = (() => {
   function renderDetail() {
     const detail = $("rideDetail"); detail.replaceChildren();
     const p = R.profiles.find((p) => p.id === selected);
-    detail.append(el("span", t(p.id === "forward" ? "ownerReported" : "experiment"), "ride-kicker"), el("h3", local(p.name)));
+    detail.append(el("span", t(p.id === "forward" ? "ownerReported" : "experiment"), "ride-kicker"));
+    const heading = el("div", undefined, "ride-detail-heading");
+    heading.append(el("h3", local(p.name))); detail.append(heading);
     try {
       const view = comparisonState(), before = view.before, after = R.apply(view.draft, selected);
+      const preview = button(t("preview"), () => {
+        try { review(R.apply(api.pull(), selected), local(p.name)); } catch { message("invalid"); }
+      }, "primary");
+      preview.id = "ridePreview"; heading.append(preview);
+      detail.append(rideBrief(before, after));
       detail.append(el("h4", t("sevenTitle")), el("p", `${view.label} · ${profileName(before)}. ${t("compareHint")}`, "muted"));
       const metrics = el("div", undefined, "ride-comparison");
       for (const row of M.compare(before, after)) {
@@ -255,21 +276,48 @@ globalThis.BBSRideGarage = (() => {
         metrics.append(item);
       }
       detail.append(metrics, el("p", t("changesCount").replace("{n}", C.diff(before,after).length), "muted"), el("p", t("ceiling"), "muted"));
-      const preview = button(t("preview"), () => {
-        try { review(R.apply(api.pull(), selected), local(p.name)); } catch { message("invalid"); }
-      }, "primary");
-      preview.id = "ridePreview";
-      detail.append(preview);
       detail.append(chart(before, after));
     } catch { detail.append(el("p", t("invalid"), "notice warning")); }
     detail.append(el("h4", t("effect")), el("p", local(p.description)), el("h4", t("compromise")), el("p", local(p.tradeoff)));
     detail.append(el("p", t("preserved"), "ride-preserved"));
   }
+  function rideBrief(before, after) {
+    const rows = Object.fromEntries(M.compare(before, after).map(row => [row.id, row]));
+    const brief = el("section", undefined, "ride-brief"); brief.id = "rideBrief";
+    brief.append(el("h4", t("briefTitle")));
+    const grid = el("div", undefined, "ride-brief-grid");
+    const directionKey = (row, prefix) => prefix + (row.direction > 0 ? "More" : row.direction < 0 ? "Less" : "Same");
+    const response = rows.response.changed ? directionLabel(rows.response) + "." : t("responseSame");
+    const ramp = rows.acceleration.changed ? directionLabel(rows.acceleration) + "." : t("rampSame");
+    const assist = (level, row) => t("assistLevel").replace("{level}", level).replace("{change}", t(directionKey(row, "assist")));
+    for (const [key, text] of [
+      ["briefStart", `${response} ${t(directionKey(rows.pickup, "start"))}`],
+      ["briefRamp", `${ramp} ${t("rampHint")}`],
+      ["briefRide", `${assist(5,rows.middle)} ${assist(9,rows.peak)}`],
+    ]) {
+      const item = el("div"); item.dataset.effect = key;
+      item.append(el("h5", t(key)), el("p", text)); grid.append(item);
+    }
+    brief.append(grid, el("p", t("briefNote"), "muted"));
+    return brief;
+  }
+  function renderDraftActions() {
+    const motor = api.motorProfile();
+    let changed = false;
+    if (motor) {
+      try { changed = !C.eq(motor, api.pull()); } catch { changed = true; }
+    }
+    $("rideRestoreMotor").hidden = !motor;
+    $("rideRestoreMotor").disabled = api.busy() || !changed;
+    $("rideRestoreMotor").title = t("restoreHint");
+    $("garageUndo").disabled = !undo || api.busy();
+    $("rideDraftActions").hidden = !changed && !undo;
+  }
   function renderLibrary() {
     $("garageSave").disabled = !storage || api.busy();
     $("garageArchive").disabled = !storage || api.busy();
     $("garageName").disabled = $("garageNote").disabled = api.busy();
-    $("garageUndo").disabled = !undo || api.busy();
+    renderDraftActions();
     const list = $("garageSaved"); list.replaceChildren();
     if (!storage) list.append(el("p", t("unavailable"), "notice"));
     else if (!saved.length) list.append(el("p", t("empty"), "muted"));
@@ -321,7 +369,7 @@ globalThis.BBSRideGarage = (() => {
       renderKey = key;
       renderBaseline(view); renderCards(); renderDetail();
     }
-    $("garageUndo").disabled = !undo || api.busy();
+    renderDraftActions();
   }
   function init(bridge) {
     api = bridge;
@@ -351,6 +399,18 @@ globalThis.BBSRideGarage = (() => {
     $("garageUndo").onclick = () => {
       if (!undo || api.busy()) return;
       const old = undo; undo = null; api.push(old.profile, old.source); api.calculate(); message("undone"); renderLibrary();
+    };
+    $("rideRestoreMotor").onclick = () => {
+      if (api.busy()) return;
+      // Read the baseline again at click time; a disconnected or uncertain session cannot restore it.
+      const motor = api.motorProfile();
+      if (!motor) return;
+      let previous = null;
+      try { previous = {profile: C.clone(api.pull()), source: api.source()}; } catch { /* Invalid input can be discarded, but not reapplied as a valid profile. */ }
+      if (previous && C.eq(previous.profile, motor)) return;
+      undo = previous;
+      api.push(motor, "sourceEdited"); api.calculate(); message("restored"); renderLibrary();
+      (undo ? $("garageUndo") : $("rideDetail")).focus({preventScroll: true});
     };
     $("garageSave").onclick = async () => {
       if (api.busy()) return;

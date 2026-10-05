@@ -44,6 +44,8 @@ npm run test:browser
 
 ## Covered
 
+- Plain-language profile summary reflects the current comparison. Reset-to-motor only replaces the draft, supports undo for valid drafts, discards invalid fields without reapplying them, and is blocked while busy, disconnected or awaiting a new read. Browser checks assert no UART requests and no change to the verified baseline.
+
 - Owner General and Basic capture replay; independent legacy reference packets for all four blocks and every single-bit mutation; all fragmentation boundaries; changed/corrupt/missing second General; checksum convention pinned for the session; legacy backup/write/readback with separate TX rules. Browser replay displays the captured 24 A after a complete read.
 
 - Fixed independent General/Basic/PAS/Throttle vectors, every single-byte corruption, malformed/truncated/extra responses, fragmented reads, wrong block, timeout and disconnect.
