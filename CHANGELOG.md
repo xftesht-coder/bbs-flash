@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.4.7 — 2026-10-05 · Compact layout for everyday screens
+
+- Move the cyclist and ride estimates above the workspace; put optional estimate controls in a keyboard-accessible disclosure.
+- Use horizontal section navigation and the full content width. Reduce padding, combine the setup actions, and collapse bike assumptions into a compact summary.
+- Show three smaller profile cards per row on laptops, two on tablets and one on phones. The first row's actions fit a 1280×720 viewport in RU and EN.
+- Verify all sections at eight widths from 360 to 1440 px, the estimate disclosure and the existing simulated write/backup/readback journey. Preserve protocol, storage and numeric profiles.
+
 ## 3.4.6 — 2026-10-05 · Browser cache compatibility
 
 - Version every runtime script and stylesheet URL so an updated page bypasses modules retained from an older release.

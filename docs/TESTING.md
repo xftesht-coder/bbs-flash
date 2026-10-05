@@ -1,4 +1,6 @@
-# Verification of 3.4.6
+# Verification of 3.4.7
+
+Compact-layout coverage: syntax checks, 42 Node tests and 30 Edge browser scenarios. All six sections are checked for horizontal overflow at 360/390/640/768/1024/1280/1366/1440 px. Additional RU/EN checks verify that the ride panel precedes navigation and the first profile row's action buttons fit a 1280×720 and 1366×720 viewport. Native estimate controls open and close with the keyboard, remain usable at narrow widths, and send no UART commands. Dark/light laptop and mobile renders were visually inspected. Controller core, storage, simulation and numeric profiles are unchanged.
 
 42 Node tests and 29 browser scenarios include release-specific keys on all runtime assets and an actual browser context primed with an incompatible, cacheable older module before opening the current application.
 
@@ -47,7 +49,7 @@ npm run test:browser
 - Presets preserve hardware and throttle; motor model and General limits remain separate from simulation choice.
 - Correct gearing direction, electrical/mechanical power conversion, PAS-specific range, zero inputs, row-level thermal heuristic, BBSHD 30 A in simulation.
 - Fresh and denied IndexedDB, unavailable Web Serial, local backup persistence across reload, complete dynamic RU/EN, light/dark theme persistence.
-- Every tab at 360/390/768/1440 px; reduced-motion mode; no page overflow; both landing URLs, calculator and application CTA.
+- Every tab at 360/390/640/768/1024/1280/1366/1440 px; reduced-motion mode; no page overflow; both landing URLs, calculator and application CTA.
 - Race HUD shares PAS/current/speed/cadence/range inputs; invalid input clears output; display mode and animation cannot send serial commands. Animation pauses when hidden or reduced motion is enabled.
 - Every controller field has a bilingual Penoff guide; keyboard dismissal returns focus; attributions and source links remain visible.
 - No console/runtime errors in exercised browser scenarios.

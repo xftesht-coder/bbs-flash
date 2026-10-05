@@ -267,11 +267,11 @@ async function toPanel(page, id) {
       await context.close();
     });
     await check(
-      "mobile 360/390/768 and desktop: no page overflow; all navigation visible",
+      "360/390/640/768/1024/1280/1366/1440: no page overflow; all navigation visible",
       async () => {
-        for (const width of [360, 390, 768, 1440]) {
+        for (const width of [360, 390, 640, 768, 1024, 1280, 1366, 1440]) {
           const { page, context } = await newPage({
-            viewport: { width, height: 900 },
+            viewport: { width, height: 720 },
             reducedMotion: "reduce",
           });
           await ready(page);
@@ -297,6 +297,51 @@ async function toPanel(page, id) {
               path: path.join(output, "simulator-mobile.png"),
               fullPage: true,
             });
+          await context.close();
+        }
+      },
+    );
+    await check(
+      "compact top ride panel: laptop profile actions fit, accordion is keyboard accessible and sends no UART",
+      async () => {
+        for (const width of [360, 768, 1280, 1366]) {
+          const { page, context } = await newPage({ viewport: { width, height: 720 }, reducedMotion: "reduce" });
+          await mock(page); await ready(page); await toPanel(page, "presets");
+          for (const language of ["ru", "en"]) {
+            await page.locator("#language").selectOption(language);
+            await page.evaluate(() => scrollTo(0, 0));
+            const geometry = await page.evaluate(() => {
+              const hud = document.getElementById("raceHud"), tabs = document.getElementById("tabs");
+              return {
+                hudBeforeTabs: !!(hud.compareDocumentPosition(tabs) & Node.DOCUMENT_POSITION_FOLLOWING),
+                hudBottom: hud.getBoundingClientRect().bottom,
+                tabsTop: tabs.getBoundingClientRect().top,
+                cardButtonBottom: document.querySelector("#rideCards article button").getBoundingClientRect().bottom,
+                overflow: document.documentElement.scrollWidth > innerWidth + 1,
+              };
+            });
+            assert.equal(geometry.hudBeforeTabs, true);
+            assert.ok(geometry.hudBottom <= geometry.tabsTop);
+            assert.equal(geometry.overflow, false);
+            if (width >= 1280) assert.ok(geometry.cardButtonBottom <= 720, `${width}/${language}: ${geometry.cardButtonBottom}`);
+          }
+          const summary = page.locator(".hud-controls summary");
+          assert.equal(await page.locator("#previewToggle").isVisible(), false);
+          await summary.focus(); await page.keyboard.press("Enter");
+          assert.equal(await page.locator("#previewToggle").isVisible(), true);
+          await page.locator('[data-hud-pas="2"]').click();
+          assert.equal(await page.locator("#sim-level").inputValue(), "2");
+          assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true);
+          await summary.focus(); await page.keyboard.press("Enter");
+          assert.equal(await page.locator("#previewToggle").isVisible(), false);
+          await page.locator("#language").selectOption("ru");
+          await page.evaluate(() => scrollTo(0, 0));
+          await page.screenshot({path: path.join(output, `compact-profiles-${width}.png`), animations: "disabled"});
+          if (width === 1280) {
+            await page.locator("#theme").click();
+            await page.screenshot({path: path.join(output, "compact-profiles-light.png"), animations: "disabled"});
+          }
+          assert.deepEqual(await page.evaluate(() => __motor.sent), []);
           await context.close();
         }
       },
@@ -364,6 +409,7 @@ async function toPanel(page, id) {
         await connectRead(page);
         const count = await page.evaluate(() => __motor.sent.length);
         await toPanel(page, "simulator");
+        await page.locator(".hud-controls summary").click();
         await page.locator('[data-hud-pas="2"]').click();
         assert.equal(await page.locator("#sim-level").inputValue(), "2");
         assert.equal(
@@ -425,6 +471,7 @@ async function toPanel(page, id) {
           await wheel.evaluate((el) => getComputedStyle(el).animationPlayState),
           "paused",
         );
+        await page.locator(".hud-controls summary").click();
         await page.locator("#previewToggle").click();
         assert.equal(await hud.getAttribute("data-running"), "true");
         assert.equal(

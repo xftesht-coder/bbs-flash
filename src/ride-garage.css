@@ -1,49 +1,49 @@
 /* Ride cards use ordinary HTML meters and static decoration; no animation required. */
-.garage-start { margin: 0 0 22px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.garage-start { margin: 0 0 12px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
 .garage-start h2 { font: 500 13px var(--display); color: var(--muted); }
 .start-paths { display: flex; flex-wrap: wrap; gap: 8px; }
 .start-paths button { min-height: 44px; }
-.setup-steps { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); list-style: none; margin: 0 0 18px; padding: 0; gap: 16px; }
-.setup-steps li { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 12px; border-top: 2px solid var(--line); padding-top: 10px; }
+.setup-steps { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); list-style: none; margin: 0 0 8px; padding: 0; gap: 12px; }
+.setup-steps li { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 12px; border-top: 2px solid var(--line); padding-top: 5px; }
 .setup-steps li>span { font: 11px var(--mono); }
 .setup-steps b { font-weight: 500; }
 .setup-steps li[data-complete="true"],.setup-steps li[aria-current="step"] { border-color: var(--accent); color: var(--accent); }
 .setup-steps li[aria-current="step"] b { font-weight: 700; }
-.setup-summary { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 16px; }
-.garage-start h2.setup-title { font: 650 20px/1.35 var(--display); color: var(--ink); margin: 0 0 6px; }
+.setup-summary { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 0; }
+.garage-start h2.setup-title { font: 650 17px/1.35 var(--display); color: var(--ink); margin: 0 0 4px; }
 #setupHint { font-size: 13px; margin: 0; max-width: 850px; }
 #setupNext { flex-shrink: 0; }
-.garage-start .start-paths { padding-top: 14px; border-top: 1px solid var(--line); }
-.garage-start .start-paths button { min-height: 36px; font-size: 12px; background: transparent; }
+.setup-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.garage-start .start-paths { gap: 6px; }
+.garage-start .start-paths button { min-height: 36px; padding: 7px 10px; font-size: 12px; background: transparent; }
 .garage-start[data-setup-state="verified"] .setup-title { color: var(--accent); }
 .garage-start[data-setup-state="partial"] .setup-title { color: var(--bad); }
 #garageNext { margin-bottom: 16px; }
-@media(max-width: 700px) { .garage:not([data-active-panel="connection"]) .garage-intro { display: none; } }
-@media(max-width: 700px) { .setup-steps { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px 16px; }.setup-summary { align-items: stretch; flex-direction: column; gap: 12px; }.garage-start h2.setup-title { font-size: 18px; }.setup-steps li { font-size: 11px; }.garage-start .start-paths { display: flex; }.garage-start .start-paths button { flex: 1 1 auto; } }
-.ride-hero { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding: 24px 0 12px; }
-.ride-hero h2 { font: 650 30px/1.15 var(--display), sans-serif; max-width: 24ch; }
-.ride-hero p { max-width: 58ch; }
-.ride-hero-number { display: none; }
-.bike-card { border: 1px solid var(--line); border-radius: 14px; padding: 20px; background: var(--surface); margin-bottom: 18px; }
-.bike-card h3 { margin: 8px 0; }
-.bike-card details { margin-bottom: 0; }
-.bike-card details p { margin-top: 12px; }
+@media(max-width: 1100px) { .setup-actions { flex-direction: column; align-items: stretch; } }
+@media(max-width: 700px) { .setup-steps { gap: 6px; }.setup-steps li { font-size: 10px; gap: 4px; flex-wrap: wrap; }.setup-summary { align-items: stretch; flex-direction: column; gap: 10px; }.setup-actions { flex-direction: row; flex-wrap: wrap; }.garage-start .start-paths { display: flex; flex: 1; }.garage-start .start-paths button { flex: 1 1 auto; } }
+.ride-hero { display: flex; gap: 20px; align-items: center; justify-content: space-between; padding: 4px 0 8px; }
+.garage .ride-hero h2 { font: 650 22px/1.2 var(--display),sans-serif; margin: 0; flex-shrink: 0; }
+.ride-hero p { max-width: 80ch; font-size: 12px; color: var(--muted); margin: 0; }
+.ride-toolbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin: 4px 0 8px; }
+.garage .bike-card { flex: 1; min-width: 0; padding: 8px 12px; margin: 0; }
+.bike-card summary .muted { margin-left: 12px; font-size: 12px; font-weight: 400; }
+.bike-card p { margin: 10px 0; font-size: 12px; }
 .ride-kicker { font: 10px var(--mono); letter-spacing: .02em; color: var(--muted); }
-.ride-filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0; }
-.ride-filters button { min-height: 40px; }
+.ride-filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; flex-shrink: 0; }
+.ride-filters button { min-height: 34px; padding: 6px 12px; font-size: 12px; }
 .ride-filters [aria-pressed="true"] { color: var(--bg); background: var(--ink); border-color: var(--ink); }
-.ride-cards { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
-.ride-card { --ride-color: var(--accent); min-width: 0; position: relative; overflow: hidden; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); display: flex; flex-direction: column; }
+.ride-cards { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; }
+.ride-card { --ride-color: var(--accent); min-width: 0; position: relative; overflow: hidden; padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); display: flex; flex-direction: column; }
 .tone-mint { --ride-color: #80b9a4; }.tone-blue { --ride-color: #86a9e1; }.tone-sand { --ride-color: #c4a879; }
 .ride-card[data-selected="true"] { border-color: var(--ride-color); box-shadow: inset 0 0 0 1px var(--ride-color); background: linear-gradient(145deg,var(--surface),var(--soft)); }
-.ride-card-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 24px; }
+.ride-card-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; }
 .ride-code { font: 11px var(--mono); color: var(--muted); letter-spacing: .06em; }
 .ride-chip { font: 10px var(--display); border: 1px solid var(--line); border-radius: 20px; color: var(--ride-color); padding: 3px 8px; }
-.garage .ride-card h3 { font: 650 20px/1.25 var(--display),sans-serif; overflow-wrap: anywhere; }
-.ride-card > p { color: var(--muted); min-height: 3em; font-size: 13px; }
-.ride-card button { margin-top: auto; min-height: 42px; width: 100%; }
-.ride-traits { margin: 8px 0 20px; }
-.ride-traits > div { display: grid; grid-template-columns: 1fr 90px; align-items: center; gap: 6px; font-size: 12px; margin: 7px 0; }
+.garage .ride-card h3 { font: 650 18px/1.25 var(--display),sans-serif; overflow-wrap: anywhere; }
+.ride-card > p { color: var(--muted); min-height: 2em; font-size: 12px; margin-bottom: 6px; }
+.ride-card button { margin-top: auto; min-height: 36px; padding: 7px 10px; width: 100%; }
+.ride-traits { margin: 0 0 10px; }
+.ride-traits > div { display: grid; grid-template-columns: 1fr 90px; align-items: center; gap: 6px; font-size: 11px; margin: 3px 0; }
 meter { width: 100%; height: 10px; background: transparent; }
 meter::-webkit-meter-bar { background: var(--line); border: none; border-radius: 6px; }
 meter::-webkit-meter-optimum-value { background: var(--ride-color,var(--accent)); }
@@ -84,15 +84,15 @@ meter::-moz-meter-bar { background: var(--ride-color,var(--accent)); }
 #rideReviewDiff td:first-child { overflow-wrap: anywhere; }
 .garage #compare { max-width: 260px; }
 .garage-content [data-g="compareHelp"] { margin-top: 12px; }
-@media(min-width: 1550px) { .garage-shell { max-width: 1540px; } }
+@media(max-width: 1000px) { .ride-toolbar { flex-direction: column; gap: 8px; }.garage .bike-card { width: 100%; } .ride-cards { grid-template-columns: repeat(2,minmax(0,1fr)); }.ride-hero { align-items: flex-start; flex-direction: column; gap: 6px; } }
 @media(max-width: 600px) {
-  .start-paths { display: grid; grid-template-columns: 1fr; }
+  .setup-actions { flex-direction: column; align-items: stretch; }
+  .start-paths { display: flex; }
   .start-paths button { justify-content: flex-start; }
   .ride-cards { grid-template-columns: 1fr; }
-  .ride-card { padding: 18px; }
-  .ride-card-top { margin-bottom: 16px; }
-  .ride-hero h2 { font-size: 26px; }
-  .ride-hero-number { display: none; }
+  .ride-card { padding: 14px; }
+  .garage .ride-hero h2 { font-size: 20px; }
+  .bike-card summary .muted { display: block; margin-left: 0; }
   .ride-detail { padding: 16px; }
   .ride-filters button { flex: 1 0 40%; }
   .ride-card > p { min-height: 0; }

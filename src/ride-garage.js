@@ -11,7 +11,7 @@ globalThis.BBSRideGarage = (() => {
     ownerReported: ["Владелец подтвердил запись и заезд на 3.4.2", "Owner reported a verified write and ride on 3.4.2"],
     rides: ["ВЫБЕРИ ХАРАКТЕР ПОЕЗДКИ", "CHOOSE YOUR RIDE"],
     title: ["{count} профилей. Твой BBS02.", "{count} profiles. Your BBS02."],
-    intro: ["Найди свой характер езды — от спокойной прогулки до бодрого разгона. Перед выбором увидишь точные изменения. В мотор они попадут только после отдельной записи.", "Preview the changes, then apply to a draft. The dashboard shows the current draft. Nothing is sent to the motor automatically."],
+    intro: ["Выбери характер поездки. Профиль меняет черновик; запись в мотор — отдельный шаг.", "Choose a ride style. Profiles change the draft; writing to the motor is a separate step."],
     all: ["Все {count}", "All {count}"], calm: ["Спокойно", "Relaxed"], daily: ["На каждый день", "Everyday"], active: ["Активно", "Active"],
     learn: ["Подробнее о профиле", "Explore profile"],
     experiment: ["Авторский профиль · отправная точка", "Author profile · a starting point"],
@@ -201,7 +201,6 @@ globalThis.BBSRideGarage = (() => {
     if (locale !== api.lang()) {
       locale = api.lang();
       document.querySelectorAll("[data-g]").forEach((n) => n.textContent = t(n.dataset.g));
-      document.querySelector(".ride-hero-number").textContent = String(R.profiles.length).padStart(2, "0");
       $("garageName").placeholder = t("placeholder");
       $("rideFilters").setAttribute("aria-label", t("categories"));
       $("rideDetail").setAttribute("aria-label", t("details"));
