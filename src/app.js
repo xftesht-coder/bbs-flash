@@ -60,8 +60,8 @@
     ],
     roadmap: ["План развития ↗", "Roadmap ↗"],
     experimental: [
-      "Версия 3.4.7 для BBS02 750 Вт: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 В / предел контроллера 25 А. Сначала считай и сохрани исходные настройки, затем выбери профиль и запиши изменения. Другие контроллеры — только чтение.",
-      "Version 3.4.7 for BBS02 750 W: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / controller maximum 25 A. Read and back up the original settings, then choose a profile and write the changes. Other controllers are read-only.",
+      "Версия 3.4.8 для BBS02 750 Вт: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 В / предел контроллера 25 А. Сначала считай и сохрани исходные настройки, затем выбери профиль и запиши изменения. Другие контроллеры — только чтение.",
+      "Version 3.4.8 for BBS02 750 W: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / controller maximum 25 A. Read and back up the original settings, then choose a profile and write the changes. Other controllers are read-only.",
     ],
     connection: ["Подключение", "Connection"],
     basic: ["Основные настройки", "Basic"],
@@ -985,6 +985,7 @@
         backup.device.model
       : t("noBackup");
     refreshSetup();
+    BBSRideGarage.sync();
   }
   function describeDevice(d) {
     const compatibility = d.readChecksum === "legacy"
@@ -998,7 +999,7 @@
     document.documentElement.lang = lang;
     $("language").value = lang;
     $("language").setAttribute("aria-label", t("language"));
-    document.title = lang === "en" ? "BBS Flash 3.4.7 · Configurator" : "BBS Flash 3.4.7 · Настройка мотора";
+    document.title = lang === "en" ? "BBS Flash 3.4.8 · Configurator" : "BBS Flash 3.4.8 · Настройка мотора";
     document.querySelectorAll("[data-hud-pas]").forEach(b => b.setAttribute("aria-label", t("selectPas") + " " + b.dataset.hudPas));
     document
       .querySelectorAll("[data-t]")
@@ -1433,6 +1434,7 @@
     );
   BBSRideGarage.init({
     lang: () => lang, busy: () => busy, source: () => source,
+    motorProfile: () => connected() && C.isWriteReady(session) ? C.clone(editorBase) : null,
     pull, push, calculate: renderCalculations, diffTable: changesTable,
     download, error: report,
     nextStep: goToNextStep,

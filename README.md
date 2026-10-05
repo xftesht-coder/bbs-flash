@@ -1,4 +1,4 @@
-# BBS Flash 3.4.7
+# BBS Flash 3.4.8
 
 **Гараж профилей для BBS02 750 Вт.** 12 характеров поездки: «Максимальная экономия», «Суперплавный», «Городской ритм», «Прогулка в парке», «Бездорожье», «Полный вперёд», «Максимальная скорость», «Камон! Ускорение», «Длинный подъём», «Техничная тропа», «Дальнобой» и «Тренировка». Карточки RU/EN объясняют ожидаемое поведение и компромиссы; график PAS и таблица изменений показывают результат до применения. Настройки — авторские отправные точки по справочнику Penoff, а не оптимизированные на физическом моторе профили.
 
@@ -12,7 +12,7 @@
 
 Редактор настроек Bafang BBS UART: импорт/экспорт `.el`, пресеты, сравнение PAS, расчёт скорости и дальности, чтение контроллера и резервные копии. Vanilla JavaScript, без сборщика и зависимостей в браузере. Это **настройки, не прошивка firmware**.
 
-**Выпуск ограничен конфигурацией владельца:** HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / максимум контроллера 25 A. Запись выключена по умолчанию и требует полного чтения, проверенной копии и отдельного разрешения для текущего подключения. Владелец подтвердил запись с повторным чтением и поездку с «Полным вперёд» на 3.4.2; изменения 3.4.7 проверены программно. Восстановление на моторе пока не подтверждено. [Границы аппаратного подтверждения](docs/BENCH-VALIDATION.md). Другие модели/прошивки — только чтение. Нельзя выбирать модель вручную, чтобы обойти этот запрет. CAN не поддерживается.
+**Выпуск ограничен конфигурацией владельца:** HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / максимум контроллера 25 A. Запись выключена по умолчанию и требует полного чтения, проверенной копии и отдельного разрешения для текущего подключения. Владелец подтвердил запись с повторным чтением и поездку с «Полным вперёд» на 3.4.2; изменения 3.4.8 проверены программно. Восстановление на моторе пока не подтверждено. [Границы аппаратного подтверждения](docs/BENCH-VALIDATION.md). Другие модели/прошивки — только чтение. Нельзя выбирать модель вручную, чтобы обойти этот запрет. CAN не поддерживается.
 
 После «Считать все блоки» приложение дважды читает исходные данные и сохраняет проверенную резервную копию до загрузки в редактор. Повторное чтение предупреждает о замене изменённого черновика. Перед каждым изменением контроллера приложение снова дважды читает все блоки, сверяет их с исходным чтением текущего сеанса, проверяет совпадение, сохраняет оригинал в IndexedDB, проверяет сохранение и показывает точную дельту. После подтверждения снова проверяет исходные данные, записывает выбранные блоки и сверяет повторным чтением. Отказ хранилища, неверный кадр, превышение лимита или несовпадение останавливают процедуру. Это **не гарантирует безопасность оборудования**: см. [ограничения](docs/SAFETY.md).
 
@@ -59,4 +59,4 @@ python -m http.server 8765
 
 ## English
 
-A local Bafang UART settings workbench with `.el` import/export, PAS templates, A/B comparison, range estimates and verified backups. The owner reported a verified write and a ride with Full ahead on 3.4.2; 3.4.7 changes have software test coverage. Physical restore remains unconfirmed. Writes default to off and require explicit opt-in plus the exact HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / maximum 25 A configuration. Unknown controllers are read-only. There is no CAN support, firmware flashing, live telemetry or cloud profile upload. See [Safety](docs/SAFETY.md), [Protocol](docs/PROTOCOL.md) and [Roadmap](ROADMAP.md).
+A local Bafang UART settings workbench with `.el` import/export, PAS templates, A/B comparison, range estimates and verified backups. The owner reported a verified write and a ride with Full ahead on 3.4.2; 3.4.8 changes have software test coverage. Physical restore remains unconfirmed. Writes default to off and require explicit opt-in plus the exact HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / maximum 25 A configuration. Unknown controllers are read-only. There is no CAN support, firmware flashing, live telemetry or cloud profile upload. See [Safety](docs/SAFETY.md), [Protocol](docs/PROTOCOL.md) and [Roadmap](ROADMAP.md).

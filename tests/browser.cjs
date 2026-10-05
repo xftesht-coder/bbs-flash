@@ -785,6 +785,63 @@ async function toPanel(page, id) {
         await context.close();
       },
     );
+    await check("seven profile values compare actual drafts, update after edits, and clear invalid input", async () => {
+      const {page,context}=await newPage(); await mock(page); await ready(page); await toPanel(page,"presets");
+      const card=page.locator('.ride-card').filter({has:page.locator('[data-ride="forward"]')});
+      const value=(id,side)=>card.locator(`[data-metric="${id}"] .trait-${side}`).getAttribute('data-value');
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'demo');
+      assert.equal(await page.locator('.ride-trait').count(),12*7);
+      assert.equal(await value('pickup','before'),'10'); assert.equal(await value('pickup','after'),'20');
+      assert.equal(await value('peak','before'),'18'); assert.equal(await value('peak','after'),'18');
+      const original=await page.locator('#pas-SC').inputValue();
+      await page.locator('[data-ride="forward"]').click();
+      assert.equal(await page.locator('.ride-comparison-item').count(),7);
+      assert.match(await page.locator('#rideDetail').textContent(),/не время разгона/);
+      assert.equal(await page.locator('#pas-SC').inputValue(),original);
+      await page.locator('#ridePreview').click(); await page.locator('#rideReviewApply').click();
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'draft');
+      assert.match(await page.locator('#rideBaseline').textContent(),/Полный вперёд/);
+      assert.equal(await value('pickup','before'),'20');
+      assert.equal(await card.locator('[data-changed="true"]').count(),0);
+      await page.locator('#garageUndo').click(); assert.equal(await value('pickup','before'),'10');
+      await toPanel(page,'basic'); await page.locator('#bas-LC').fill('12'); await toPanel(page,'presets');
+      assert.equal(await value('peak','after'),'12');
+      await toPanel(page,'basic'); await page.locator('#bas-LC').fill(''); await toPanel(page,'presets');
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'invalid');
+      assert.equal(await page.locator('.ride-trait').count(),0);
+      await toPanel(page,'basic'); await page.locator('#bas-LC').fill('18'); await toPanel(page,'presets');
+      await page.locator('#language').selectOption('en');
+      assert.ok(!/[А-Яа-яЁё]/.test(await page.locator('#panel-presets').innerText()));
+      await page.locator('#language').selectOption('ru'); assert.equal(await page.locator('.ride-trait').count(),84);
+      assert.deepEqual(await page.evaluate(()=>__motor.sent),[]);
+      await context.close();
+    });
+    await check("motor comparison stays anchored through draft selection and follows verified writes and reconnect", async () => {
+      const {page,context}=await newPage(); await mock(page); await ready(page); await connectRead(page);
+      await toPanel(page,'presets');
+      const card=page.locator('.ride-card').filter({has:page.locator('[data-ride="forward"]')});
+      const before=()=>card.locator('[data-metric="pickup"] .trait-before').getAttribute('data-value');
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'motor');
+      await page.locator('[data-ride="forward"]').click(); await page.locator('#ridePreview').click(); await page.locator('#rideReviewApply').click();
+      assert.equal(await before(),'10');
+      assert.match(await page.locator('#rideBaseline').textContent(),/ещё не записаны/);
+      assert.equal(await page.evaluate(()=>__motor.sent.filter(f=>f[0]===22).length),0);
+      await page.setViewportSize({width:1280,height:900});
+      await page.locator('#rideBaseline').scrollIntoViewIfNeeded();
+      await page.screenshot({path:path.join(output,'profile-comparison-motor.png'),animations:'disabled'});
+      await toPanel(page,'connection'); await page.locator('#bench').check(); await page.locator('#writeAll').click();
+      await page.waitForFunction(()=>document.getElementById('writeDialog').open);
+      await page.locator('#confirmSafety').check(); await page.locator('#confirmWrite').click();
+      await page.waitForFunction(()=>document.getElementById('status').textContent.includes('подтверждена'));
+      assert.equal(await before(),'20');
+      assert.match(await page.locator('#rideBaseline').textContent(),/Черновик совпадает/);
+      await page.locator('#disconnect').click(); await page.waitForFunction(()=>!document.getElementById('connect').disabled);
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'draft');
+      await page.locator('#connect').click(); await page.waitForFunction(()=>!document.getElementById('readAll').disabled);
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'draft');
+      assert.match(await page.locator('#rideBaseline').textContent(),/не считан/);
+      await context.close();
+    });
     await check("guided setup distinguishes drafts, reading and verified writes without automatic UART actions", async () => {
       const {page, context} = await newPage(); await mock(page); await ready(page);
       const state = () => page.locator(".garage-start").getAttribute("data-setup-state");
@@ -815,6 +872,7 @@ async function toPanel(page, id) {
       await page.locator('[data-ride="forward"]').click();
       await page.locator("#ridePreview").click(); await page.locator("#rideReviewApply").click();
       assert.equal(await state(), "draft");
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'motor');
       const sent = await page.evaluate(() => __motor.sent.length);
       await page.locator("#garageNext").click();
       assert.equal(await page.evaluate(() => document.activeElement.id), "bench");
@@ -916,6 +974,8 @@ async function toPanel(page, id) {
       await page.waitForFunction(() => document.getElementById("status").textContent.includes("подтверждена"));
       assert.equal(await page.locator("#pas-KC").inputValue(),"55");
       assert.equal(await page.evaluate(() => __motor.frames[83][12]),60);
+      assert.equal(await page.locator('.ride-card').first().locator('[data-metric="cruise"] .trait-before').getAttribute('data-value'),'60');
+      assert.equal(await page.locator('.ride-card').first().locator('[data-metric="peak"] .trait-before').getAttribute('data-value'),'17');
       assert.match(await page.locator("#source").textContent(), /ещё не записанные/);
       assert.equal(await page.locator(".garage-start").getAttribute("data-setup-state"), "draft");
       await toPanel(page,"connection"); await page.locator("#writeAll").click();
@@ -924,6 +984,7 @@ async function toPanel(page, id) {
       await page.waitForFunction(() => document.getElementById("status").textContent.includes("подтверждена"));
       assert.deepEqual(await page.evaluate(() => __motor.sent.filter(f=>f[0]===22).map(f=>f[1])),[82,83]);
       assert.equal(await page.evaluate(() => __motor.frames[83][12]),55);
+      assert.equal(await page.locator('.ride-card').first().locator('[data-metric="cruise"] .trait-before').getAttribute('data-value'),'55');
       await context.close();
     });
     await check("ACK without persistence closes the session and reports an unverified partial write", async () => {
@@ -939,6 +1000,7 @@ async function toPanel(page, id) {
       assert.equal(await page.evaluate(() => __motor.sent.filter(f=>f[0]===22).length),1);
       assert.ok(!(await page.locator("#status").textContent()).includes("Запись подтверждена"));
       assert.equal(await page.locator(".garage-start").getAttribute("data-setup-state"), "partial");
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'draft');
       assert.equal(await page.locator('[data-setup-step][data-complete="true"]').count(), 0);
       assert.equal(await page.locator("#backupEl").isDisabled(),false);
       await context.close();

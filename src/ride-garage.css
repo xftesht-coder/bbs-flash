@@ -39,11 +39,25 @@
 .ride-card-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; }
 .ride-code { font: 11px var(--mono); color: var(--muted); letter-spacing: .06em; }
 .ride-chip { font: 10px var(--display); border: 1px solid var(--line); border-radius: 20px; color: var(--ride-color); padding: 3px 8px; }
-.garage .ride-card h3 { font: 650 18px/1.25 var(--display),sans-serif; overflow-wrap: anywhere; }
+.garage .ride-card h3 { margin: 0 0 4px; }
 .ride-card > p { color: var(--muted); min-height: 2em; font-size: 12px; margin-bottom: 6px; }
-.ride-card button { margin-top: auto; min-height: 36px; padding: 7px 10px; width: 100%; }
-.ride-traits { margin: 0 0 10px; }
-.ride-traits > div { display: grid; grid-template-columns: 1fr 90px; align-items: center; gap: 6px; font-size: 11px; margin: 3px 0; }
+.ride-card .ride-select { font: 650 17px/1.25 var(--display); text-align: left; justify-content: space-between; min-height: 32px; padding: 0; width: 100%; border: 0; background: transparent; color: var(--ink); }
+.ride-select span { color: var(--accent); font-size: 18px; }
+.ride-select:hover { color: var(--accent); }
+.ride-baseline { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 16px; padding: 8px 12px; margin: 8px 0; border: 1px solid var(--line); border-radius: 10px; background: var(--soft); }
+.ride-baseline>div { display: grid; gap: 1px; }.ride-baseline strong { font-size: 12px; font-weight: 550; }.ride-baseline p { font-size: 11px; color: var(--muted); margin: 0; text-align: right; }
+.ride-traits { margin: 0; }
+.ride-traits>div { display: grid; grid-template-columns: minmax(0,1fr) 59px 79px; align-items: center; gap: 5px; }
+.ride-traits .ride-traits-heading { color: var(--muted); font-size: 10px; margin-bottom: 3px; }
+.ride-traits-heading span:not(:first-child) { text-align: right; }
+.ride-trait { min-height: 26px; border-top: 1px solid color-mix(in srgb,var(--line) 60%,transparent); font-size: 12px; }
+.ride-trait-label { display: flex; align-items: center; justify-content: space-between; gap: 6px; line-height: 1.3; }
+.trait-before { color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+.trait-outcome { white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+.trait-after { font-weight: 600; }.trait-arrow { color: var(--muted); }
+.ride-trait[data-changed="true"] .trait-after { color: var(--accent); }
+.trait-bars { width: 38px; flex-shrink: 0; display: grid; gap: 2px; }
+.trait-bars meter { display: block; height: 3px; }.trait-meter-before { --ride-color: #8799aa; }.trait-meter-after { --ride-color: var(--accent); }
 meter { width: 100%; height: 10px; background: transparent; }
 meter::-webkit-meter-bar { background: var(--line); border: none; border-radius: 6px; }
 meter::-webkit-meter-optimum-value { background: var(--ride-color,var(--accent)); }
@@ -53,10 +67,12 @@ meter::-moz-meter-bar { background: var(--ride-color,var(--accent)); }
 .garage .ride-detail h3 { font: 650 27px/1.2 var(--display),sans-serif; margin: 12px 0 20px; }
 .ride-detail h4 { margin: 18px 0 7px; font-size: 12px; letter-spacing: .01em; color: var(--accent); }
 .ride-detail > p { line-height: 1.7; }
-.ride-metrics { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
-.ride-metrics > div { padding: 13px; background: var(--surface); }
-.ride-metrics dt { font-size: 11px; color: var(--muted); }
-.ride-metrics dd { font: 23px var(--mono); margin: 5px 0 0; }
+.ride-comparison { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin: 14px 0; }
+.ride-comparison-item { padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.ride-comparison-item h4 { margin: 0 0 8px; color: var(--ink); }
+.ride-comparison-item .comparison-values { font-size: 20px; margin-bottom: 4px; font-variant-numeric: tabular-nums; }
+.comparison-values strong { color: var(--accent); }.comparison-direction { font-size: 11px; color: var(--accent); }
+.ride-comparison-item>p:last-child { color: var(--muted); font-size: 12px; margin: 8px 0 0; }
 .ride-preserved { margin: 16px 0 0; font-size: 11px; color: var(--muted); }
 .pas-chart { margin: 20px 0; padding: 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; }
 .pas-chart figcaption { font-weight: 700; margin-bottom: 5px; }
@@ -84,8 +100,11 @@ meter::-moz-meter-bar { background: var(--ride-color,var(--accent)); }
 #rideReviewDiff td:first-child { overflow-wrap: anywhere; }
 .garage #compare { max-width: 260px; }
 .garage-content [data-g="compareHelp"] { margin-top: 12px; }
-@media(max-width: 1000px) { .ride-toolbar { flex-direction: column; gap: 8px; }.garage .bike-card { width: 100%; } .ride-cards { grid-template-columns: repeat(2,minmax(0,1fr)); }.ride-hero { align-items: flex-start; flex-direction: column; gap: 6px; } }
+@media(max-width: 1200px) { .ride-cards { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width: 1000px) { .ride-toolbar { flex-direction: column; gap: 8px; }.garage .bike-card { width: 100%; }.ride-hero { align-items: flex-start; flex-direction: column; gap: 6px; } }
 @media(max-width: 600px) {
+  .ride-baseline { grid-template-columns: 1fr 1fr; gap: 6px 10px; }.ride-baseline p { grid-column: 1/-1; text-align: left; }
+  .ride-comparison { grid-template-columns: 1fr; }.trait-bars { width: 24px; }
   .setup-actions { flex-direction: column; align-items: stretch; }
   .start-paths { display: flex; }
   .start-paths button { justify-content: flex-start; }

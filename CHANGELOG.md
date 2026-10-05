@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.4.8 — 2026-10-05 · Seven-value profile comparison
+
+- Replace three fixed subjective ratings with seven before/after values computed from actual settings: pedal response, initial pickup, assist ramp, PAS 5 current, PAS 9 current, keep current and PAS 5 speed percentage.
+- Show the current comparison source and draft separately. Use the last verified motor baseline while the connection remains valid; otherwise label demo/draft values explicitly. Choosing a preset does not advance the motor baseline.
+- Explain changed ride behavior on every card and all seven settings in profile details. Keep current limits, rounding and relative speed percentages visible rather than promising measured acceleration or range.
+- Refresh comparisons after edits, imports, undo, partial/full verified writes, failed writes and reconnect. Profile previews remain read-only until explicit draft application.
+- Preserve compact top ride panel, cache keys, controller protocol, storage and numerical tuning. Remove obsolete static three-value ratings.
+
 ## 3.4.7 — 2026-10-05 · Compact layout for everyday screens
 
 - Move the cyclist and ride estimates above the workspace; put optional estimate controls in a keyboard-accessible disclosure.

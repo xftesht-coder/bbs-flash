@@ -1,6 +1,10 @@
-# Verification of 3.4.7
+# Verification of 3.4.8
 
-Compact-layout coverage: syntax checks, 42 Node tests and 30 Edge browser scenarios. All six sections are checked for horizontal overflow at 360/390/640/768/1024/1280/1366/1440 px. Additional RU/EN checks verify that the ride panel precedes navigation and the first profile row's action buttons fit a 1280×720 and 1366×720 viewport. Native estimate controls open and close with the keyboard, remain usable at narrow widths, and send no UART commands. Dark/light laptop and mobile renders were visually inspected. Controller core, storage, simulation and numeric profiles are unchanged.
+45 Node tests and 32 Edge browser scenarios cover seven computed comparison values, inverse ramp/response direction, capped/rounded PAS current at 1/12/18/24/25/30 A, imports and invalid inputs. Browser checks cover all twelve cards, live draft edits, preview without mutation, apply/undo, RU/EN, motor baseline stability until verified writing, partial block writes, failed writes and reconnect. The deployment smoke check requires 84 comparison rows and an explicitly labelled demo baseline. There are no new motor commands or numerical tuning changes.
+
+## Earlier regression evidence
+
+3.4.7 compact-layout coverage: syntax checks, 42 Node tests and 30 Edge browser scenarios. All six sections are checked for horizontal overflow at 360/390/640/768/1024/1280/1366/1440 px. Additional RU/EN checks verify that the ride panel precedes navigation and the first profile row's action buttons fit a 1280×720 and 1366×720 viewport. Native estimate controls open and close with the keyboard, remain usable at narrow widths, and send no UART commands. Dark/light laptop and mobile renders were visually inspected. Controller core, storage, simulation and numeric profiles are unchanged.
 
 42 Node tests and 29 browser scenarios include release-specific keys on all runtime assets and an actual browser context primed with an incompatible, cacheable older module before opening the current application.
 
@@ -10,7 +14,7 @@ The interface update passed syntax checks, 41 Node tests and 26 Edge browser sce
 
 Additional coverage: twelve ride profiles preserve hardware/PAS0/throttle fields and current ceilings at 1/12/18/25/30 A; switching economy → full ahead; actual supplied Penoff.el indices and roundtrip; browser preview/cancel/apply/undo for all twelve modes, category counts and new RU/EN descriptions, no profile-driven UART commands, local named drafts and escaping, downloads, read-only file comparison, rejected malformed comparison and IndexedDB v1 migration with existing backups/preferences.
 
-Profile meters describe design intent, not measured tuning quality. Default battery capacity is 19.2 Ah as supplied by the owner. The owner reported a verified write and ride on 3.4.2; the 3.4.3 and 3.4.4 changes have software test coverage only. See BENCH-VALIDATION.md for the exact limits of this evidence.
+Profile meters now show raw setting values, not measured tuning quality; previous three-value design ratings were removed in 3.4.8. Default battery capacity is 19.2 Ah as supplied by the owner. The owner reported a verified write and ride on 3.4.2; changes through 3.4.8 have software test coverage only. See BENCH-VALIDATION.md for the exact limits of this evidence.
 
 Baseline audited: `ad3aed5` (3.4.2). Tests do not access a physical serial port.
 

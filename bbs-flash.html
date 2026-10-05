@@ -11,19 +11,20 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
     />
-    <title>BBS Flash 3.4.7 · Настройка мотора</title>
+    <title>BBS Flash 3.4.8 · Настройка мотора</title>
     <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./src/styles.css?v=3.4.7" />
-    <link rel="stylesheet" href="./src/garage.css?v=3.4.7" />
-    <link rel="stylesheet" href="./src/ride-garage.css?v=3.4.7" />
-    <script defer src="./src/core.js?v=3.4.7"></script>
-    <script defer src="./src/storage.js?v=3.4.7"></script>
-    <script defer src="./src/presets.js?v=3.4.7"></script>
-    <script defer src="./src/guide.js?v=3.4.7"></script>
-    <script defer src="./src/dash.js?v=3.4.7"></script>
-    <script defer src="./src/ride-profiles.js?v=3.4.7"></script>
-    <script defer src="./src/ride-garage.js?v=3.4.7"></script>
-    <script defer src="./src/app.js?v=3.4.7"></script>
+    <link rel="stylesheet" href="./src/styles.css?v=3.4.8" />
+    <link rel="stylesheet" href="./src/garage.css?v=3.4.8" />
+    <link rel="stylesheet" href="./src/ride-garage.css?v=3.4.8" />
+    <script defer src="./src/core.js?v=3.4.8"></script>
+    <script defer src="./src/storage.js?v=3.4.8"></script>
+    <script defer src="./src/presets.js?v=3.4.8"></script>
+    <script defer src="./src/guide.js?v=3.4.8"></script>
+    <script defer src="./src/dash.js?v=3.4.8"></script>
+    <script defer src="./src/ride-profiles.js?v=3.4.8"></script>
+    <script defer src="./src/ride-compare.js?v=3.4.8"></script>
+    <script defer src="./src/ride-garage.js?v=3.4.8"></script>
+    <script defer src="./src/app.js?v=3.4.8"></script>
   </head>
   <body class="garage" data-active-panel="connection">
     <header>
@@ -32,7 +33,7 @@
           ><span class="brand-stripes" aria-hidden="true"></span>BBS<span
             class="brand-slash"
             >//</span
-          >FLASH<span class="version">3.4.7</span></a
+          >FLASH<span class="version">3.4.8</span></a
         >
         <div class="tools">
           <button
@@ -422,6 +423,7 @@
               <button data-filter="active" aria-pressed="false" data-g="active" data-editable></button>
             </div>
             </div>
+            <div id="rideBaseline" class="ride-baseline" role="status" aria-live="polite"></div>
             <div id="rideCards" class="ride-cards"></div>
             <p class="muted ride-ratings" data-g="ratings"></p>
             <section id="rideDetail" class="ride-detail" tabindex="-1" aria-label="Ride profile details"></section>
