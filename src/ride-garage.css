@@ -3,6 +3,23 @@
 .garage-start h2 { font: 500 13px var(--display); color: var(--muted); }
 .start-paths { display: flex; flex-wrap: wrap; gap: 8px; }
 .start-paths button { min-height: 44px; }
+.setup-steps { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); list-style: none; margin: 0 0 18px; padding: 0; gap: 16px; }
+.setup-steps li { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 12px; border-top: 2px solid var(--line); padding-top: 10px; }
+.setup-steps li>span { font: 11px var(--mono); }
+.setup-steps b { font-weight: 500; }
+.setup-steps li[data-complete="true"],.setup-steps li[aria-current="step"] { border-color: var(--accent); color: var(--accent); }
+.setup-steps li[aria-current="step"] b { font-weight: 700; }
+.setup-summary { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 16px; }
+.garage-start h2.setup-title { font: 650 20px/1.35 var(--display); color: var(--ink); margin: 0 0 6px; }
+#setupHint { font-size: 13px; margin: 0; max-width: 850px; }
+#setupNext { flex-shrink: 0; }
+.garage-start .start-paths { padding-top: 14px; border-top: 1px solid var(--line); }
+.garage-start .start-paths button { min-height: 36px; font-size: 12px; background: transparent; }
+.garage-start[data-setup-state="verified"] .setup-title { color: var(--accent); }
+.garage-start[data-setup-state="partial"] .setup-title { color: var(--bad); }
+#garageNext { margin-bottom: 16px; }
+@media(max-width: 700px) { .garage:not([data-active-panel="connection"]) .garage-intro { display: none; } }
+@media(max-width: 700px) { .setup-steps { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px 16px; }.setup-summary { align-items: stretch; flex-direction: column; gap: 12px; }.garage-start h2.setup-title { font-size: 18px; }.setup-steps li { font-size: 11px; }.garage-start .start-paths { display: flex; }.garage-start .start-paths button { flex: 1 1 auto; } }
 .ride-hero { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding: 24px 0 12px; }
 .ride-hero h2 { font: 650 30px/1.15 var(--display), sans-serif; max-width: 24ch; }
 .ride-hero p { max-width: 58ch; }

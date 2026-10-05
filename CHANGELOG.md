@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.4.5 — 2026-10-05 · Guided motor setup
+
+- Show connection, backed-up reading, draft editing and verified writing as separate setup steps with contextual next actions.
+- Keep next-step buttons as navigation only: they never open a serial port, enable writes or send controller commands.
+- Distinguish current-session backups from saved history, incomplete writes from success, and remaining draft edits after single-block writes.
+- Clear stale profile messages and undo state when reading or a verified write establishes a new baseline.
+- Add browser regressions for the complete guided journey, reconnect/reload, denied storage and failed readback. Preserve UART framing and numerical profiles.
+
 ## 3.4.4 — 2026-10-05 · Clearer interface and Russian copy
 
 - Replace the dense race skin with a calm, responsive dark/light interface and readable system typography.

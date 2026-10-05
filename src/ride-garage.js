@@ -28,6 +28,7 @@ globalThis.BBSRideGarage = (() => {
     preserved: ["Сохраняются общий ток, отсечка батареи, колесо, датчики, PAS 0, задержки остановки, режим работы и настройки газа. Таблица PAS общая: она может влиять и на газ, если он использует уровень помощи. Если PAS закреплён на одном уровне, переключатель дисплея не выберет другие ступени.", "Global current, battery cutoff, wheel, sensors, PAS 0, stop timing, Work Mode and throttle settings are preserved. The shared PAS table can also affect throttle operation when it uses an assist level. A fixed designated PAS level prevents display selection of other levels."],
     ceiling: ["Профиль не повышает общий лимит тока. Предел помощи рассчитывается по текущему черновику; после чтения мотора проверь его заново.", "The profile never raises the global current limit. Assistance is calculated from the current draft; review it again after reading the motor."],
     applied: ["Профиль применён к черновику. Мотор не изменён.", "Applied to the draft. Motor unchanged."],
+    nextStep: ["Что дальше?", "What's next?"],
     undo: ["Отменить последнее применение", "Undo last application"],
     undone: ["Предыдущий черновик восстановлен.", "Previous draft restored."],
     library: ["Мой гараж", "My garage"], name: ["Название профиля", "Profile name"], note: ["Заметка о поездке", "Ride note"],
@@ -45,10 +46,8 @@ globalThis.BBSRideGarage = (() => {
     stale: ["Черновик изменился. Открой сравнение заново.", "The draft changed. Reopen the comparison."],
     fileCompare: ["Сравнить со своим .el", "Compare with my .el"],
     fileLabel: ["Мой файл .el", "My .el file"],
-    welcome: ["С чего начнём?", "Where shall we start?"],
-    browse: ["Выбрать профиль поездки", "Choose a ride profile"],
-    open: ["Открыть файл .el", "Open an .el file"],
-    connect: ["Подключить мотор", "Connect a motor"],
+    browse: ["Профили поездки", "Ride profiles"],
+    open: ["Открыть .el", "Open .el"],
     bike: ["ТВОЙ ВЕЛОСИПЕД", "YOUR BIKE"],
     bikeDetails: ["Trek Roscoe 8 · 2020–2021 · BBS02 750 Вт", "Trek Roscoe 8 · 2020–2021 · BBS02 750 W"],
     kit: ["48 В · 19,2 А·ч · LG Cells · 32T · 860C", "48 V · 19.2 Ah · LG Cells · 32T · 860C"],
@@ -76,7 +75,10 @@ globalThis.BBSRideGarage = (() => {
     b.disabled = api.busy();
     return b;
   }
-  function message(key) { lastMessage = key; $("garageMessage").textContent = t(key); }
+  function message(key) {
+    lastMessage = key; $("garageMessage").textContent = t(key);
+    $("garageNext").hidden = key !== "applied";
+  }
   function download(item) {
     try { api.download("bbs-profile.el", C.toEl(C.validate(item.profile))); }
     catch { message("invalid"); }
@@ -223,7 +225,7 @@ globalThis.BBSRideGarage = (() => {
     });
     $("startBrowse").onclick = () => api.panel("presets");
     $("startImport").onclick = () => { api.panel("connection"); $("import").click(); };
-    $("startConnect").onclick = () => api.panel("connection");
+    $("garageNext").onclick = () => api.nextStep();
     $("rideSetup").onclick = () => api.panel("simulator");
     $("rideReviewCancel").onclick = () => $("rideReviewDialog").close();
     $("rideReviewApply").onclick = () => {
@@ -288,6 +290,10 @@ globalThis.BBSRideGarage = (() => {
       if (key.startsWith("ride:")) return R.apply(profile, key.slice(5));
       return null;
     },
-    resetUndo() { undo = null; },
+    resetUndo() {
+      undo = null; lastMessage = null;
+      $("garageMessage").textContent = "";
+      $("garageNext").hidden = true;
+    },
   };
 })();

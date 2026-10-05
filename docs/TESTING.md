@@ -1,4 +1,6 @@
-# Verification of 3.4.4
+# Verification of 3.4.5
+
+Guided setup coverage: 41 Node tests and 28 browser scenarios. The additional scenarios exercise navigation-only next actions, offline profile selection, reading without writing, explicit write opt-in, cancellation, confirmed readback, invalid fields, language switching, and reconnect/reload with an older saved backup. Existing failure tests also check that storage errors, unsent blocks and partial writes cannot show a completed setup. Hardware is simulated.
 
 The interface update passed syntax checks, 41 Node tests and 26 Edge browser scenarios on 2026-10-04/05. The added scenario checks Russian field labels and units, unchanged raw field values, accessible names, profile evidence wording and an EN → RU language roundtrip. Dark and light desktop layouts and mobile widths were visually inspected. Core protocol, storage and numeric profiles are unchanged from 3.4.3.
 
