@@ -173,14 +173,14 @@ async function toPanel(page, id) {
       } finally { primeLegacyCache = false; await context.close(); }
     });
     await check(
-      "fresh IndexedDB startup; dark default; every tab accessible",
+      "fresh IndexedDB startup; light default; every tab accessible",
       async () => {
         for (let i = 0; i < 3; i++) {
           const { page, context } = await newPage();
           await ready(page);
           assert.equal(
             await page.locator("html").getAttribute("data-theme"),
-            "dark",
+            "light",
           );
           assert.equal(await page.locator("#writeAll").isDisabled(), true);
           for (const id of [
@@ -225,7 +225,7 @@ async function toPanel(page, id) {
         // Preferences are asynchronous IndexedDB writes. Verify the commit,
         // not an arbitrary delay, before testing persistence across reload.
         await page.waitForFunction(
-          async () => (await BBSStore.get("prefs", "theme")) === "light",
+          async () => (await BBSStore.get("prefs", "theme")) === "dark",
         );
         await page.reload();
         await page.waitForFunction(
@@ -233,11 +233,11 @@ async function toPanel(page, id) {
         );
         assert.equal(
           await page.locator("html").getAttribute("data-theme"),
-          "light",
+          "dark",
         );
         await toPanel(page, "simulator");
         await page.screenshot({
-          path: path.join(output, "simulator-light-en.png"),
+          path: path.join(output, "simulator-dark-en.png"),
           fullPage: true,
         });
         await context.close();
@@ -339,7 +339,7 @@ async function toPanel(page, id) {
           await page.screenshot({path: path.join(output, `compact-profiles-${width}.png`), animations: "disabled"});
           if (width === 1280) {
             await page.locator("#theme").click();
-            await page.screenshot({path: path.join(output, "compact-profiles-light.png"), animations: "disabled"});
+            await page.screenshot({path: path.join(output, "compact-profiles-dark.png"), animations: "disabled"});
           }
           assert.deepEqual(await page.evaluate(() => __motor.sent), []);
           await context.close();

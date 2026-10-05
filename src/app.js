@@ -511,7 +511,7 @@
     rangeGrade: ["Уклон подъёмов, %", "Uphill gradient, %"],
   };
   let lang = "ru",
-    theme = "dark",
+    theme = "light",
     session = null,
     busy = false,
     storageReady = false,

@@ -2,7 +2,7 @@
   "use strict";
   const $ = (id) => document.getElementById(id);
   let lang = "ru",
-    dark = true;
+    dark = false;
   const english = {
     rideOpen: "Choose a ride profile →",
     rideEyebrow: "RIDE PROFILES · BBS02 750 W",
