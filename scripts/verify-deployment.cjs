@@ -21,8 +21,13 @@ const files = [
   "src/guide.js",
   "src/dash.js",
   "src/ride-profiles.js",
+  "src/ride-compare.js",
   "src/ride-garage.js",
   "src/ride-garage.css",
+  "src/access-demo.js",
+  "src/account-model.js",
+  "src/account.js",
+  "src/account.css",
   "assets/icon.svg",
   "assets/RussoOne-Regular.ttf",
   "assets/OFL-RussoOne.txt",
@@ -116,6 +121,8 @@ const attempts = Number(process.env.BBS_DEPLOY_ATTEMPTS || 24),
     await page.locator("#closeGuide").click();
     await page.locator('[data-panel="presets"]').click();
     if ((await page.locator("#rideCards article").count()) !== 12) throw Error("Ride catalogue missing");
+    if ((await page.locator(".ride-trait").count()) !== 84) throw Error("Seven-value profile comparison missing");
+    if ((await page.locator("#rideBaseline").getAttribute("data-basis")) !== "demo") throw Error("Demo values mistaken for motor settings");
     await page.locator('[data-ride="forward"]').click();
     await page.locator("#ridePreview").click();
     await page.locator("#rideReviewCancel").click();
