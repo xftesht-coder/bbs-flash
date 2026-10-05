@@ -219,6 +219,29 @@ async function toPanel(page, id) {
         await context.close();
       },
     );
+    await check("Russian labels, units and profile evidence remain accurate after a language roundtrip", async () => {
+      const {page,context}=await newPage();
+      await ready(page);
+      assert.equal(await page.locator('#language').getAttribute('aria-label'),'Язык');
+      assert.match(await page.title(),/Настройка мотора/);
+      await toPanel(page,'basic');
+      assert.match(await page.locator('label[for="bas-LBP"]').innerText(),/Защита от разряда, В/);
+      assert.match(await page.locator('label[for="bas-LC"]').innerText(),/лимит тока, А/);
+      assert.equal(await page.locator('#bas-LBP').inputValue(),'41');
+      await toPanel(page,'throttle');
+      assert.match(await page.locator('label[for="thr-SV"]').innerText(),/×0,1 В/);
+      assert.equal(await page.locator('#thr-SV').inputValue(),'11');
+      await toPanel(page,'presets');
+      await page.locator('[data-ride="forward"]').click();
+      assert.match(await page.locator('#rideDetail').innerText(),/Владелец подтвердил запись и заезд на 3\.4\.2/i);
+      for(const lang of ['en','ru']) await page.locator('#language').selectOption(lang);
+      assert.equal(await page.locator('[data-t="cadenceUnit"]').innerText(),'об/мин');
+      assert.match(await page.locator('[data-hud-pas="2"]').getAttribute('aria-label'),/Уровень помощи 2/);
+      const missing=await page.locator('[data-t]').evaluateAll(nodes=>nodes.filter(n=>!n.textContent.trim()||n.textContent===n.dataset.t).map(n=>n.dataset.t));
+      assert.deepEqual(missing,[]);
+      assert.doesNotMatch(await page.locator('body').innerText(),/SETUP LAB|Reality Check|RPM|checksum/);
+      await context.close();
+    });
     await check(
       "mobile 360/390/768 and desktop: no page overflow; all navigation visible",
       async () => {
@@ -475,7 +498,7 @@ async function toPanel(page, id) {
         await page.waitForFunction(() =>
           document
             .getElementById("source")
-            .textContent.includes("импортированный"),
+            .textContent.includes("профиль из файла"),
         );
         assert.equal(await page.locator("#pas-SSM").inputValue(), "6");
         assert.equal(await page.locator("#pas-WM").inputValue(), "10");
@@ -532,7 +555,7 @@ async function toPanel(page, id) {
         await ready(page);
         assert.match(
           await page.locator("#capability").innerText(),
-          /недоступен/,
+          /недоступно/,
         );
         assert.equal(await page.locator("#connect").isDisabled(), true);
         await toPanel(page, "simulator");
@@ -796,7 +819,7 @@ async function toPanel(page, id) {
       await page.locator("#connect").click();
       await page.waitForFunction(() => !document.getElementById("readAll").disabled);
       assert.match(await page.locator("#device").textContent(), /HW 1\.1 · FW 2\.0\.1\.1/);
-      assert.match(await page.locator("#device").textContent(), /General: 48 V · 25 A/);
+      assert.match(await page.locator("#device").textContent(), /Контроллер: 48 В · 25 А/);
       assert.match(await page.locator("#device").textContent(), /двумя чтениями/);
       assert.equal(await page.locator("#writeAll").isDisabled(), true);
       assert.equal(await page.locator("#bench").isChecked(), false);

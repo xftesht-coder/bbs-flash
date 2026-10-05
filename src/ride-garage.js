@@ -6,23 +6,26 @@ globalThis.BBSRideGarage = (() => {
   let api, locale = "", selected = "city", filter = "all", undo = null;
   let pending = null, saved = [], backups = [], external = null, storage = false, lastMessage = null, opener = null;
   const words = {
+    profileCode: ["Профиль", "Profile"],
+    amp: ["А", "A"],
+    ownerReported: ["Владелец подтвердил запись и заезд на 3.4.2", "Owner reported a verified write and ride on 3.4.2"],
     rides: ["ВЫБЕРИ ХАРАКТЕР ПОЕЗДКИ", "CHOOSE YOUR RIDE"],
     title: ["{count} профилей. Твой BBS02.", "{count} profiles. Your BBS02."],
-    intro: ["Сначала посмотри, что изменится. Затем примени к черновику. Приборка показывает текущий черновик. В мотор ничего не отправляется автоматически.", "Preview the changes, then apply to a draft. The dashboard shows the current draft. Nothing is sent to the motor automatically."],
+    intro: ["Найди свой характер езды — от спокойной прогулки до бодрого разгона. Перед выбором увидишь точные изменения. В мотор они попадут только после отдельной записи.", "Preview the changes, then apply to a draft. The dashboard shows the current draft. Nothing is sent to the motor automatically."],
     all: ["Все {count}", "All {count}"], calm: ["Спокойно", "Relaxed"], daily: ["На каждый день", "Everyday"], active: ["Активно", "Active"],
-    learn: ["Разобрать профиль", "Explore profile"],
-    experiment: ["Стартовый шаблон · без проверки на моторе", "Starting point · not motor-tested"],
+    learn: ["Подробнее о профиле", "Explore profile"],
+    experiment: ["Авторский профиль · отправная точка", "Author profile · a starting point"],
     effect: ["Как задумано", "Intended feel"], compromise: ["Что учесть", "Tradeoff"],
     pickup: ["Подхват", "Pickup"], smooth: ["Плавность", "Smoothness"], support: ["Поддержка", "Assistance"],
     ratings: ["Шкалы показывают задуманный характер, а не измерения или рейтинг безопасности.", "Bars indicate design intent, not measurements or safety ratings."],
-    limit: ["Предел PAS 9", "PAS 9 ceiling"], start: ["Стартовый ток", "Start current"], ramp: ["Темп старта, код", "Ramp code"], keep: ["Поддержка на каденсе", "Keep current"],
+    limit: ["Предел PAS 9", "PAS 9 ceiling"], start: ["Стартовый ток", "Start current"], ramp: ["Темп старта, код", "Ramp code"], keep: ["Помощь при быстром вращении", "Keep current"],
     currentGraph: ["Ток по уровням PAS · А", "Current by PAS level · A"],
     old: ["Сейчас", "Current"], next: ["После выбора", "After selection"],
     preview: ["Посмотреть изменения →", "Preview changes →"],
     apply: ["Применить к черновику", "Apply to draft"], cancel: ["Отмена", "Cancel"],
     delta: ["Проверь изменения", "Review changes"],
     draftOnly: ["Меняется только редактор. Для записи в мотор нужна отдельная процедура подключения, чтения, копирования и подтверждения.", "Only the editor changes. Writing requires a separate connection, read, backup and confirmation procedure."],
-    preserved: ["Сохраняются общий ток, отсечка батареи, колесо, датчики, PAS 0, задержки остановки, Work Mode и настройки газа. Таблица PAS общая: она может влиять и на газ, если он использует уровень помощи. Если PAS закреплён на одном уровне, переключатель дисплея не выберет другие ступени.", "Global current, battery cutoff, wheel, sensors, PAS 0, stop timing, Work Mode and throttle settings are preserved. The shared PAS table can also affect throttle operation when it uses an assist level. A fixed designated PAS level prevents display selection of other levels."],
+    preserved: ["Сохраняются общий ток, отсечка батареи, колесо, датчики, PAS 0, задержки остановки, режим работы и настройки газа. Таблица PAS общая: она может влиять и на газ, если он использует уровень помощи. Если PAS закреплён на одном уровне, переключатель дисплея не выберет другие ступени.", "Global current, battery cutoff, wheel, sensors, PAS 0, stop timing, Work Mode and throttle settings are preserved. The shared PAS table can also affect throttle operation when it uses an assist level. A fixed designated PAS level prevents display selection of other levels."],
     ceiling: ["Профиль не повышает общий лимит тока. Предел помощи рассчитывается по текущему черновику; после чтения мотора проверь его заново.", "The profile never raises the global current limit. Assistance is calculated from the current draft; review it again after reading the motor."],
     applied: ["Профиль применён к черновику. Мотор не изменён.", "Applied to the draft. Motor unchanged."],
     undo: ["Отменить последнее применение", "Undo last application"],
@@ -35,7 +38,7 @@ globalThis.BBSRideGarage = (() => {
     local: ["Хранится только в этом браузере. Скачивай .el отдельно: очистка данных сайта удаляет гараж. Сохранённый черновик не является резервной копией мотора.", "Stored only in this browser. Download .el files separately: clearing site data removes the garage. A saved draft is not a motor backup."],
     load: ["Сравнить и загрузить", "Review and load"], download: ["Скачать .el", "Download .el"],
     backups: ["История копий контроллера", "Controller backup history"],
-    noBackups: ["Пока нет копий контроллера. Они создаются и проверяются перед записью в мотор.", "No controller backups yet. They are created and verified before motor writes."],
+    noBackups: ["Пока нет копий контроллера. Первая появится после полного чтения; перед записью сохраняется ещё одна.", "No controller backups yet. The first is saved after a full read; another is saved before writing."],
     unavailable: ["Хранилище недоступно. Карточки, редактор и экспорт работают; сохранение в гараж и запись в мотор недоступны.", "Storage unavailable. Cards, editor and export still work; garage saving and motor writes are unavailable."],
     invalid: ["Не удалось выполнить действие. Проверь поля редактора и доступность хранилища.", "Action failed. Check editor fields and storage availability."],
     nameRequired: ["Введи название профиля.", "Enter a profile name."],
@@ -43,9 +46,9 @@ globalThis.BBSRideGarage = (() => {
     fileCompare: ["Сравнить со своим .el", "Compare with my .el"],
     fileLabel: ["Мой файл .el", "My .el file"],
     welcome: ["С чего начнём?", "Where shall we start?"],
-    browse: ["01 · Выбрать характер поездки", "01 · Choose a ride profile"],
-    open: ["02 · Открыть свой .el", "02 · Open my .el"],
-    connect: ["03 · Подключить мотор", "03 · Connect a motor"],
+    browse: ["Выбрать профиль поездки", "Choose a ride profile"],
+    open: ["Открыть файл .el", "Open an .el file"],
+    connect: ["Подключить мотор", "Connect a motor"],
     bike: ["ТВОЙ ВЕЛОСИПЕД", "YOUR BIKE"],
     bikeDetails: ["Trek Roscoe 8 · 2020–2021 · BBS02 750 Вт", "Trek Roscoe 8 · 2020–2021 · BBS02 750 W"],
     kit: ["48 В · 19,2 А·ч · LG Cells · 32T · 860C", "48 V · 19.2 Ah · LG Cells · 32T · 860C"],
@@ -92,7 +95,7 @@ globalThis.BBSRideGarage = (() => {
       for (const [value, key, cls] of [[a,"old","before-bar"],[b,"next","after-bar"]]) {
         const meter = el("meter", undefined, cls);
         meter.min = 0; meter.max = max; meter.value = value;
-        meter.setAttribute("aria-label", `PAS ${i} · ${t(key)} · ${value.toFixed(1)} A`);
+        meter.setAttribute("aria-label", `PAS ${i} · ${t(key)} · ${value.toFixed(1)} ${t("amp")}`);
         bars.append(meter);
       }
       row.append(bars, el("span", `${a.toFixed(1)} / ${b.toFixed(1)}`, "pas-values"));
@@ -119,7 +122,7 @@ globalThis.BBSRideGarage = (() => {
       const card = el("article", undefined, `ride-card tone-${p.tone}`);
       card.dataset.selected = String(p.id === selected);
       const top = el("div", undefined, "ride-card-top");
-      top.append(el("span", p.code, "ride-code"), el("span", "BBS02", "ride-chip"));
+      top.append(el("span", t("profileCode") + " " + p.code.split(" / ")[0], "ride-code"), el("span", "BBS02", "ride-chip"));
       card.append(top, el("h3", local(p.name)), el("p", local(p.tagline)));
       const traits = el("div", undefined, "ride-traits");
       ["pickup", "smooth", "support"].forEach((key, i) => {
@@ -142,11 +145,11 @@ globalThis.BBSRideGarage = (() => {
   function renderDetail() {
     const detail = $("rideDetail"); detail.replaceChildren();
     const p = R.profiles.find((p) => p.id === selected);
-    detail.append(el("span", t("experiment"), "ride-kicker"), el("h3", local(p.name)), el("h4", t("effect")), el("p", local(p.description)), el("h4", t("compromise")), el("p", local(p.tradeoff)));
+    detail.append(el("span", t(p.id === "forward" ? "ownerReported" : "experiment"), "ride-kicker"), el("h3", local(p.name)), el("h4", t("effect")), el("p", local(p.description)), el("h4", t("compromise")), el("p", local(p.tradeoff)));
     try {
       const before = api.pull(), after = R.apply(before, selected);
       const metrics = el("dl", undefined, "ride-metrics");
-      for (const [key, value] of [["limit",`${(after.bas.LC * after.bas.ALC[9] / 100).toFixed(1)} A`],["start",`${p.start}%`],["ramp",p.ramp],["keep",`${p.keep}%`]]) {
+      for (const [key, value] of [["limit",`${(after.bas.LC * after.bas.ALC[9] / 100).toFixed(1)} ${t("amp")}`],["start",`${p.start}%`],["ramp",p.ramp],["keep",`${p.keep}%`]]) {
         const item = el("div"); item.append(el("dt", t(key)), el("dd", String(value))); metrics.append(item);
       }
       detail.append(metrics, el("p", t("ceiling"), "muted"), chart(before, after));

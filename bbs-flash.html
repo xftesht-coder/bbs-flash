@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta
       name="description"
-      content="BBS Flash: Bafang UART settings, verified backups and transparent estimates."
+      content="BBS Flash — понятная настройка BBS02: профили поездки, резервные копии и проверка записи."
     />
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
     />
-    <title>BBS Flash 3.4.3 · Configurator</title>
+    <title>BBS Flash 3.4.4 · Настройка мотора</title>
     <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./src/styles.css" />
     <link rel="stylesheet" href="./src/garage.css" />
@@ -32,7 +32,7 @@
           ><span class="brand-stripes" aria-hidden="true"></span>BBS<span
             class="brand-slash"
             >//</span
-          >FLASH<span class="version">3.4.3</span></a
+          >FLASH<span class="version">3.4.4</span></a
         >
         <div class="tools">
           <button
@@ -63,16 +63,16 @@
           <p class="muted" data-t="subtitle"></p>
         </div>
         <div class="garage-number" aria-hidden="true">
-          01<span>SETUP LAB</span>
+          BBS02<span data-t="motorRating">750 Вт / 48 В</span>
         </div>
       </div>
-      <div class="notice warning race-notice" data-t="experimental"></div>
+      <details class="compatibility"><summary data-t="compatibilityTitle"></summary><p data-t="experimental"></p></details>
       <section class="garage-start" aria-labelledby="startTitle">
         <h2 id="startTitle" data-g="welcome"></h2>
         <div class="start-paths">
-          <button id="startBrowse" data-g="browse" class="primary" data-editable></button>
+          <button id="startConnect" data-g="connect" class="primary" data-editable></button>
+          <button id="startBrowse" data-g="browse" data-editable></button>
           <button id="startImport" data-g="open" data-editable></button>
-          <button id="startConnect" data-g="connect" data-editable></button>
         </div>
       </section>
       <div class="garage-workspace">
@@ -481,7 +481,7 @@
           <div class="hud-stats">
             <div>
               <span data-t="hudCurrent"></span
-              ><strong><b id="hudCurrent">—</b><small>A</small></strong
+              ><strong><b id="hudCurrent">—</b><small data-t="currentUnit">А</small></strong
               ><progress
                 id="hudCurrentBar"
                 max="30"
@@ -491,7 +491,7 @@
             </div>
             <div>
               <span data-t="hudCadence"></span
-              ><strong><b id="hudCadence">—</b><small>RPM</small></strong
+              ><strong><b id="hudCadence">—</b><small data-t="cadenceUnit">об/мин</small></strong
               ><progress
                 id="hudCadenceBar"
                 max="180"
