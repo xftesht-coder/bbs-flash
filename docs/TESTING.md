@@ -1,8 +1,10 @@
-# Verification of 3.4.3
+# Verification of 3.4.4
+
+The interface update passed syntax checks, 41 Node tests and 26 Edge browser scenarios on 2026-10-04/05. The added scenario checks Russian field labels and units, unchanged raw field values, accessible names, profile evidence wording and an EN → RU language roundtrip. Dark and light desktop layouts and mobile widths were visually inspected. Core protocol, storage and numeric profiles are unchanged from 3.4.3.
 
 Additional coverage: twelve ride profiles preserve hardware/PAS0/throttle fields and current ceilings at 1/12/18/25/30 A; switching economy → full ahead; actual supplied Penoff.el indices and roundtrip; browser preview/cancel/apply/undo for all twelve modes, category counts and new RU/EN descriptions, no profile-driven UART commands, local named drafts and escaping, downloads, read-only file comparison, rejected malformed comparison and IndexedDB v1 migration with existing backups/preferences.
 
-Profile meters describe design intent, not measured tuning quality. Default battery capacity is 19.2 Ah as supplied by the owner. The owner reported a verified write and ride on 3.4.2; the 3.4.3 changes have software test coverage only. See BENCH-VALIDATION.md for the exact limits of this evidence.
+Profile meters describe design intent, not measured tuning quality. Default battery capacity is 19.2 Ah as supplied by the owner. The owner reported a verified write and ride on 3.4.2; the 3.4.3 and 3.4.4 changes have software test coverage only. See BENCH-VALIDATION.md for the exact limits of this evidence.
 
 Baseline audited: `ad3aed5` (3.4.2). Tests do not access a physical serial port.
 

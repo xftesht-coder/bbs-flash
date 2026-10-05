@@ -1,47 +1,47 @@
 /* Ride cards use ordinary HTML meters and static decoration; no animation required. */
-.garage-start { margin: 0 0 22px; padding: 16px; border: 1px solid var(--line); background: var(--surface); }
-.garage-start h2 { font: 13px var(--mono); color: var(--muted); }
+.garage-start { margin: 0 0 22px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.garage-start h2 { font: 500 13px var(--display); color: var(--muted); }
 .start-paths { display: flex; flex-wrap: wrap; gap: 8px; }
 .start-paths button { min-height: 44px; }
 .ride-hero { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding: 24px 0 12px; }
-.ride-hero h2 { font: 28px/1.15 Garage, sans-serif; max-width: 24ch; }
+.ride-hero h2 { font: 650 30px/1.15 var(--display), sans-serif; max-width: 24ch; }
 .ride-hero p { max-width: 58ch; }
-.ride-hero-number { font: 80px Garage,sans-serif; color: var(--line); }
-.bike-card { border-left: 3px solid var(--accent); padding: 16px; background: var(--surface); margin-bottom: 18px; }
+.ride-hero-number { display: none; }
+.bike-card { border: 1px solid var(--line); border-radius: 14px; padding: 20px; background: var(--surface); margin-bottom: 18px; }
 .bike-card h3 { margin: 8px 0; }
 .bike-card details { margin-bottom: 0; }
 .bike-card details p { margin-top: 12px; }
-.ride-kicker { font: 10px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.ride-kicker { font: 10px var(--mono); letter-spacing: .02em; color: var(--muted); }
 .ride-filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0; }
 .ride-filters button { min-height: 40px; }
 .ride-filters [aria-pressed="true"] { color: var(--bg); background: var(--ink); border-color: var(--ink); }
 .ride-cards { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
-.ride-card { --ride-color: var(--accent); min-width: 0; position: relative; overflow: hidden; padding: 18px; border: 1px solid var(--line); border-top: 3px solid var(--ride-color); background: var(--surface); display: flex; flex-direction: column; }
-.tone-mint { --ride-color: #80ae8b; }.tone-blue { --ride-color: #83a7d0; }.tone-sand { --ride-color: #c6aa74; }
-.ride-card[data-selected="true"] { outline: 2px solid var(--ride-color); outline-offset: -2px; background: linear-gradient(145deg,var(--surface),var(--soft)); }
+.ride-card { --ride-color: var(--accent); min-width: 0; position: relative; overflow: hidden; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); display: flex; flex-direction: column; }
+.tone-mint { --ride-color: #80b9a4; }.tone-blue { --ride-color: #86a9e1; }.tone-sand { --ride-color: #c4a879; }
+.ride-card[data-selected="true"] { border-color: var(--ride-color); box-shadow: inset 0 0 0 1px var(--ride-color); background: linear-gradient(145deg,var(--surface),var(--soft)); }
 .ride-card-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 24px; }
 .ride-code { font: 11px var(--mono); color: var(--muted); letter-spacing: .06em; }
-.ride-chip { font: 9px var(--mono); border: 1px solid var(--line); padding: 3px 5px; }
-.garage .ride-card h3 { font: 19px/1.2 Garage,sans-serif; overflow-wrap: anywhere; }
+.ride-chip { font: 10px var(--display); border: 1px solid var(--line); border-radius: 20px; color: var(--ride-color); padding: 3px 8px; }
+.garage .ride-card h3 { font: 650 20px/1.25 var(--display),sans-serif; overflow-wrap: anywhere; }
 .ride-card > p { color: var(--muted); min-height: 3em; font-size: 13px; }
 .ride-card button { margin-top: auto; min-height: 42px; width: 100%; }
 .ride-traits { margin: 8px 0 20px; }
-.ride-traits > div { display: grid; grid-template-columns: 1fr 90px; align-items: center; gap: 6px; font-size: 11px; margin: 5px 0; }
+.ride-traits > div { display: grid; grid-template-columns: 1fr 90px; align-items: center; gap: 6px; font-size: 12px; margin: 7px 0; }
 meter { width: 100%; height: 10px; background: transparent; }
-meter::-webkit-meter-bar { background: var(--line); border: none; border-radius: 0; }
+meter::-webkit-meter-bar { background: var(--line); border: none; border-radius: 6px; }
 meter::-webkit-meter-optimum-value { background: var(--ride-color,var(--accent)); }
 meter::-moz-meter-bar { background: var(--ride-color,var(--accent)); }
 .ride-ratings { margin: 14px 0 22px; font-size: 11px; }
-.ride-detail { padding: 22px; border: 1px solid var(--line); border-top: 3px solid var(--accent); background: var(--surface); margin: 12px 0; scroll-margin: 18px; }
-.garage .ride-detail h3 { font: 25px/1.2 Garage,sans-serif; margin: 12px 0 20px; }
-.ride-detail h4 { margin: 18px 0 7px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--accent); }
+.ride-detail { padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); margin: 12px 0; scroll-margin: 18px; }
+.garage .ride-detail h3 { font: 650 27px/1.2 var(--display),sans-serif; margin: 12px 0 20px; }
+.ride-detail h4 { margin: 18px 0 7px; font-size: 12px; letter-spacing: .01em; color: var(--accent); }
 .ride-detail > p { line-height: 1.7; }
 .ride-metrics { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
 .ride-metrics > div { padding: 13px; background: var(--surface); }
 .ride-metrics dt { font-size: 11px; color: var(--muted); }
 .ride-metrics dd { font: 23px var(--mono); margin: 5px 0 0; }
 .ride-preserved { margin: 16px 0 0; font-size: 11px; color: var(--muted); }
-.pas-chart { margin: 20px 0; padding: 14px; background: var(--bg); border: 1px solid var(--line); }
+.pas-chart { margin: 20px 0; padding: 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; }
 .pas-chart figcaption { font-weight: 700; margin-bottom: 5px; }
 .pas-chart > p { font-size: 11px; }
 .pas-chart-rows { display: grid; gap: 5px; }

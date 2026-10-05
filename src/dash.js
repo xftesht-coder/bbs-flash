@@ -23,7 +23,7 @@ globalThis.BBSDash = (() => {
     $("hudRange").textContent =
       estimate.km === null ? "—" : estimate.km.toFixed(1);
     $("hudModel").textContent = scenario.model;
-    $("hudGear").textContent = `${scenario.chainring} / ${scenario.cog} T`;
+    $("hudGear").textContent = `${scenario.chainring} / ${scenario.cog} ${document.documentElement.lang === "ru" ? "зуб." : "T"}`;
     $("hudSlope").textContent = (mode === "flat" ? 0 : scenario.grade) + "%";
     $("hudNeedle").setAttribute(
       "transform",

@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.4.4 — 2026-10-05 · Clearer interface and Russian copy
+
+- Replace the dense race skin with a calm, responsive dark/light interface and readable system typography.
+- Simplify navigation, profile cards and start actions; label the ride panel as an estimate.
+- Correct Russian parameter names, units, accessible labels and backup/profile evidence copy.
+- Preserve the UART core, write gates and numeric ride profiles.
+
+
 ## 3.4.3 — 2026-10-04 · Foundation workflow repairs
 
 - Audit the current module/dependency boundaries; prioritize Audit → Cleanup → Core → Safety → Tests → UI without adding ride features.

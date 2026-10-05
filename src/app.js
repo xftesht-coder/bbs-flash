@@ -5,29 +5,34 @@
     S = BBSStore,
     $ = (id) => document.getElementById(id);
   const TEXT = {
+    compatibilityTitle: ["BBS02 750 Вт · совместимость подключения", "BBS02 750 W · connection compatibility"],
+    motorRating: ["750 Вт / 48 В", "750 W / 48 V"],
+    currentUnit: ["А", "A"],
+    cadenceUnit: ["об/мин", "rpm"],
+    gearUnit: ["зуб.", "T"],
     language: ["Язык", "Language"],
-    dark: ["Ночь", "Night"],
-    light: ["День", "Day"],
-    guideButton: ["? Penoff", "? Penoff"],
+    dark: ["Тёмная тема", "Dark theme"],
+    light: ["Светлая тема", "Light theme"],
+    guideButton: ["Справочник", "? Penoff"],
     offline: ["Не подключено", "Disconnected"],
     online: ["Подключено", "Connected"],
-    eyebrow: ["Пит-бокс / электрическая тяга", "Pit garage / electric drive"],
-    title: ["СОБЕРИ СВОЙ ХАРАКТЕР.", "TUNE YOUR RIDE."],
+    eyebrow: ["Твой BBS02 · настройки под себя", "Pit garage / electric drive"],
+    title: ["Настрой свой ритм.", "TUNE YOUR RIDE."],
     subtitle: [
-      "Ток. Подхват. Помощь. Твой Bafang — твой сетап.",
+      "Выбери характер поездки. Посмотри изменения. Сохрани в мотор.",
       "Current. Pickup. Assist. Your Bafang, your setup.",
     ],
     roadmap: ["План развития ↗", "Roadmap ↗"],
     experimental: [
-      "Версия 3.4.3 для BBS02 750 Вт: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 В / предел контроллера 25 А. Сначала считай и сохрани исходные настройки, затем выбери профиль и запиши изменения. Другие контроллеры — только чтение.",
-      "Version 3.4.3 for BBS02 750 W: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / controller maximum 25 A. Read and back up the original settings, then choose a profile and write the changes. Other controllers are read-only.",
+      "Версия 3.4.4 для BBS02 750 Вт: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 В / предел контроллера 25 А. Сначала считай и сохрани исходные настройки, затем выбери профиль и запиши изменения. Другие контроллеры — только чтение.",
+      "Version 3.4.4 for BBS02 750 W: HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / controller maximum 25 A. Read and back up the original settings, then choose a profile and write the changes. Other controllers are read-only.",
     ],
     connection: ["Подключение", "Connection"],
-    basic: ["Основные", "Basic"],
-    pas: ["Помощь педалей", "Pedal assist"],
+    basic: ["Основные настройки", "Basic"],
+    pas: ["Помощь педалям", "Pedal assist"],
     throttle: ["Ручка газа", "Throttle"],
     presets: ["Профили поездки", "Ride profiles"],
-    simulator: ["Симулятор", "Simulator"],
+    simulator: ["Расчёт поездки", "Simulator"],
     connectHelp: [
       "Нужен совместимый кабель программирования Bafang UART и настольный Chrome или Edge. Перед подключением проверь распиновку своего контроллера. CAN не поддерживается.",
       "Use a compatible Bafang UART programming cable and desktop Chrome or Edge. Verify the pinout of your controller before connecting. CAN is not supported.",
@@ -62,38 +67,38 @@
       "Controller matches this release's configuration. Read all blocks, download a backup and enable writing separately.",
     ],
     unknown: [
-      "Неизвестная сигнатура контроллера. Разрешено только чтение.",
+      "Эта версия контроллера пока не поддерживает запись. Доступно только чтение.",
       "Unknown controller signature. Read-only access.",
     ],
     serialOk: [
-      "Web Serial доступен. Доступ к порту запрашивается только кнопкой «Подключить».",
+      "Браузер готов к подключению. Выбери кабель после нажатия «Подключить».",
       "Web Serial is available. Port access is requested only when you click Connect.",
     ],
     serialMissing: [
-      "В этом браузере Web Serial недоступен. Редактор, импорт и расчёты работают без мотора.",
+      "Подключение к мотору в этом браузере недоступно. Можно выбирать профили, открывать файлы и смотреть расчёты.",
       "Web Serial is unavailable in this browser. Editing, import and calculations work without a motor.",
     ],
-    files: ["Профиль и резервная копия", "Profile and backup"],
+    files: ["Файлы и резервная копия", "Profile and backup"],
     filesHelp: [
       "Импорт меняет только черновик. Экспорт черновика не считается резервной копией контроллера.",
       "Import changes only the draft. Exporting a draft does not count as a controller backup.",
     ],
-    import: ["Импорт .el", "Import .el"],
-    export: ["Экспорт черновика .el", "Export draft .el"],
+    import: ["Открыть .el", "Import .el"],
+    export: ["Скачать черновик .el", "Export draft .el"],
     backup: ["Последняя резервная копия", "Latest backup"],
     noBackup: [
       "Проверенной резервной копии пока нет.",
       "No verified backup yet.",
     ],
     downloadEl: ["Скачать копию .el", "Download backup .el"],
-    downloadRaw: ["Скачать сырые данные JSON", "Download raw JSON"],
+    downloadRaw: ["Скачать исходные данные JSON", "Download raw JSON"],
     restore: ["Загрузить копию в черновик", "Load backup into draft"],
     backupHelp: [
       "Копия хранится в этом браузере. Скачай её отдельно: очистка данных сайта удалит локальные копии. Восстановление требует обычной процедуры проверки и записи.",
       "The backup is stored in this browser. Download a separate copy: clearing site data removes local backups. Restoration uses the normal review and write procedure.",
     ],
     storageReady: [
-      "Хранилище готово. Копии проверяются после завершения транзакции.",
+      "Хранилище готово. Резервные копии сохраняются и проверяются в этом браузере.",
       "Storage ready. Backups are verified after transaction completion.",
     ],
     storageUnavailable: [
@@ -102,7 +107,7 @@
     ],
     storageWaiting: ["Проверка хранилища…", "Checking storage…"],
     sourceDemo: [
-      "Источник: демонстрационный профиль.",
+      "Сейчас открыт пример настроек. Для настройки своего мотора сначала считай его данные.",
       "Source: demonstration profile.",
     ],
     sourceRead: [
@@ -110,11 +115,11 @@
       "Source: connected controller. Edits remain a draft until written.",
     ],
     sourceImport: [
-      "Источник: импортированный файл; не данные текущего контроллера.",
+      "Открыт профиль из файла. Он ещё не записан в подключённый мотор.",
       "Source: imported file; not a read of the current controller.",
     ],
     sourcePreset: [
-      "Источник: черновик с применённым шаблоном.",
+      "Профиль применён к черновику. Для изменения мотора нужна запись.",
       "Source: draft with a template applied.",
     ],
     sourceLibrary: ["Источник: сохранённый черновик из гаража; не чтение контроллера.", "Source: saved garage draft; not a controller read."],
@@ -128,9 +133,9 @@
     assistTable: ["Уровни помощи", "Assist levels"],
     currentPct: ["Лимит тока, %", "Current limit, %"],
     speedPct: ["Лимит скорости, %", "Speed limit, %"],
-    currentA: ["Ток, A", "Current, A"],
+    currentA: ["Ток, А", "Current, A"],
     stopPolicy: [
-      "Для новой записи Time of Stop ниже 20 × 10 мс заблокирован политикой релиза. Увеличение стартового тока выше 20% тоже заблокировано. Это ограничения приложения, не универсальные пределы прошивок.",
+      "Задержку отключения нельзя уменьшить ниже 200 мс. Повышение стартового тока выше 20% тоже заблокировано. Это ограничения приложения, а не общие пределы всех контроллеров.",
       "This release blocks setting a new Time of Stop below 20 × 10 ms and increasing start current above 20%. These are application policies, not universal firmware limits.",
     ],
     throttleHelp: [
@@ -155,19 +160,19 @@
     presetBalanced: ["Равномерные ступени", "Even steps"],
     presetTorque: ["Постоянный предел скорости", "Constant speed ceiling"],
     presetEcoHelp: [
-      "До 18 A, старт 8%, ступени тока 15–100%.",
+      "До 18 А, старт 8%, ступени тока 15–100%.",
       "Up to 18 A, 8% start current, 15–100% current steps.",
     ],
     presetBalancedHelp: [
-      "До 20 A, старт 10%, ступени тока 10–100%.",
+      "До 20 А, старт 10%, ступени тока 10–100%.",
       "Up to 20 A, 10% start current, 10–100% current steps.",
     ],
     presetTorqueHelp: [
-      "До 18 A, старт 10%, скорость 100% на PAS 1–9.",
+      "До 18 А, старт 10%, скорость 100% на PAS 1–9.",
       "Up to 18 A, 10% start current, 100% speed on PAS 1–9.",
     ],
     simHelp: [
-      "Это расчёт, не телеметрия и не прогноз температуры. Масса, передача, напряжение и потери общие для сравнения, Reality Check и дальности. Выбор модели ниже не разрешает запись в контроллер.",
+      "Это расчёт, не телеметрия и не прогноз температуры. Масса, передача, напряжение и потери общие для сравнения, оценки нагрузки и запаса хода. Выбор модели ниже не разрешает запись в контроллер.",
       "These are estimates, not telemetry or a temperature prediction. Mass, gearing, voltage and losses are shared by comparison, Reality Check and range. Selecting a motor below does not enable controller writes.",
     ],
     assumptions: ["Допущения расчёта", "Calculation assumptions"],
@@ -178,7 +183,7 @@
     gearLimit: ["Предел по передаче, км/ч", "Gearing ceiling, km/h"],
     cadence: ["Каденс на уклоне, об/мин", "Climbing cadence, rpm"],
     levelCurrent: [
-      "Предел тока выбранного PAS, A",
+      "Предел тока на выбранном уровне, А",
       "Selected PAS current ceiling, A",
     ],
     comparison: ["Сравнение A/B", "A/B comparison"],
@@ -186,7 +191,7 @@
     profile: ["Профиль", "Profile"],
     draft: ["A · Черновик", "A · Draft"],
     template: ["B · Шаблон", "B · Template"],
-    electrical: ["Мощность, W", "Electrical, W"],
+    electrical: ["Мощность, Вт", "Electrical, W"],
     flat: ["Ровно, км/ч", "Flat, km/h"],
     climb: ["Уклон, км/ч", "Climb, km/h"],
     cadenceCol: ["Каденс, об/мин", "Cadence, rpm"],
@@ -197,18 +202,18 @@
       "Uses the selected PAS, profile A and the scenario above. Uphill share is a fraction of distance. Speed uses the same limits as the simulator.",
     ],
     rangeKm: ["Расчётная дальность, км", "Estimated distance, km"],
-    whKm: ["Расход, Wh/км", "Consumption, Wh/km"],
-    availableWh: ["Энергия с резервом 15%, Wh", "Energy after 15% reserve, Wh"],
+    whKm: ["Расход, Вт·ч/км", "Consumption, Wh/km"],
+    availableWh: ["Энергия с резервом 15%, Вт·ч", "Energy after 15% reserve, Wh"],
     rangeLimit: [
       "Это ориентир: температура, состояние батареи, ветер, разгоны и переменный КПД не моделируются. Уровень PAS с нулевой помощью не даёт моторной оценки дальности.",
       "This is an estimate: temperature, battery health, wind, acceleration and variable efficiency are not modeled. A zero-assist PAS level has no motor-only range estimate.",
     ],
     risk: [
-      "Reality Check: высокий ток при низком каденсе. Снизь нагрузку и выбери более лёгкую передачу. Это индикатор режима, не измерение нагрева.",
+      "Высокий ток при медленном вращении педалей. Снизь нагрузку и выбери более лёгкую передачу. Это индикатор режима, не измерение нагрева.",
       "Reality Check: high current at low cadence. Reduce load and choose a lower gear. This flags operating conditions; it does not measure heat.",
     ],
     noRisk: [
-      "Проверка нагрузки: в выбранной строке нет сочетания ≥22 A и <60 об/мин. Это не гарантия отсутствия перегрева.",
+      "В выбранном режиме нет сочетания тока от 22 А с каденсом ниже 60 об/мин. Это не означает, что перегрев исключён.",
       "Reality Check: the selected row does not combine ≥22 A with <60 rpm. This does not guarantee freedom from overheating.",
     ],
     modelLimit: [
@@ -249,28 +254,28 @@
     guideCaution: ["Учитывай при настройке", "Tuning considerations"],
     allCredits: ["Источники и благодарности ↗", "Sources and credits ↗"],
     helpLabel: ["Справка: ", "Help: "],
-    ridePreview: ["Тестовый заезд", "Ride preview"],
+    ridePreview: ["Расчёт поездки", "Ride preview"],
     estimateTag: ["РАСЧЁТ", "ESTIMATE"],
     trackFlat: ["Асфальт / 0%", "Tarmac / 0%"],
     trackClimb: ["Подъём", "Climb"],
     speedUnit: ["км/ч · расчёт", "km/h · estimate"],
     kmUnit: ["км", "km"],
-    hudCurrent: ["Лимит тока", "Current limit"],
+    hudCurrent: ["Ток на уровне", "Current limit"],
     hudCadence: ["Каденс", "Cadence"],
-    hudRange: ["Дальность", "Range"],
+    hudRange: ["Запас хода", "Range"],
     reserveTag: ["резерв 15%", "15% reserve"],
     selectPas: ["Уровень помощи", "Assist level"],
     hudRisk: ["Высокий ток / низкий каденс", "High current / low cadence"],
     animatePreview: ["Анимация заезда", "Animate ride"],
     hudDisclaimer: [
-      "Визуализация расчёта. Не телеметрия и не команда мотору.",
+      "Оценка по настройкам черновика. Это не показания датчиков и не управление мотором.",
       "An animated estimate. Not telemetry or a motor command.",
     ],
     safetyDoc: ["Ограничения и безопасность", "Limits and safety"],
     feedback: ["Сообщить о проблеме", "Report an issue"],
     preview: ["Проверка перед записью", "Review before writing"],
     previewHelp: [
-      "Запись нескольких блоков не атомарна. При обрыве часть изменений может уже сохраниться. Автоматического повтора или отката нет.",
+      "Блоки записываются по очереди. При обрыве часть изменений может сохраниться. Автоматического повтора или возврата к исходным настройкам нет.",
       "Writing multiple blocks is not atomic. Some changes may already be saved if the connection fails. There is no automatic retry or rollback.",
     ],
     hardwareNotice: [
@@ -331,7 +336,7 @@
       "Неверный диапазон напряжений ручки газа",
       "Invalid throttle voltage range",
     ],
-    DEVICE: ["Не удалось проверить General", "Could not validate General"],
+    DEVICE: ["Не удалось проверить данные контроллера", "Could not validate General"],
     MODEL: ["Неизвестная модель", "Unknown model"],
     WHEEL: [
       "Неизвестный код колеса; запись запрещена",
@@ -395,34 +400,34 @@
       "Browser denied port access",
     ],
     FILE: ["Не удалось прочитать файл", "Could not read the file"],
-    "bas.LBP": ["Отключение батареи, V", "Low battery cutoff, V"],
-    "bas.LC": ["Общий лимит тока, A", "Total current limit, A"],
-    "bas.WD": ["Колесо в контроллере", "Controller wheel setting"],
+    "bas.LBP": ["Защита от разряда, В", "Low battery cutoff, V"],
+    "bas.LC": ["Общий лимит тока, А", "Total current limit, A"],
+    "bas.WD": ["Размер колеса в контроллере", "Controller wheel setting"],
     "bas.SMType": ["Датчик скорости", "Speed sensor"],
     "bas.SMSig": ["Импульсы за оборот", "Pulses per revolution"],
     "pas.PT": ["Тип датчика педалей", "Pedal sensor type"],
-    "pas.DA": ["Назначенный уровень PAS", "Designated assist"],
+    "pas.DA": ["Уровень помощи PAS", "Designated assist"],
     "pas.SL": ["Лимит скорости, км/ч", "Speed limit, km/h"],
     "pas.SC": ["Стартовый ток, %", "Start current, %"],
-    "pas.SSM": ["Плавность старта, код 1–8", "Slow-start code, 1–8"],
+    "pas.SSM": ["Режим старта, код 1–8", "Slow-start code, 1–8"],
     "pas.SDN": ["Импульсы до старта", "Start degree signals"],
     "pas.WM": ["Режим работы, код", "Work mode code"],
     "pas.TS": ["Задержка отключения, ×10 мс", "Time of Stop, ×10 ms"],
     "pas.CD": ["Снижение тока, код", "Current decay code"],
     "pas.SD": ["Время снижения тяги, ×10 мс", "Stop decay, ×10 ms"],
-    "pas.KC": ["Остаточная помощь, %", "Keep current, %"],
-    "thr.SV": ["Начальное напряжение, ×0.1 V", "Start voltage, ×0.1 V"],
-    "thr.EV": ["Конечное напряжение, ×0.1 V", "End voltage, ×0.1 V"],
+    "pas.KC": ["Ток при быстром вращении, %", "Keep current, %"],
+    "thr.SV": ["Начальное напряжение, ×0,1 В", "Start voltage, ×0.1 V"],
+    "thr.EV": ["Конечное напряжение, ×0,1 В", "End voltage, ×0.1 V"],
     "thr.MODE": ["Режим ручки газа", "Throttle mode"],
-    "thr.DA": ["Назначенный уровень", "Designated assist"],
+    "thr.DA": ["Уровень помощи ручки газа", "Designated assist"],
     "thr.SL": ["Лимит скорости, км/ч", "Speed limit, km/h"],
     "thr.SC": ["Стартовый ток, %", "Start current, %"],
     cutoffHelp: [
-      "Диапазон проверяется по General. Требуемое значение зависит от батареи и BMS.",
+      "Допустимый диапазон определяется напряжением контроллера. Конкретный порог зависит от батареи и её платы защиты (BMS).",
       "Validated against General voltage class. Correct value depends on battery and BMS.",
     ],
     currentHelp: [
-      "Запись ограничена меньшим из лимита General и лимита распознанной модели.",
+      "При записи проверяется предел подключённого контроллера. Допустимый ток батареи и её платы защиты нужно учитывать отдельно.",
       "Writes use the lower of the General limit and the recognized model limit.",
     ],
     wheelHelp: [
@@ -434,7 +439,7 @@
       "Calibration changes affect the measured speed.",
     ],
     firmwareHelp: [
-      "Семантика зависит от прошивки. Не считай большее число универсально более мягким или резким.",
+      "Поведение зависит от прошивки контроллера. Большее число не всегда означает более плавную или более резкую помощь.",
       "Behavior depends on firmware. A larger code does not universally mean softer or sharper response.",
     ],
     scHelp: [
@@ -453,8 +458,8 @@
     sensor1: ["Внутренний", "Internal"],
     sensor2: ["По мотору", "Motor based"],
     model: ["Модель для расчёта", "Simulation motor"],
-    mass: ["Масса велосипед + райдер, кг", "Bike + rider mass, kg"],
-    volt: ["Напряжение под нагрузкой, V", "Loaded battery voltage, V"],
+    mass: ["Велосипед и велосипедист, кг", "Bike + rider mass, kg"],
+    volt: ["Напряжение под нагрузкой, В", "Loaded battery voltage, V"],
     eta: ["КПД, %", "Efficiency, %"],
     grade: ["Уклон, %", "Gradient, %"],
     chainring: ["Передняя звезда, зубьев", "Front chainring, teeth"],
@@ -465,7 +470,7 @@
     crr: ["Сопротивление качению, Crr", "Rolling resistance, Crr"],
     cda: ["Аэродинамическая площадь, CdA (м²)", "Drag area, CdA (m²)"],
     level: ["Уровень PAS для оценки", "PAS level for estimates"],
-    ah: ["Ёмкость батареи, Ah", "Battery capacity, Ah"],
+    ah: ["Ёмкость батареи, А·ч", "Battery capacity, Ah"],
     hillShare: ["Доля подъёмов, % расстояния", "Uphill share, % of distance"],
     rangeGrade: ["Уклон подъёмов, %", "Uphill gradient, %"],
   };
@@ -880,8 +885,8 @@
   }
   function describeDevice(d) {
     const compatibility = d.readChecksum === "legacy"
-      ? (lang === "en" ? "\nUART: legacy checksum, confirmed twice." : "\nUART: формат checksum подтверждён двумя чтениями.") : "";
-    return `${d.manufacturer} ${d.model}\nHW ${d.hw} · FW ${d.fw}\nGeneral: ${[24, 36, 48, 60, "24–48", "24–60"][d.nominalCode]} V · ${d.maxCurrent} A${compatibility}`;
+      ? (lang === "en" ? "\nUART: legacy checksum, confirmed twice." : "\nUART: контрольная сумма подтверждена двумя чтениями.") : "";
+    return `${d.manufacturer} ${d.model}\nHW ${d.hw} · FW ${d.fw}\n${lang === "en" ? "Controller" : "Контроллер"}: ${[24, 36, 48, 60, "24–48", "24–60"][d.nominalCode]} ${lang === "en" ? "V" : "В"} · ${d.maxCurrent} ${t("currentUnit")}${compatibility}`;
   }
   function remember(key, value) {
     S.put("prefs", value, key).catch(() => {});
@@ -889,6 +894,9 @@
   function applyLanguage() {
     document.documentElement.lang = lang;
     $("language").value = lang;
+    $("language").setAttribute("aria-label", t("language"));
+    document.title = lang === "en" ? "BBS Flash 3.4.4 · Configurator" : "BBS Flash 3.4.4 · Настройка мотора";
+    document.querySelectorAll("[data-hud-pas]").forEach(b => b.setAttribute("aria-label", t("selectPas") + " " + b.dataset.hudPas));
     document
       .querySelectorAll("[data-t]")
       .forEach((el) => (el.textContent = t(el.dataset.t)));
