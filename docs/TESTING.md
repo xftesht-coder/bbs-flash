@@ -44,6 +44,9 @@ npm run test:browser
 
 ## Covered
 
+- Subscription demo on both entry pages: RU/EN copy, no-expiry label, keyboard dismissal and focus return, mobile dialog bounds, no form/card inputs, no outbound payment request or navigation, no UART command or changed motor eligibility.
+- Animated rider legs change pose, both play controls stay synchronized, and pedaling stops for zero speed, hidden tabs and reduced motion. UI transitions also respect reduced motion.
+
 - Plain-language profile summary reflects the current comparison. Reset-to-motor only replaces the draft, supports undo for valid drafts, discards invalid fields without reapplying them, and is blocked while busy, disconnected or awaiting a new read. Browser checks assert no UART requests and no change to the verified baseline.
 
 - Owner General and Basic capture replay; independent legacy reference packets for all four blocks and every single-bit mutation; all fragmentation boundaries; changed/corrupt/missing second General; checksum convention pinned for the session; legacy backup/write/readback with separate TX rules. Browser replay displays the captured 24 A after a complete read.

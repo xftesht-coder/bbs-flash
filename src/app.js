@@ -997,6 +997,7 @@
   }
   function applyLanguage() {
     document.documentElement.lang = lang;
+    BBSAccessDemo.sync(lang);
     $("language").value = lang;
     $("language").setAttribute("aria-label", t("language"));
     document.title = lang === "en" ? "BBS Flash 3.4.8 · Configurator" : "BBS Flash 3.4.8 · Настройка мотора";

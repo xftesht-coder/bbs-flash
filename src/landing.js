@@ -76,6 +76,7 @@
   russian.light = "Светлая тема";
   function apply() {
     document.documentElement.lang = lang;
+    BBSAccessDemo.sync(lang);
     $("language").setAttribute("aria-label", lang === "ru" ? "Язык" : "Language");
     document.title = lang === "ru" ? "BBS Flash · Настройка BBS02" : "BBS Flash · BBS02 settings";
     document

@@ -463,21 +463,30 @@ async function toPanel(page, id) {
         const { page, context } = await newPage({
           reducedMotion: "no-preference",
         });
+        await mock(page);
         await ready(page);
         const hud = page.locator("#raceHud"),
           wheel = page.locator(".rear-wheel");
+        const leg = page.locator('.pedal-leg-front').first();
+        const pose = await leg.evaluate(n=>getComputedStyle(n).d);
         assert.equal(await hud.getAttribute("data-running"), "false");
         assert.equal(
           await wheel.evaluate((el) => getComputedStyle(el).animationPlayState),
           "paused",
         );
         await page.locator(".hud-controls summary").click();
-        await page.locator("#previewToggle").click();
+        await page.locator("#scenePlay").click();
         assert.equal(await hud.getAttribute("data-running"), "true");
         assert.equal(
           await wheel.evaluate((el) => getComputedStyle(el).animationPlayState),
           "running",
         );
+        await page.waitForFunction(before=>getComputedStyle(document.querySelector('.pedal-leg-front')).d !== before,pose);
+        assert.equal(await page.locator('#previewToggle').getAttribute('aria-pressed'),'true');
+        await page.locator('#previewToggle').click();
+        assert.equal(await page.locator('#scenePlay').getAttribute('aria-pressed'),'false');
+        assert.equal(await leg.evaluate(n=>getComputedStyle(n).animationPlayState),'paused');
+        await page.locator('#scenePlay').click();
         await page.locator('[data-hud-pas="0"]').click();
         assert.equal(await hud.getAttribute("data-running"), "false");
         await page.locator('[data-hud-pas="9"]').click();
@@ -505,9 +514,50 @@ async function toPanel(page, id) {
           await wheel.evaluate((el) => getComputedStyle(el).animationName),
           "none",
         );
+        assert.equal(await leg.evaluate(n=>getComputedStyle(n).animationName),'none');
+        assert.deepEqual(await page.evaluate(()=>__motor.sent),[]);
         await context.close();
       },
     );
+    await check("lifetime subscription is an accessible RU/EN demo with no payment, navigation or UART activity", async () => {
+      for (const pathname of ['/bbs-flash.html','/']) {
+        const {page,context}=await newPage(); await mock(page);
+        const outbound=[];
+        page.on('request',req=>{if(new URL(req.url()).origin!==new URL(base).origin || req.method()!=='GET') outbound.push(req.url());});
+        if (pathname==='/') await page.goto(base+'/'); else await ready(page);
+        const source=pathname==='/'?null:await page.locator('#pas-SC').inputValue();
+        assert.match(await page.locator('#accessDemo').innerText(),/Бессрочная/);
+        assert.match(await page.locator('#accessDemo').innerText(),/ДЕМО/);
+        await page.locator('#openPaymentDemo').click();
+        const dialog=page.locator('#paymentDemoDialog');
+        assert.equal(await dialog.isVisible(),true);
+        assert.match(await dialog.innerText(),/Бессрочный/);
+        assert.match(await dialog.innerText(),/деньги не списываются/);
+        assert.equal(await dialog.locator('input,form').count(),0);
+        await page.keyboard.press('Escape');
+        assert.equal(await dialog.isVisible(),false);
+        assert.equal(await page.evaluate(()=>document.activeElement.id),'openPaymentDemo');
+        await page.locator('#language').selectOption('en');
+        await page.locator('#openPaymentDemo').click();
+        assert.ok(!/[А-Яа-яЁё]/.test(await dialog.innerText()));
+        assert.match(await dialog.innerText(),/No expiry/);
+        await page.locator('#closePaymentDemo').click();
+        await page.locator('#language').selectOption('ru');
+        await page.setViewportSize({width:390,height:844});
+        await page.locator('#openPaymentDemo').click();
+        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+        assert.equal(await dialog.evaluate(n=>n.scrollWidth<=n.clientWidth+1),true);
+        if(pathname!=='/') await page.screenshot({path:path.join(output,'subscription-demo-mobile.png'),animations:'disabled'});
+        await page.locator('#closePaymentDemo').click();
+        assert.deepEqual(outbound,[]); assert.equal(context.pages().length,1);
+        assert.deepEqual(await page.evaluate(()=>__motor.sent),[]);
+        if(source!==null) {
+          assert.equal(await page.locator('#pas-SC').inputValue(),source);
+          assert.equal(await page.locator('#writeAll').isDisabled(),true);
+        }
+        await context.close();
+      }
+    });
     await check(
       "presets preserve cutoff, wheel, sensor, throttle and total current ceiling",
       async () => {
@@ -838,6 +888,7 @@ async function toPanel(page, id) {
       await page.waitForFunction(()=>document.getElementById('writeDialog').open);
       assert.equal(await page.locator('#rideRestoreMotor').isDisabled(),true);
       assert.equal(await page.locator('#garageUndo').isDisabled(),true);
+      assert.equal(await page.locator('#openPaymentDemo').isDisabled(),true);
       await page.locator('#confirmSafety').check(); await page.locator('#confirmWrite').click();
       await page.waitForFunction(()=>document.getElementById('status').textContent.includes('подтверждена'));
       assert.equal(await before(),'20');

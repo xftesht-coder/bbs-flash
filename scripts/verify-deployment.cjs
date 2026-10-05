@@ -24,6 +24,7 @@ const files = [
   "src/ride-compare.js",
   "src/ride-garage.js",
   "src/ride-garage.css",
+  "src/access-demo.js",
   "assets/icon.svg",
   "assets/RussoOne-Regular.ttf",
   "assets/OFL-RussoOne.txt",

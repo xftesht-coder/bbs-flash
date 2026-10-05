@@ -24,6 +24,7 @@
     <script defer src="./src/ride-profiles.js?v=3.4.8"></script>
     <script defer src="./src/ride-compare.js?v=3.4.8"></script>
     <script defer src="./src/ride-garage.js?v=3.4.8"></script>
+    <script defer src="./src/access-demo.js?v=3.4.8"></script>
     <script defer src="./src/app.js?v=3.4.8"></script>
   </head>
   <body class="garage" data-active-panel="connection">
@@ -35,6 +36,7 @@
             >//</span
           >FLASH<span class="version">3.4.8</span></a
         >
+        <div id="accessDemo" class="access-demo"></div>
         <div class="tools">
           <button
             id="openGuide"
@@ -101,33 +103,53 @@
                   d="m-60 217 44-3m40-2 44-3m40-2 44-3m40-2 44-3m40-2 44-3m40-2 44-3m40-2 44-3"
                 />
               </g>
-              <g class="bike-rig">
-                <g transform="translate(139 70)">
+              <ellipse class="bike-shadow" cx="244" cy="203" rx="115" ry="7" />
+              <g class="speed-streaks"><path d="M56 117h45m-59 15h40m-18 17h37" /></g>
+              <g transform="translate(115 48) scale(1.08)">
+                <g class="bike-rig">
                   <g class="wheel rear-wheel">
-                    <circle cx="35" cy="105" r="36" />
-                    <path d="M35 69v72M-1 105h72m-61-25 50 50m-50 0 50-50" />
+                    <circle cx="32" cy="108" r="39" />
+                    <circle class="tire-tread" cx="32" cy="108" r="39" />
+                    <circle class="wheel-rim" cx="32" cy="108" r="32" />
+                    <path d="M32 76v64M0 108h64m-54-22 44 44m-44 0 44-44" />
+                    <circle class="brake-disc" cx="32" cy="108" r="10" />
                   </g>
                   <g class="wheel front-wheel">
-                    <circle cx="172" cy="105" r="36" />
-                    <path d="M172 69v72m-36-36h72m-61-25 50 50m-50 0 50-50" />
+                    <circle cx="184" cy="108" r="39" />
+                    <circle class="tire-tread" cx="184" cy="108" r="39" />
+                    <circle class="wheel-rim" cx="184" cy="108" r="32" />
+                    <path d="M184 76v64m-32-32h64m-54-22 44 44m-44 0 44-44" />
+                    <circle class="brake-disc" cx="184" cy="108" r="11" />
                   </g>
-                  <path
-                    class="bike-frame"
-                    d="m35 105 43-65 29 65H35m43-65 73 4-44 61m44-61 21 61m-99-75 7 15m-17-17h28m53 5 17-4 5 3"
-                  />
-                  <path class="bike-battery" d="m91 56 15 31 9-4-15-30z" />
-                  <circle class="bike-motor" cx="107" cy="105" r="9" />
-                  <path
-                    class="rider-leg"
-                    d="m94 36 34 26-20 38 13 7m-27-71-5 39 21 28"
-                  />
-                  <path class="rider-body" d="m89 34 23-31 33 10-16 29z" />
-                  <path class="rider-arm" d="m136 16 15 22 14-7" />
-                  <path
-                    class="rider-helmet"
-                    d="m117-4 2-14 18-6 18 10-2 17-21 1z"
-                  />
-                  <path class="rider-visor" d="m136-12 20 3-3 8-19-1z" />
+                  <path class="pedal-leg pedal-leg-back" d="M96 48 109 79 98 108 110 110" />
+                  <path class="bike-chain" d="M32 104 112 98a10 10 0 0 1 0 20L32 113Z" />
+                  <path class="bike-frame" d="M32 108 78 46 112 108H32m46-62 86-1-52 63m52-63 20 63M78 46 73 32" />
+                  <path class="frame-highlight" d="m82 49 75-1-43 53" />
+                  <path class="bike-hardware" d="M62 30h29m71 4 12-5 17 3m-28 10 13 41" />
+                  <path class="fork-highlight" d="m169 57 8 25" />
+                  <path class="bike-battery" d="M150 55 130 84 137 89 157 59Z" />
+                  <path class="battery-stripe" d="m148 62-13 18" />
+                  <circle class="bike-motor" cx="112" cy="108" r="11" />
+                  <g transform="translate(112 108)"><g class="crank-spin">
+                    <path class="bike-crank" d="M-14 0H14m-18-3h8m4 6h8" />
+                    <circle class="crank-hub" r="4" />
+                  </g></g>
+                  <path class="pedal-leg pedal-leg-front" d="M96 48 128 76 126 108 138 110" />
+                  <path class="pedal-leg pedal-leg-front leg-seam" d="M96 48 128 76 126 108 138 110" />
+                  <g class="rider-upper">
+                    <path class="rider-neck" d="m144 1-6 14" />
+                    <path class="rider-body" d="M91 40 109 8q13-8 26-3l19 17-23 26-24-3Z" />
+                    <path class="rider-panel" d="m112 9 20-1 12 11-12 10-28-9Z" />
+                    <path class="rider-pack" d="m101 12 12 6-8 22-15-6Z" />
+                    <path class="rider-pack-stripe" d="m103 19-5 12" />
+                    <path class="rider-arm" d="m142 17 13 22 17-8" />
+                    <path class="rider-cuff" d="m166 33 7-3" />
+                    <path class="rider-helmet" d="M130-12q-2-16 16-20 20-4 28 16l-5 20-18 7-14-6Z" />
+                    <path class="helmet-panel" d="m134-16 8-11 16-1 11 10Z" />
+                    <path class="rider-visor" d="m147-15 29 2-6 12-25-3Z" />
+                    <path class="visor-glint" d="m152-11 16 1" />
+                    <path class="helmet-vent" d="m153 4 10-3m-10-25 6 1" />
+                  </g>
                 </g>
               </g>
               <path
@@ -135,6 +157,7 @@
                 class="scene-frame"
               />
             </svg>
+            <button id="scenePlay" class="scene-play" type="button" aria-label="Запустить анимацию заезда" aria-pressed="false"><span class="play-icon" aria-hidden="true"></span></button>
             <div class="scene-caption">
               <span id="hudModel">BBS02</span><span id="hudGear">32 / 11 T</span
               ><span id="hudSlope">8%</span>

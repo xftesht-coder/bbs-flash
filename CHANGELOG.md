@@ -8,6 +8,8 @@
 - Refresh comparisons after edits, imports, undo, partial/full verified writes, failed writes and reconnect. Profile previews remain read-only until explicit draft application.
 - Add a plain-language starting/ramp/riding summary in profile details and move the review action beside the profile name. Offer reversible reset of the draft to the last verified motor read; disconnected and uncertain sessions cannot use it.
 - Make a gray-white retro desktop theme the default, with striped window headings, compact frames, cyan actions, violet changed values and magenta accents. Match the cyclist illustration to the palette; retain the dark option and saved preferences.
+- Redraw the trail rider and bike with a full-face helmet, detailed frame and cadence-linked leg/crank motion. Add an on-scene play/pause control and short interface transitions, all respecting reduced motion.
+- Add a clearly labelled lifetime subscription demo and Pay preview on both entry pages. No checkout, account, expiry timer, payment request or new motor access gate is connected.
 - Preserve compact top ride panel, cache keys, controller protocol, storage and numerical tuning. Remove obsolete static three-value ratings.
 
 ## 3.4.7 — 2026-10-05 · Compact layout for everyday screens
