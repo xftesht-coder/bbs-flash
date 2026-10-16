@@ -6,9 +6,9 @@ const C = require("../src/core.js");
 const R = require("../src/ride-profiles.js");
 const { profile } = require("./helpers.cjs");
 
-test("all twelve ride modes preserve hardware, PAS0 and throttle, and respect current ceilings", () => {
-  assert.equal(R.profiles.length, 12);
-  for (const amps of [1, 12, 18, 25, 30]) {
+test("all fifteen ride modes preserve hardware, PAS0 and throttle, and respect current ceilings", () => {
+  assert.equal(R.profiles.length, 15);
+  for (const amps of Array.from({length:30}, (_,i) => i + 1)) {
     const before = structuredClone(profile);
     before.bas.LC = amps; before.bas.LBP = 40; before.bas.WD = 4;
     before.bas.ALC[0] = 1; before.bas.ALBP[0] = 1;
@@ -32,6 +32,27 @@ test("all twelve ride modes preserve hardware, PAS0 and throttle, and respect cu
     }
     assert.deepEqual(before, original, "input must remain immutable");
   }
+});
+
+test("new modes have distinct purposes and floor-rounded ceilings at the owner's current limit", () => {
+  const base = structuredClone(profile); base.bas.LC = 24;
+  assert.deepEqual(R.profiles.filter(p => p.fresh).map(p => p.id), ["city-sport", "trail-flow", "loose-ground"]);
+  for (const [id,peak] of [["city-sport",21.84],["trail-flow",19.92],["loose-ground",13.92]]) {
+    const p = R.apply(base,id);
+    assert.ok(Math.abs(p.bas.LC*p.bas.ALC[9]/100-peak)<1e-9);
+    assert.equal(p.bas.LC,24);
+    const spec = R.profiles.find(p => p.id===id);
+    assert.equal(spec.usage.length,3);
+    assert.ok(spec.usage.every(pair => pair.length===2 && pair.every(text => text.length>10)));
+  }
+  const sport = R.apply(base,"city-sport"), acceleration=R.apply(base,"acceleration");
+  assert.ok(sport.pas.SSM>acceleration.pas.SSM);
+  assert.ok(sport.bas.ALC[1]<acceleration.bas.ALC[1]);
+  assert.ok(sport.pas.KC>acceleration.pas.KC);
+  const flow=R.apply(base,"trail-flow"), trail=R.apply(base,"trail");
+  assert.ok(flow.pas.SDN<trail.pas.SDN);
+  assert.ok(flow.pas.SC<trail.pas.SC);
+  assert.deepEqual(flow.bas.ALBP.slice(1),Array(9).fill(100));
 });
 
 test("specialist modes offer distinct assistance without promising extra global current", () => {

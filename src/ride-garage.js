@@ -8,6 +8,14 @@ globalThis.BBSRideGarage = (() => {
   let renderKey = "";
   const words = {
     profileCode: ["Профиль", "Profile"],
+    newProfiles: ["Новинки", "New profiles"], fresh: ["Новый", "New"],
+    pasGuide: ["Как пользоваться уровнями PAS", "Using PAS levels"],
+    pasMapping: ["Это 9 уровней контроллера. Соответствие кнопкам дисплея зависит от его настройки. Амперы — расчётные потолки, а не измеренный ток.", "These are the controller's 9 levels. Display button mapping depends on its configuration. Amps are calculated ceilings, not measured current."],
+    actualCap: ["PAS 9 после выбора: {peak} А · общий лимит: {limit} А · потолок шаблона: {cap} А", "PAS 9 after selection: {peak} A · global limit: {limit} A · template ceiling: {cap} A"],
+    limitedCap: ["Текущий общий лимит ниже потолка шаблона: профиль его не повысит.", "Your global limit is below the template ceiling: the profile will not raise it."],
+    pasLow: ["Начни с нижних ступеней, чтобы оценить включение помощи.", "Start with lower levels to assess assistance engagement."],
+    pasMid: ["Добавляй помощь по нагрузке, сохраняя удобную передачу.", "Increase assistance as needed while using a suitable gear."],
+    pasHigh: ["Верхние ступени дают больше помощи и расходуют больше энергии. Они не заменяют переключение передач.", "Upper levels provide more assistance and use more energy. They do not replace shifting gears."],
     amp: ["А", "A"],
     ownerReported: ["Владелец подтвердил запись и заезд на 3.4.2", "Owner reported a verified write and ride on 3.4.2"],
     rides: ["ВЫБЕРИ ХАРАКТЕР ПОЕЗДКИ", "CHOOSE YOUR RIDE"],
@@ -229,11 +237,11 @@ globalThis.BBSRideGarage = (() => {
     const list = $("rideCards"); list.replaceChildren();
     let view;
     try { view = comparisonState(); } catch { /* Invalid drafts have no comparison values. */ }
-    for (const p of R.profiles.filter((p) => filter === "all" || p.category === filter)) {
+    for (const p of R.profiles.filter((p) => filter === "all" || (filter === "new" ? p.fresh : p.category === filter))) {
       const card = el("article", undefined, `ride-card tone-${p.tone}`);
       card.dataset.selected = String(p.id === selected);
       const top = el("div", undefined, "ride-card-top");
-      top.append(el("span", t("profileCode") + " " + p.code.split(" / ")[0], "ride-code"), el("span", p.id === selected ? t("selectedLabel") : "BBS02", "ride-chip"));
+      top.append(el("span", t("profileCode") + " " + p.code.split(" / ")[0], "ride-code"), el("span", p.id === selected ? t("selectedLabel") : p.fresh ? t("fresh") : "BBS02", "ride-chip"));
       const b = button(local(p.name), () => {
         selected = p.id; renderCards(); renderDetail();
         $("rideDetail").focus({preventScroll:true});
@@ -265,6 +273,10 @@ globalThis.BBSRideGarage = (() => {
       }, "primary");
       preview.id = "ridePreview"; heading.append(preview);
       detail.append(rideBrief(before, after));
+      const amps = (level) => (after.bas.LC * after.bas.ALC[level] / 100).toLocaleString(api.lang(), {maximumFractionDigits:2});
+      const cap = el("p", t("actualCap").replace("{peak}", amps(9)).replace("{limit}", after.bas.LC).replace("{cap}", p.cap), "notice");
+      cap.id = "rideActualCap"; detail.append(cap);
+      if (after.bas.LC < p.cap) detail.append(el("p", t("limitedCap"), "muted"));
       detail.append(el("h4", t("sevenTitle")), el("p", `${view.label} · ${profileName(before)}. ${t("compareHint")}`, "muted"));
       const metrics = el("div", undefined, "ride-comparison");
       for (const row of M.compare(before, after)) {
@@ -277,6 +289,14 @@ globalThis.BBSRideGarage = (() => {
       }
       detail.append(metrics, el("p", t("changesCount").replace("{n}", C.diff(before,after).length), "muted"), el("p", t("ceiling"), "muted"));
       detail.append(chart(before, after));
+      const guide = el("details"); guide.id = "ridePasGuide";
+      guide.append(el("summary", t("pasGuide")), el("p", t("pasMapping"), "muted"));
+      for (const [i, low, high, key] of [[0,1,3,"pasLow"],[1,4,6,"pasMid"],[2,7,9,"pasHigh"]]) {
+        const row = el("p");
+        row.append(el("strong", `PAS ${low}–${high} · ${amps(low)}–${amps(high)} ${t("amp")}`), el("span", " — " + (p.usage ? local(p.usage[i]) : t(key))));
+        guide.append(row);
+      }
+      detail.append(guide);
     } catch { detail.append(el("p", t("invalid"), "notice warning")); }
     detail.append(el("h4", t("effect")), el("p", local(p.description)), el("h4", t("compromise")), el("p", local(p.tradeoff)));
     detail.append(el("p", t("preserved"), "ride-preserved"));

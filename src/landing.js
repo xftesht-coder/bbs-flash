@@ -7,7 +7,7 @@
     rideOpen: "Choose a ride profile →",
     rideEyebrow: "RIDE PROFILES · BBS02 750 W",
     rideTitle: "From a relaxed cruise to Full ahead",
-    rideText: "12 ride characters: from economy and smooth starts to acceleration, long climbs, technical trails, touring and workouts. Each includes an explanation, tradeoffs and an exact preview before applying.",
+    rideText: "15 ride characters: from economy and smooth starts to acceleration, long climbs, technical trails, touring and workouts. Each includes an explanation, tradeoffs and an exact preview before applying.",
     rideLocal: "Save your own variants with notes, compare .el files and revisit controller backups. Everything stays in this browser. Profiles are starting points for testing, not tunes verified on your motor.",
     creditsTitle: "Built on BafangConfigTool",
     creditsText:
@@ -59,7 +59,7 @@
       "Editing and calculations adapt to a phone screen. This release does not provide a motor connection in mobile browsers.",
     safe: "How safe are writes?",
     safeText:
-      "Checksums, backups, limits and readback do not guarantee hardware safety. Incorrect current or calibration may cause overheating or unexpected motion. The owner reported a verified write and a ride with Full ahead on version 3.4.2. Changes in 3.4.3 through 3.4.8 have software test coverage; a physical restore remains unconfirmed.",
+      "Checksums, backups, limits and readback do not guarantee hardware safety. Incorrect current or calibration may cause overheating or unexpected motion. The owner reported a verified write and a ride with Full ahead on version 3.4.2. Changes in 3.4.3 through 3.4.9 have software test coverage; a physical restore remains unconfirmed.",
     support: "Which controllers are supported?",
     supportText:
       "BBS UART General, Basic, PAS and Throttle reads with length and checksum validation. Writes are limited to the exact HZXT SZZ9 configuration listed above; BBS01, BBSHD and other hardware or firmware revisions remain read-only. Selecting a simulated model does not extend compatibility.",

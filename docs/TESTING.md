@@ -1,3 +1,7 @@
+# Verification of 3.4.9
+
+54 Node tests and 39 browser scenarios. All 15 profiles preserve hardware settings for every integer current limit from 1 through 30 A. New profiles have distinct numeric signatures; actual PAS ceilings include floor rounding. New-filter, bilingual PAS guide, live current changes, invalid input and zero UART traffic are covered in the browser. Deployment requires 15 cards and 105 comparison rows. New tunes have software coverage only; the original twelve numeric definitions are unchanged.
+
 # Verification of 3.4.8
 
 53 Node tests and 38 Edge browser scenarios cover seven computed comparison values, inverse ramp/response direction, capped/rounded PAS current at 1/12/18/24/25/30 A, imports and invalid inputs. Browser checks cover all twelve cards, live draft edits, preview without mutation, apply/undo, RU/EN, motor baseline stability until verified writing, partial block writes, failed writes and reconnect. The deployment smoke check requires 84 comparison rows and an explicitly labelled demo baseline. There are no new motor commands or numerical tuning changes.
