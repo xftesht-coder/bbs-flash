@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.4.8 — 2026-10-05 · Seven-value profile comparison
+
+- Replace three fixed subjective ratings with seven before/after values computed from actual settings: pedal response, initial pickup, assist ramp, PAS 5 current, PAS 9 current, keep current and PAS 5 speed percentage.
+- Show the current comparison source and draft separately. Use the last verified motor baseline while the connection remains valid; otherwise label demo/draft values explicitly. Choosing a preset does not advance the motor baseline.
+- Explain changed ride behavior on every card and all seven settings in profile details. Keep current limits, rounding and relative speed percentages visible rather than promising measured acceleration or range.
+- Refresh comparisons after edits, imports, undo, partial/full verified writes, failed writes and reconnect. Profile previews remain read-only until explicit draft application.
+- Add a plain-language starting/ramp/riding summary in profile details and move the review action beside the profile name. Offer reversible reset of the draft to the last verified motor read; disconnected and uncertain sessions cannot use it.
+- Make a gray-white retro desktop theme the default, with striped window headings, compact frames, cyan actions, violet changed values and magenta accents. Match the cyclist illustration to the palette; retain the dark option and saved preferences.
+- Redraw the trail rider and bike with a full-face helmet, detailed frame and cadence-linked leg/crank motion. Add an on-scene play/pause control and short interface transitions, all respecting reduced motion.
+- Add a personal cabinet on both entry pages with a local bike card, actual saved profiles/backups, export and purchase history. Prepare a separate SMTP email-code account service with isolated server bike cards, revocable sessions and optimistic concurrency. Static hosting remains local-only; SMTP and server deployment are not configured.
+- Prepare one-time lifetime access per user, with a clearly labelled Pay demo. Checkout and commercial access gates remain disabled; no payment or successful purchase is simulated. Document the remaining launch work.
+- Preserve compact top ride panel, cache keys, controller protocol, storage and numerical tuning. Remove obsolete static three-value ratings.
+
 ## 3.4.7 — 2026-10-05 · Compact layout for everyday screens
 
 - Move the cyclist and ride estimates above the workspace; put optional estimate controls in a keyboard-accessible disclosure.

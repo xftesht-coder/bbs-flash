@@ -10,6 +10,12 @@ globalThis.BBSDash = (() => {
       playing && !document.hidden && !media.matches && last?.speed > 0;
     $("raceHud").dataset.running = String(!!active);
     $("previewToggle").setAttribute("aria-pressed", String(playing));
+    $("scenePlay").setAttribute("aria-pressed", String(playing));
+    const label = document.documentElement.lang === "en"
+      ? (playing ? "Pause ride animation" : "Play ride animation")
+      : (playing ? "Поставить анимацию заезда на паузу" : "Запустить анимацию заезда");
+    $("scenePlay").setAttribute("aria-label", label);
+    $("scenePlay").title = label;
   }
   function update({ row, scenario, estimate }) {
     const speed = mode === "flat" ? row.flatKmh : row.climbKmh,
@@ -38,6 +44,7 @@ globalThis.BBSDash = (() => {
       "--track-time",
       (speed > 0 ? Math.max(0.3, 10 / (speed / 3.6)) : 4) + "s",
     );
+    $("raceHud").style.setProperty("--pedal-time", (rpm > 0 ? 60 / rpm : 1) + "s");
     $("hudCurrentBar").value = row.currentA;
     $("hudCadenceBar").value = rpm;
     document
@@ -86,7 +93,7 @@ globalThis.BBSDash = (() => {
           onChange();
         }),
     );
-    $("previewToggle").onclick = () => {
+    $("previewToggle").onclick = $("scenePlay").onclick = () => {
       playing = !playing;
       motion();
     };

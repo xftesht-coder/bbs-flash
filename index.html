@@ -1,8 +1,9 @@
 <!doctype html>
-<html lang="ru" data-theme="dark">
+<html lang="ru" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="bbs-account-api" content="" />
     <meta
       name="description"
       content="BBS Flash — редактор настроек Bafang UART: .el, сравнение PAS, расчёт дальности и проверенные резервные копии."
@@ -14,10 +15,15 @@
     <title>BBS Flash · Настройка BBS02</title>
     <link rel="canonical" href="https://xftesht-coder.github.io/bbs-flash/" />
     <link rel="icon" href="./assets/icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./src/styles.css?v=3.4.7" />
-    <link rel="stylesheet" href="./src/garage.css?v=3.4.7" />
-    <script defer src="./src/core.js?v=3.4.7"></script>
-    <script defer src="./src/landing.js?v=3.4.7"></script>
+    <link rel="stylesheet" href="./src/styles.css?v=3.4.8" />
+    <link rel="stylesheet" href="./src/garage.css?v=3.4.8" />
+    <link rel="stylesheet" href="./src/account.css?v=3.4.8" />
+    <script defer src="./src/core.js?v=3.4.8"></script>
+    <script defer src="./src/storage.js?v=3.4.8"></script>
+    <script defer src="./src/access-demo.js?v=3.4.8"></script>
+    <script defer src="./src/account-model.js?v=3.4.8"></script>
+    <script defer src="./src/account.js?v=3.4.8"></script>
+    <script defer src="./src/landing.js?v=3.4.8"></script>
   </head>
   <body>
     <header>
@@ -26,8 +32,9 @@
           ><span class="brand-stripes" aria-hidden="true"></span>BBS<span
             class="brand-slash"
             >//</span
-          >FLASH<span class="version">3.4.7</span></a
+          >FLASH<span class="version">3.4.8</span></a
         >
+        <div id="accessDemo" class="access-demo"></div>
         <div class="tools">
           <a href="https://github.com/xftesht-coder/bbs-flash">GitHub ↗</a
           ><select id="language" aria-label="Language">
@@ -205,7 +212,7 @@
             не гарантируют безопасность оборудования. Неверный ток или
             калибровка могут привести к перегреву или неожиданному движению.
             Владелец подтвердил запись с повторным чтением и заезд с профилем
-            «Полный вперёд» на версии 3.4.2. Изменения 3.4.3–3.4.7 проверены
+            «Полный вперёд» на версии 3.4.2. Изменения 3.4.3–3.4.8 проверены
             программно; восстановление исходных настроек на моторе ещё не подтверждено.
           </p>
         </details>
@@ -264,7 +271,7 @@
         >
       </section>
       <footer class="foot">
-        <span>© 2026 BBS Flash · 3.4.7</span
+        <span>© 2026 BBS Flash · 3.4.8</span
         ><a href="./bbs-flash.html" data-t="open">Открыть конфигуратор →</a>
       </footer>
     </main>

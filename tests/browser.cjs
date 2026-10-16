@@ -12,6 +12,7 @@ const results = [],
   errors = [];
 let browser, server, base;
 let primeLegacyCache = false;
+let accountService = null;
 const types = {
   ".html": "text/html; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
@@ -31,6 +32,7 @@ async function newPage(options = {}) {
   return { context, page };
 }
 async function check(name, fn) {
+  if (process.env.BBS_BROWSER_FILTER && !name.includes(process.env.BBS_BROWSER_FILTER)) return;
   const start = Date.now();
   await fn();
   results.push({ name, status: "pass", ms: Date.now() - start });
@@ -122,6 +124,7 @@ async function toPanel(page, id) {
 (async () => {
   try {
     server = http.createServer((req, res) => {
+      if (accountService && req.url.startsWith('/api/')) return accountService.handle(req,res);
       if (primeLegacyCache && req.url === "/cache-prime.html") {
         res.setHeader("Content-Type", "text/html");
         res.end('<link rel="icon" href="/assets/icon.svg"><script src="/src/ride-garage.js"></script>');
@@ -141,7 +144,8 @@ async function toPanel(page, id) {
         );
         if (file === root) file = path.join(root, "index.html");
         if (!file.startsWith(root + path.sep)) throw Error("path");
-        const data = fs.readFileSync(file);
+        let data = fs.readFileSync(file);
+        if (accountService && file.endsWith('.html')) data = Buffer.from(data.toString().replace('<meta name="bbs-account-api" content="" />','<meta name="bbs-account-api" content="/api/" />'));
         res.setHeader(
           "Content-Type",
           types[path.extname(file)] || "application/octet-stream",
@@ -173,14 +177,14 @@ async function toPanel(page, id) {
       } finally { primeLegacyCache = false; await context.close(); }
     });
     await check(
-      "fresh IndexedDB startup; dark default; every tab accessible",
+      "fresh IndexedDB startup; light default; every tab accessible",
       async () => {
         for (let i = 0; i < 3; i++) {
           const { page, context } = await newPage();
           await ready(page);
           assert.equal(
             await page.locator("html").getAttribute("data-theme"),
-            "dark",
+            "light",
           );
           assert.equal(await page.locator("#writeAll").isDisabled(), true);
           for (const id of [
@@ -225,7 +229,7 @@ async function toPanel(page, id) {
         // Preferences are asynchronous IndexedDB writes. Verify the commit,
         // not an arbitrary delay, before testing persistence across reload.
         await page.waitForFunction(
-          async () => (await BBSStore.get("prefs", "theme")) === "light",
+          async () => (await BBSStore.get("prefs", "theme")) === "dark",
         );
         await page.reload();
         await page.waitForFunction(
@@ -233,11 +237,11 @@ async function toPanel(page, id) {
         );
         assert.equal(
           await page.locator("html").getAttribute("data-theme"),
-          "light",
+          "dark",
         );
         await toPanel(page, "simulator");
         await page.screenshot({
-          path: path.join(output, "simulator-light-en.png"),
+          path: path.join(output, "simulator-dark-en.png"),
           fullPage: true,
         });
         await context.close();
@@ -339,7 +343,7 @@ async function toPanel(page, id) {
           await page.screenshot({path: path.join(output, `compact-profiles-${width}.png`), animations: "disabled"});
           if (width === 1280) {
             await page.locator("#theme").click();
-            await page.screenshot({path: path.join(output, "compact-profiles-light.png"), animations: "disabled"});
+            await page.screenshot({path: path.join(output, "compact-profiles-dark.png"), animations: "disabled"});
           }
           assert.deepEqual(await page.evaluate(() => __motor.sent), []);
           await context.close();
@@ -463,21 +467,30 @@ async function toPanel(page, id) {
         const { page, context } = await newPage({
           reducedMotion: "no-preference",
         });
+        await mock(page);
         await ready(page);
         const hud = page.locator("#raceHud"),
           wheel = page.locator(".rear-wheel");
+        const leg = page.locator('.pedal-leg-front').first();
+        const pose = await leg.evaluate(n=>getComputedStyle(n).d);
         assert.equal(await hud.getAttribute("data-running"), "false");
         assert.equal(
           await wheel.evaluate((el) => getComputedStyle(el).animationPlayState),
           "paused",
         );
         await page.locator(".hud-controls summary").click();
-        await page.locator("#previewToggle").click();
+        await page.locator("#scenePlay").click();
         assert.equal(await hud.getAttribute("data-running"), "true");
         assert.equal(
           await wheel.evaluate((el) => getComputedStyle(el).animationPlayState),
           "running",
         );
+        await page.waitForFunction(before=>getComputedStyle(document.querySelector('.pedal-leg-front')).d !== before,pose);
+        assert.equal(await page.locator('#previewToggle').getAttribute('aria-pressed'),'true');
+        await page.locator('#previewToggle').click();
+        assert.equal(await page.locator('#scenePlay').getAttribute('aria-pressed'),'false');
+        assert.equal(await leg.evaluate(n=>getComputedStyle(n).animationPlayState),'paused');
+        await page.locator('#scenePlay').click();
         await page.locator('[data-hud-pas="0"]').click();
         assert.equal(await hud.getAttribute("data-running"), "false");
         await page.locator('[data-hud-pas="9"]').click();
@@ -505,9 +518,50 @@ async function toPanel(page, id) {
           await wheel.evaluate((el) => getComputedStyle(el).animationName),
           "none",
         );
+        assert.equal(await leg.evaluate(n=>getComputedStyle(n).animationName),'none');
+        assert.deepEqual(await page.evaluate(()=>__motor.sent),[]);
         await context.close();
       },
     );
+    await check("lifetime subscription is an accessible RU/EN demo with no payment, navigation or UART activity", async () => {
+      for (const pathname of ['/bbs-flash.html','/']) {
+        const {page,context}=await newPage(); await mock(page);
+        const outbound=[];
+        page.on('request',req=>{if(new URL(req.url()).origin!==new URL(base).origin || req.method()!=='GET') outbound.push(req.url());});
+        if (pathname==='/') await page.goto(base+'/'); else await ready(page);
+        const source=pathname==='/'?null:await page.locator('#pas-SC').inputValue();
+        assert.match(await page.locator('#accessDemo').innerText(),/Бессрочный/);
+        assert.match(await page.locator('#accessDemo').innerText(),/ДЕМО/);
+        await page.locator('#openPaymentDemo').click();
+        const dialog=page.locator('#paymentDemoDialog');
+        assert.equal(await dialog.isVisible(),true);
+        assert.match(await dialog.innerText(),/Бессрочный/);
+        assert.match(await dialog.innerText(),/деньги не списываются/);
+        assert.equal(await dialog.locator('input,form').count(),0);
+        await page.keyboard.press('Escape');
+        assert.equal(await dialog.isVisible(),false);
+        assert.equal(await page.evaluate(()=>document.activeElement.id),'openPaymentDemo');
+        await page.locator('#language').selectOption('en');
+        await page.locator('#openPaymentDemo').click();
+        assert.ok(!/[А-Яа-яЁё]/.test(await dialog.innerText()));
+        assert.match(await dialog.innerText(),/No expiry/);
+        await page.locator('#closePaymentDemo').click();
+        await page.locator('#language').selectOption('ru');
+        await page.setViewportSize({width:390,height:844});
+        await page.locator('#openPaymentDemo').click();
+        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+        assert.equal(await dialog.evaluate(n=>n.scrollWidth<=n.clientWidth+1),true);
+        if(pathname!=='/') await page.screenshot({path:path.join(output,'subscription-demo-mobile.png'),animations:'disabled'});
+        await page.locator('#closePaymentDemo').click();
+        assert.deepEqual(outbound,[]); assert.equal(context.pages().length,1);
+        assert.deepEqual(await page.evaluate(()=>__motor.sent),[]);
+        if(source!==null) {
+          assert.equal(await page.locator('#pas-SC').inputValue(),source);
+          assert.equal(await page.locator('#writeAll').isDisabled(),true);
+        }
+        await context.close();
+      }
+    });
     await check(
       "presets preserve cutoff, wheel, sensor, throttle and total current ceiling",
       async () => {
@@ -785,6 +839,111 @@ async function toPanel(page, id) {
         await context.close();
       },
     );
+    await check("seven profile values compare actual drafts, update after edits, and clear invalid input", async () => {
+      const {page,context}=await newPage(); await mock(page); await ready(page); await toPanel(page,"presets");
+      const card=page.locator('.ride-card').filter({has:page.locator('[data-ride="forward"]')});
+      const value=(id,side)=>card.locator(`[data-metric="${id}"] .trait-${side}`).getAttribute('data-value');
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'demo');
+      assert.equal(await page.locator('.ride-trait').count(),12*7);
+      assert.equal(await value('pickup','before'),'10'); assert.equal(await value('pickup','after'),'20');
+      assert.equal(await value('peak','before'),'18'); assert.equal(await value('peak','after'),'18');
+      const original=await page.locator('#pas-SC').inputValue();
+      await page.locator('[data-ride="forward"]').click();
+      assert.equal(await page.locator('.ride-comparison-item').count(),7);
+      assert.match(await page.locator('#rideBrief').innerText(),/Включится раньше/);
+      assert.match(await page.locator('#rideBrief').innerText(),/Быстрее нарастает помощь/);
+      assert.match(await page.locator('#rideBrief').innerText(),/уровне 9: тот же/);
+      assert.match(await page.locator('#rideDetail').textContent(),/не время разгона/);
+      assert.equal(await page.locator('#pas-SC').inputValue(),original);
+      await page.locator('#ridePreview').click(); await page.locator('#rideReviewApply').click();
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'draft');
+      assert.match(await page.locator('#rideBaseline').textContent(),/Полный вперёд/);
+      assert.equal(await value('pickup','before'),'20');
+      assert.equal(await card.locator('[data-changed="true"]').count(),0);
+      assert.match(await page.locator('#rideBrief').innerText(),/Темп нарастания помощи тот же/);
+      await page.locator('#garageUndo').click(); assert.equal(await value('pickup','before'),'10');
+      await toPanel(page,'basic'); await page.locator('#bas-LC').fill('12'); await toPanel(page,'presets');
+      assert.equal(await value('peak','after'),'12');
+      await toPanel(page,'basic'); await page.locator('#bas-LC').fill(''); await toPanel(page,'presets');
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'invalid');
+      assert.equal(await page.locator('.ride-trait').count(),0);
+      assert.equal(await page.locator('#rideBrief').count(),0);
+      await toPanel(page,'basic'); await page.locator('#bas-LC').fill('18'); await toPanel(page,'presets');
+      await page.locator('#language').selectOption('en');
+      assert.ok(!/[А-Яа-яЁё]/.test(await page.locator('#panel-presets').innerText()));
+      await page.locator('#language').selectOption('ru'); assert.equal(await page.locator('.ride-trait').count(),84);
+      assert.deepEqual(await page.evaluate(()=>__motor.sent),[]);
+      await context.close();
+    });
+    await check("motor comparison stays anchored through draft selection and follows verified writes and reconnect", async () => {
+      const {page,context}=await newPage(); await mock(page); await ready(page); await connectRead(page);
+      await toPanel(page,'presets');
+      const card=page.locator('.ride-card').filter({has:page.locator('[data-ride="forward"]')});
+      const before=()=>card.locator('[data-metric="pickup"] .trait-before').getAttribute('data-value');
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'motor');
+      await page.locator('[data-ride="forward"]').click(); await page.locator('#ridePreview').click(); await page.locator('#rideReviewApply').click();
+      assert.equal(await before(),'10');
+      assert.match(await page.locator('#rideBaseline').textContent(),/ещё не записаны/);
+      assert.equal(await page.evaluate(()=>__motor.sent.filter(f=>f[0]===22).length),0);
+      await page.setViewportSize({width:1280,height:900});
+      await page.locator('#rideBaseline').scrollIntoViewIfNeeded();
+      await page.screenshot({path:path.join(output,'profile-comparison-motor.png'),animations:'disabled'});
+      await toPanel(page,'connection'); await page.locator('#bench').check(); await page.locator('#writeAll').click();
+      await page.waitForFunction(()=>document.getElementById('writeDialog').open);
+      assert.equal(await page.locator('#rideRestoreMotor').isDisabled(),true);
+      assert.equal(await page.locator('#garageUndo').isDisabled(),true);
+      assert.equal(await page.locator('#openPaymentDemo').isDisabled(),true);
+      await page.locator('#confirmSafety').check(); await page.locator('#confirmWrite').click();
+      await page.waitForFunction(()=>document.getElementById('status').textContent.includes('подтверждена'));
+      assert.equal(await before(),'20');
+      assert.match(await page.locator('#rideBaseline').textContent(),/Черновик совпадает/);
+      await page.locator('#disconnect').click(); await page.waitForFunction(()=>!document.getElementById('connect').disabled);
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'draft');
+      await page.locator('#connect').click(); await page.waitForFunction(()=>!document.getElementById('readAll').disabled);
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'draft');
+      assert.match(await page.locator('#rideBaseline').textContent(),/не считан/);
+      await context.close();
+    });
+    await check("reset to verified motor settings is draft-only, reversible and unavailable without a fresh read", async () => {
+      const {page,context}=await newPage(); await mock(page); await ready(page); await toPanel(page,'presets');
+      assert.equal(await page.locator('#rideRestoreMotor').isVisible(),false);
+      await toPanel(page,'connection'); await connectRead(page);
+      const snapshot=()=>page.evaluate(()=>Array.from(document.querySelectorAll('input,select')).filter(n=>/^(bas-|pas-|thr-|ALC-|ALBP-)/.test(n.id)).map(n=>[n.id,n.value]));
+      const original=await snapshot(), sent=await page.evaluate(()=>__motor.sent.length);
+      await toPanel(page,'presets');
+      assert.equal(await page.locator('#rideDraftActions').isVisible(),false);
+      await page.locator('[data-ride="forward"]').click(); await page.locator('#ridePreview').click(); await page.locator('#rideReviewApply').click();
+      await toPanel(page,'basic'); await page.locator('#bas-LC').fill('17'); await toPanel(page,'presets');
+      const edited=await snapshot();
+      assert.equal(await page.locator('#rideRestoreMotor').isEnabled(),true);
+      await page.locator('#rideRestoreMotor').click();
+      assert.deepEqual(await snapshot(),original);
+      assert.match(await page.locator('#rideBaseline').innerText(),/Черновик совпадает/);
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'motor');
+      assert.equal(await page.locator('#rideRestoreMotor').isDisabled(),true);
+      assert.equal(await page.evaluate(()=>document.activeElement.id),'garageUndo');
+      await page.locator('#garageUndo').click(); assert.deepEqual(await snapshot(),edited);
+      assert.match(await page.locator('#rideBaseline').innerText(),/ещё не записаны/);
+      assert.equal(await page.locator('#garageUndo').isDisabled(),true);
+      assert.equal(await page.evaluate(()=>__motor.sent.length),sent);
+      await page.locator('#language').selectOption('en');
+      assert.equal(await page.locator('#rideRestoreMotor').textContent(),'Reset draft to motor settings');
+      assert.ok(!/[А-Яа-яЁё]/.test(await page.locator('#panel-presets').innerText()));
+      await page.locator('#language').selectOption('ru');
+      await toPanel(page,'basic'); await page.locator('#bas-LC').fill(''); await toPanel(page,'presets');
+      assert.equal(await page.locator('#rideRestoreMotor').isEnabled(),true);
+      await page.locator('#rideRestoreMotor').click(); assert.deepEqual(await snapshot(),original);
+      assert.equal(await page.locator('#garageUndo').isDisabled(),true,'invalid inputs are discarded, never reapplied');
+      assert.equal(await page.evaluate(()=>__motor.sent.length),sent);
+      await page.locator('[data-ride="economy"]').click(); await page.locator('#ridePreview').click(); await page.locator('#rideReviewApply').click();
+      await toPanel(page,'connection'); await page.locator('#disconnect').click(); await page.waitForFunction(()=>!document.getElementById('connect').disabled);
+      await toPanel(page,'presets'); assert.equal(await page.locator('#rideRestoreMotor').isVisible(),false);
+      const offline=await snapshot(); await page.evaluate(()=>document.getElementById('rideRestoreMotor').click());
+      assert.deepEqual(await snapshot(),offline);
+      await toPanel(page,'connection'); await page.locator('#connect').click(); await page.waitForFunction(()=>!document.getElementById('readAll').disabled);
+      await toPanel(page,'presets'); assert.equal(await page.locator('#rideRestoreMotor').isVisible(),false);
+      await context.close();
+    });
     await check("guided setup distinguishes drafts, reading and verified writes without automatic UART actions", async () => {
       const {page, context} = await newPage(); await mock(page); await ready(page);
       const state = () => page.locator(".garage-start").getAttribute("data-setup-state");
@@ -815,6 +974,7 @@ async function toPanel(page, id) {
       await page.locator('[data-ride="forward"]').click();
       await page.locator("#ridePreview").click(); await page.locator("#rideReviewApply").click();
       assert.equal(await state(), "draft");
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'motor');
       const sent = await page.evaluate(() => __motor.sent.length);
       await page.locator("#garageNext").click();
       assert.equal(await page.evaluate(() => document.activeElement.id), "bench");
@@ -916,6 +1076,8 @@ async function toPanel(page, id) {
       await page.waitForFunction(() => document.getElementById("status").textContent.includes("подтверждена"));
       assert.equal(await page.locator("#pas-KC").inputValue(),"55");
       assert.equal(await page.evaluate(() => __motor.frames[83][12]),60);
+      assert.equal(await page.locator('.ride-card').first().locator('[data-metric="cruise"] .trait-before').getAttribute('data-value'),'60');
+      assert.equal(await page.locator('.ride-card').first().locator('[data-metric="peak"] .trait-before').getAttribute('data-value'),'17');
       assert.match(await page.locator("#source").textContent(), /ещё не записанные/);
       assert.equal(await page.locator(".garage-start").getAttribute("data-setup-state"), "draft");
       await toPanel(page,"connection"); await page.locator("#writeAll").click();
@@ -924,6 +1086,7 @@ async function toPanel(page, id) {
       await page.waitForFunction(() => document.getElementById("status").textContent.includes("подтверждена"));
       assert.deepEqual(await page.evaluate(() => __motor.sent.filter(f=>f[0]===22).map(f=>f[1])),[82,83]);
       assert.equal(await page.evaluate(() => __motor.frames[83][12]),55);
+      assert.equal(await page.locator('.ride-card').first().locator('[data-metric="cruise"] .trait-before').getAttribute('data-value'),'55');
       await context.close();
     });
     await check("ACK without persistence closes the session and reports an unverified partial write", async () => {
@@ -939,6 +1102,7 @@ async function toPanel(page, id) {
       assert.equal(await page.evaluate(() => __motor.sent.filter(f=>f[0]===22).length),1);
       assert.ok(!(await page.locator("#status").textContent()).includes("Запись подтверждена"));
       assert.equal(await page.locator(".garage-start").getAttribute("data-setup-state"), "partial");
+      assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'draft');
       assert.equal(await page.locator('[data-setup-step][data-complete="true"]').count(), 0);
       assert.equal(await page.locator("#backupEl").isDisabled(),false);
       await context.close();
@@ -1085,7 +1249,8 @@ async function toPanel(page, id) {
     });
     await check("IndexedDB v1 upgrade preserves backups/preferences and exposes complete backup history", async () => {
       const { page, context } = await newPage();
-      await page.goto(base+"/");
+      await page.route(base+'/seed.html',route=>route.fulfill({contentType:'text/html',body:'<link rel="icon" href="/assets/icon.svg">'}));
+      await page.goto(base+"/seed.html");
       const seed = {id:"legacy-1",sessionId:"old",at:"2026-09-17T00:00:00Z",device:{manufacturer:"HZXT",model:"SZZ9",fw:"2.0.1.1",hw:"1.0",nominalCode:2,maxCurrent:25},profile:require("./helpers.cjs").profile,raw:frames};
       await page.evaluate(async (seed) => {
         await new Promise((resolve,reject) => {
@@ -1112,6 +1277,56 @@ async function toPanel(page, id) {
       assert.equal(await page.locator("#rideReviewDialog").isVisible(),true);
       await page.locator("#rideReviewCancel").click();
       await context.close();
+    });
+    await check("local account card persists across landing and app without modifying motor draft; RU/EN mobile account is usable", async () => {
+      const {page,context}=await newPage({viewport:{width:1280,height:900}}); await mock(page);await ready(page);
+      const original=await page.locator('#source').innerText(), sc=await page.locator('#pas-SC').inputValue();
+      await page.locator('#openAccount').click(); await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+      assert.match(await page.locator('#accountLocation').innerText(),/этом браузере/);
+      assert.equal(await page.locator('#accountLogin').isVisible(),false);
+      await page.locator('#accountEditBike').click();
+      await page.locator('#account-name').fill('Антон');await page.locator('#account-bike').fill('Trek Roscoe 8');await page.locator('#account-capacity').fill('19.2');await page.locator('#account-voltage').fill('48');await page.locator('#account-chainring').fill('32');await page.locator('#account-display').fill('860C');
+      await page.locator('#accountSave').click();await page.waitForFunction(()=>document.getElementById('accountMessage').textContent.includes('сохранена'));
+      await page.locator('#accountTab-overview').click();await page.screenshot({path:path.join(output,'account-desktop.png'),animations:'disabled'});
+      await page.keyboard.press('Escape'); assert.equal(await page.evaluate(()=>document.activeElement.id),'openAccount');
+      assert.equal(await page.locator('#source').innerText(),original);assert.equal(await page.locator('#pas-SC').inputValue(),sc);assert.deepEqual(await page.evaluate(()=>__motor.sent),[]);
+      await page.goto(base+'/');await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+      assert.equal(await page.locator('#accountBikeSummary').innerText(),'Trek Roscoe 8');
+      await page.keyboard.press('Escape');await page.locator('#language').selectOption('en');await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+      await page.locator('#accountTab-purchases').click();assert.ok(!/[А-Яа-яЁё]/.test(await page.locator('#accountPanel-purchases').innerText()));
+      await page.keyboard.press('Escape');await page.locator('#language').selectOption('ru');await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+      for(const width of [390,320]){await page.setViewportSize({width,height:844});for(const tab of ['overview','bike','library','purchases']){await page.locator('#accountTab-'+tab).click();assert.equal(await page.locator('#accountDialog').evaluate(n=>n.scrollWidth<=n.clientWidth+1),true,`${width} ${tab}`);}}
+      await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.join(output,'account-mobile.png'),animations:'disabled'});
+      await page.locator('#accountPayment').click();assert.equal(await page.locator('#paymentDemoDialog').isVisible(),true);assert.match(await page.locator('#paymentDemoDialog').innerText(),/деньги не списываются/);await page.locator('#closePaymentDemo').click();
+      await context.close();
+    });
+    await check("account uses actual saved files and exports them without UART or invented purchases",async()=>{
+      const {page,context}=await newPage();await mock(page);await ready(page);await toPanel(page,'presets');
+      await page.locator('#garageName').fill('<img src=x onerror=alert(1)>');await page.locator('#garageSave').click();await page.waitForFunction(()=>document.querySelectorAll('#garageSaved article').length===1);
+      await toPanel(page,'connection');await connectRead(page);
+      const sent=await page.evaluate(()=>__motor.sent);await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+      assert.equal(await page.locator('#accountProfileCount').innerText(),'1');assert.equal(await page.locator('#accountBackupCount').innerText(),'1');
+      await page.locator('#accountTab-library').click();assert.equal(await page.locator('#accountProfiles img').count(),0);assert.match(await page.locator('#accountProfiles').innerText(),/<img/);
+      const download=page.waitForEvent('download');await page.locator('#accountExport').click();const file=await(await download).path();const archive=JSON.parse(fs.readFileSync(file,'utf8'));assert.equal(archive.profiles.length,1);assert.equal(archive.controllerBackups.length,1);
+      await page.locator('#accountTab-purchases').click();assert.match(await page.locator('#accountOrders').innerText(),/Покупок пока нет/);
+      assert.deepEqual(await page.evaluate(()=>__motor.sent),sent);await context.close();
+    });
+    await check("email account performs a real API login, server save and logout with an in-memory mail adapter",async()=>{
+      const mail=[];accountService=require('../server/account-service.cjs').createAccountService({filename:':memory:',origin:base,secret:'browser-test-only-secret-'.repeat(3),privacyUrl:'/privacy',sendCode:async(email,code)=>mail.push({email,code})});
+      const {page,context}=await newPage();try{
+        await mock(page);await ready(page);await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+        await page.locator('#accountEmailInput').fill('rider@example.test');await page.locator('#accountConsent').check();await page.locator('#accountLogin button[type=submit]').click();await page.waitForFunction(()=>!document.getElementById('accountCodeForm').hidden);
+        assert.equal(mail.length,1);await page.locator('#accountCode').fill(mail[0].code);await page.locator('#accountCodeForm button[type=submit]').click();await page.waitForFunction(()=>!document.getElementById('accountLogout').hidden);
+        assert.equal(await page.locator('#accountEmail').innerText(),'rider@example.test');assert.equal(await page.locator('#accountAccess').innerText(),'Не куплен');
+        await page.locator('#accountTab-bike').click();await page.locator('#account-bike').fill('Account bike');await page.locator('#accountSave').click();await page.waitForFunction(()=>document.getElementById('accountMessage').textContent.includes('сохранена'));
+        assert.equal(await page.evaluate(()=>BBSStore.get('prefs','account.card.v1')),undefined);
+        await page.reload();await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);assert.equal(await page.locator('#accountBikeSummary').innerText(),'Account bike');
+        await page.locator('#accountLogout').click();await page.waitForFunction(()=>document.getElementById('accountLogout').hidden);assert.match(await page.locator('#accountBikeSummary').innerText(),/Добавь/);assert.deepEqual(await page.evaluate(()=>__motor.sent),[]);
+      }finally{await context.close();accountService.close();accountService=null;}
+    });
+    await check("account storage denial disables local save and export without affecting the editor",async()=>{
+      const {page,context}=await newPage();await page.addInitScript(()=>Object.defineProperty(window,'indexedDB',{get(){throw Error('denied');}}));await page.goto(base+'/bbs-flash.html');await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
+      assert.match(await page.locator('#accountMessage').innerText(),/недоступно/);await page.locator('#accountTab-bike').click();assert.equal(await page.locator('#accountSave').isDisabled(),true);await page.locator('#accountTab-library').click();assert.equal(await page.locator('#accountExport').isDisabled(),true);await context.close();
     });
     assert.deepEqual(errors, [], "Browser console/runtime errors");
     console.log(

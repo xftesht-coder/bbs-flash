@@ -6,3 +6,9 @@ _new.html
 nul
 test-results/
 playwright-report/
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
