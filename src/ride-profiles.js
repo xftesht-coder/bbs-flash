@@ -115,6 +115,48 @@
       cap: 10, current: [0,8,13,20,29,40,53,68,84,100], speed: [0,100,100,100,100,100,100,100,100,100],
       start: 10, ramp: 5, pulses: 5, keep: 30, decay: 4,
     },
+    {
+      id: "city-sport", code: "13 / SPORT", category: "daily", tone: "orange", fresh: true,
+      name: ["Город Спорт", "City Sport"],
+      tagline: ["Лёгкие первые ступени. Бодрая середина.", "Gentle lower levels. Lively mid-range."],
+      description: ["Для активного города без постоянно резкого старта. Включение после 3 импульсов, старт 15% и код нарастания 4. Нижние ступени слабее «Камон!», а на ходу остаётся 60% помощи вместо 55%. Все уровни PAS используют 100% действующего предела скорости: уровень выбирает прежде всего силу помощи. Потолок PAS — до 22 А.", "For active city rides without a consistently sharp launch. Engagement after 3 pulses, 15% start and ramp code 4. Lower levels are lighter than Come on!, with 60% keep current instead of 55%. All PAS levels use 100% of the existing speed limit, primarily selecting assistance strength. PAS is capped at 22 A."],
+      tradeoff: ["Не быстрее «Полного вперёд» по определению: старт мягче, запас тока меньше. Единый процент скорости не снимает общий предел и не гарантирует отсутствие пульсаций на твоей прошивке. Перед остановкой переключайся на лёгкую передачу.", "Not inherently faster than Full ahead: initial pickup is gentler and the current ceiling is lower. A shared speed percentage does not remove the overall limit or guarantee surge-free operation on your firmware. Shift to a low gear before stopping."],
+      usage: [
+        ["Знакомство с профилем и спокойный участок.", "Get used to the profile on a relaxed section."],
+        ["Основной рабочий диапазон для активной поездки.", "The main assistance range for an active ride."],
+        ["Дополнительная помощь по необходимости; расход и нагрузка выше.", "Extra help when needed, with higher energy use and load."],
+      ],
+      cap: 22, current: [0,14,22,33,46,60,74,85,94,100], speed: [0,100,100,100,100,100,100,100,100,100],
+      start: 15, ramp: 4, pulses: 3, keep: 60, decay: 6,
+    },
+    {
+      id: "trail-flow", code: "14 / FLOW TRAIL", category: "active", tone: "blue", fresh: true,
+      name: ["Трейл Flow", "Trail Flow"],
+      tagline: ["Ранний отклик. Мягкий подхват. Запас на ходу.", "Early response. Gentle pickup. Support while moving."],
+      description: ["Для волнистой тропы с частым возобновлением педалирования. По сравнению с «Бездорожьем» включается после 3 вместо 4 импульсов, старт снижен с 12% до 10%, первые ступени дают меньше тока. На верхних уровнях остаётся запас до 20 А; Keep Current 65%. Процент скорости PAS 1–9 — 100%, без дополнительных низких порогов по уровням.", "For rolling trails with frequent pedaling restarts. Compared with Trail control, it engages after 3 rather than 4 pulses, reduces start current from 12% to 10% and offers lighter lower levels. Upper levels retain up to 20 A, with 65% keep current. PAS 1–9 use 100% speed without extra low per-level thresholds."],
+      tradeoff: ["Это не датчик момента и не автоматическое управление тягой. На тесном препятствии раннее включение может мешать; заранее выбирай низкий PAS. Для затяжного подъёма есть отдельный профиль с меньшим потолком тока — «Длинный подъём».", "This adds neither a torque sensor nor automatic traction control. Early engagement can be intrusive on a tight obstacle; choose a low PAS beforehand. For sustained climbs, Long climb provides a separate lower-current starting point."],
+      usage: [
+        ["Освоение подхвата и участки, где важнее точность.", "Learn the pickup and use it where precision matters."],
+        ["Ритмичная езда по неровной тропе с работой передачами.", "Rolling trail riding while actively using the gears."],
+        ["Запас помощи; не замена лёгкой передаче при падении каденса.", "Assistance reserve, not a substitute for shifting down when cadence drops."],
+      ],
+      cap: 20, current: [0,12,20,31,44,58,72,84,93,100], speed: [0,100,100,100,100,100,100,100,100,100],
+      start: 10, ramp: 5, pulses: 3, keep: 65, decay: 6,
+    },
+    {
+      id: "loose-ground", code: "15 / SOFT", category: "calm", tone: "mint", fresh: true,
+      name: ["Мягкий грунт", "Loose ground"],
+      tagline: ["Небольшие порции помощи на нижних уровнях.", "Small portions of assistance on the lower levels."],
+      description: ["Для знакомства с рыхлым покрытием на малой помощи: потолок PAS до 14 А, старт 10%, код нарастания 6 и включение после 5 импульсов. Первые три ступени намеренно небольшие; поддержка на ходу 45%. Процент скорости растёт от 40% на PAS 1 до 100% на PAS 9.", "A low-assistance starting point for loose surfaces: PAS capped at 14 A, 10% start, ramp code 6 and engagement after 5 pulses. The first three levels are deliberately light, with 45% keep current. Speed percentage rises from 40% at PAS 1 to 100% at PAS 9."],
+      tradeoff: ["Профиль не обнаруживает пробуксовку и не улучшает сцепление шин. На песке, мокрых корнях или крутом уклоне этой помощи может не хватить; не компенсируй это ездой внатяг. Пороги скорости относительные, это не режим «безопасной скорости».", "The profile cannot detect wheelspin or improve tire grip. Assistance may be insufficient on sand, wet roots or steep slopes; do not compensate by laboring in a high gear. Speed thresholds are relative, not a safe-speed mode."],
+      usage: [
+        ["Начни здесь: небольшая помощь для проверки реакции на покрытии.", "Start here with light assistance to evaluate the surface response."],
+        ["Прибавляй постепенно, если велосипед остаётся управляемым.", "Increase gradually while the bike remains controllable."],
+        ["Верхний диапазон этого профиля; осторожный старт не исключает пробуксовку.", "The upper range of this profile; a gentle start does not prevent wheelspin."],
+      ],
+      cap: 14, current: [0,10,16,24,34,46,60,74,88,100], speed: [0,40,45,50,55,60,70,80,90,100],
+      start: 10, ramp: 6, pulses: 5, keep: 45, decay: 4,
+    },
   ];
   function apply(original, id) {
     C.validate(original);
