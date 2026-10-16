@@ -1,5 +1,6 @@
 /* Compact personal cabinet, sharing the existing light/dark retro palette. */
 .access-demo .account-open { min-height:30px;padding:5px 10px;font-size:12px;border-color:var(--accent); }
+.access-demo { flex-wrap:wrap;min-width:0;max-width:100%; }
 #accountDialog { width:min(870px,calc(100vw - 24px));max-width:none;max-height:calc(100dvh - 24px);padding:0;overflow-y:auto;color:var(--ink);background:var(--surface); }
 .account-heading { padding:18px 22px 14px;display:flex;align-items:start;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line);background:linear-gradient(var(--surface),var(--chrome)); }
 .account-heading h2 { margin:0;font-size:24px; }.account-heading p { margin:2px 0 0;font-size:12px; }.account-heading .eyebrow { font-size:10px; }
@@ -26,4 +27,5 @@
   .account-content { padding:16px 13px; }.account-stats>div { padding:9px; }.account-stats strong { font-size:19px; }#accountAccess { font-size:14px; }
   .account-bike-summary { align-items:start;flex-direction:column; }.account-fields { gap:10px; }.account-fields label:nth-child(-n+2) { grid-column:1/-1; }.account-fields input { font-size:16px; }
   .account-actions>button { flex:1; }.account-signin form { max-width:none; }.access-demo { gap:6px; }
+  .access-demo .access-copy { display:grid;gap:0; }
 }
