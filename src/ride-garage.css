@@ -131,3 +131,8 @@ meter::-moz-meter-bar { background: var(--ride-color,var(--accent)); }
   .ride-card > p { min-height: 0; }
   .garage #compare { max-width: 100%; }
 }
+
+#ridePasGuide { margin: 12px 0; }
+#ridePasTable { width: 100%; table-layout: fixed; margin-top: 12px; }
+#ridePasTable th, #ridePasTable td { padding: 7px 5px; white-space: normal; overflow-wrap: anywhere; font-size: 12px; }
+#ridePasTable caption { text-align: left; margin-bottom: 8px; font-weight: 650; }

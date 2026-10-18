@@ -116,7 +116,7 @@
       start: 10, ramp: 5, pulses: 5, keep: 30, decay: 4,
     },
     {
-      id: "city-sport", code: "13 / SPORT", category: "daily", tone: "orange", fresh: true,
+      id: "city-sport", code: "13 / SPORT", category: "daily", tone: "orange",
       name: ["Город Спорт", "City Sport"],
       tagline: ["Лёгкие первые ступени. Бодрая середина.", "Gentle lower levels. Lively mid-range."],
       description: ["Для активного города без постоянно резкого старта. Включение после 3 импульсов, старт 15% и код нарастания 4. Нижние ступени слабее «Камон!», а на ходу остаётся 60% помощи вместо 55%. Все уровни PAS используют 100% действующего предела скорости: уровень выбирает прежде всего силу помощи. Потолок PAS — до 22 А.", "For active city rides without a consistently sharp launch. Engagement after 3 pulses, 15% start and ramp code 4. Lower levels are lighter than Come on!, with 60% keep current instead of 55%. All PAS levels use 100% of the existing speed limit, primarily selecting assistance strength. PAS is capped at 22 A."],
@@ -130,7 +130,7 @@
       start: 15, ramp: 4, pulses: 3, keep: 60, decay: 6,
     },
     {
-      id: "trail-flow", code: "14 / FLOW TRAIL", category: "active", tone: "blue", fresh: true,
+      id: "trail-flow", code: "14 / FLOW TRAIL", category: "active", tone: "blue",
       name: ["Трейл Flow", "Trail Flow"],
       tagline: ["Ранний отклик. Мягкий подхват. Запас на ходу.", "Early response. Gentle pickup. Support while moving."],
       description: ["Для волнистой тропы с частым возобновлением педалирования. По сравнению с «Бездорожьем» включается после 3 вместо 4 импульсов, старт снижен с 12% до 10%, первые ступени дают меньше тока. На верхних уровнях остаётся запас до 20 А; Keep Current 65%. Процент скорости PAS 1–9 — 100%, без дополнительных низких порогов по уровням.", "For rolling trails with frequent pedaling restarts. Compared with Trail control, it engages after 3 rather than 4 pulses, reduces start current from 12% to 10% and offers lighter lower levels. Upper levels retain up to 20 A, with 65% keep current. PAS 1–9 use 100% speed without extra low per-level thresholds."],
@@ -144,7 +144,7 @@
       start: 10, ramp: 5, pulses: 3, keep: 65, decay: 6,
     },
     {
-      id: "loose-ground", code: "15 / SOFT", category: "calm", tone: "mint", fresh: true,
+      id: "loose-ground", code: "15 / SOFT", category: "calm", tone: "mint",
       name: ["Мягкий грунт", "Loose ground"],
       tagline: ["Небольшие порции помощи на нижних уровнях.", "Small portions of assistance on the lower levels."],
       description: ["Для знакомства с рыхлым покрытием на малой помощи: потолок PAS до 14 А, старт 10%, код нарастания 6 и включение после 5 импульсов. Первые три ступени намеренно небольшие; поддержка на ходу 45%. Процент скорости растёт от 40% на PAS 1 до 100% на PAS 9.", "A low-assistance starting point for loose surfaces: PAS capped at 14 A, 10% start, ramp code 6 and engagement after 5 pulses. The first three levels are deliberately light, with 45% keep current. Speed percentage rises from 40% at PAS 1 to 100% at PAS 9."],
@@ -156,6 +156,36 @@
       ],
       cap: 14, current: [0,10,16,24,34,46,60,74,88,100], speed: [0,40,45,50,55,60,70,80,90,100],
       start: 10, ramp: 6, pulses: 5, keep: 45, decay: 4,
+    },
+    {
+      id: "bread-run", code: "16 / HILL MIX", category: "daily", tone: "orange", fresh: true,
+      name: ["За хлебом · баланс", "Bread run · balanced"],
+      tagline: ["Умеренно в горку. Запас помощи на разгон.", "Moderate hill assistance. Extra help to build pace."],
+      description: ["Для смешанной поездки с подъёмом: PAS 1–4 — постепенно растущая умеренная помощь, PAS 5–9 — больший запас до 18 А. Включение после 3 импульсов, старт 12% и код нарастания 4: ранний отклик с меньшей стартовой долей, чем у «Полного вперёд». Keep Current 60%. Все ступени используют 100% действующего предела скорости, без дополнительных низких порогов. Это не поддержание скорости: если мощности не хватает, скорость снизится.", "For mixed trips with a hill: PAS 1–4 gradually increase moderate assistance; PAS 5–9 add reserve up to 18 A. Engagement after 3 pulses, 12% start and ramp code 4 give early response with a lower starting percentage than Full ahead. Keep Current is 60%. Every level uses 100% of the existing speed limit without extra low-speed thresholds. This is not cruise control: speed drops when available power is insufficient."],
+      tradeoff: ["Резкость старта общая для PAS 1–9; верхние ступени не включают отдельный режим старта. На большой горке не держись за PAS 1–4 любой ценой: заранее выбери лёгкую механическую передачу. Если мотор тянет внатяг, снизь нагрузку; при необходимости остановись. Профиль не измеряет температуру и не гарантирует отсутствие перегрева или износа. Для первого знакомства начни с низкой помощи на ровном свободном участке.", "Start behavior is shared across PAS 1–9; upper levels do not enable a separate launch mode. Do not insist on PAS 1–4 on a large hill: select a low mechanical gear in advance. If the motor labors, reduce the load and stop if necessary. This profile does not measure temperature or guarantee freedom from overheating or wear. First try low assistance on a clear, level section."],
+      bands: [[1,4],[5,7],[8,9]],
+      usage: [
+        ["Умеренная помощь с работой ногами. На подъёме выбирай лёгкую механическую передачу; низкий PAS сам по себе не защищает мотор.", "Moderate assistance with rider effort. Select a low mechanical gear uphill; low PAS alone does not protect the motor."],
+        ["Больше тяги для набора темпа и участков, где нижних ступеней мало. Перед переключением передачи разгрузи цепь.", "More assistance to build pace or where lower levels are insufficient. Unload the chain before shifting gears."],
+        ["Верхний запас помощи с большим расходом. Это не временный boost и не режим с термоконтролем.", "Upper assistance reserve with higher energy use. This is neither a timed boost nor a temperature-controlled mode."],
+      ],
+      cap: 18, current: [0,25,38,52,65,73,81,88,94,100], speed: [0,100,100,100,100,100,100,100,100,100],
+      start: 12, ramp: 4, pulses: 3, keep: 60, decay: 6,
+    },
+    {
+      id: "bread-eco", code: "17 / HILL ECO", category: "calm", tone: "mint", fresh: true,
+      name: ["За хлебом · эконом", "Bread run · economy"],
+      tagline: ["Меньше доступной помощи. Больше работы ногами.", "Less available assistance. More rider effort."],
+      description: ["Вариант того же маршрута с потолком PAS до 14 А, стартом 10%, включением после 4 импульсов и более плавным кодом нарастания 5. Keep Current 50%. Первые четыре ступени дают умеренную помощь, пять верхних — запас внутри меньшего потолка. Общий предел скорости действует на всех уровнях: профиль не вводит низкие пороги скорости PAS, но и не обещает сохранить темп на подъёме.", "An alternative for the same route with PAS capped at 14 A, 10% start, engagement after 4 pulses and gentler ramp code 5. Keep Current is 50%. The first four levels offer moderate help; the five upper levels add reserve within the lower ceiling. The overall speed limit applies at every level: there are no additional low PAS speed caps, but maintaining uphill pace is not promised."],
+      tradeoff: ["Выбирай этот вариант, если готов сильнее помогать ногами и при необходимости ехать медленнее. Меньший потолок тока не доказывает экономию на конкретной горке: езда внатяг может ухудшить КПД. Если помощь недостаточна, сначала облегчи механическую передачу и снизь нагрузку. Нет датчика нагрузки, термоконтроля или гарантии ресурса трансмиссии.", "Choose this version if you can contribute more pedaling and accept a slower pace when needed. A lower current ceiling does not prove savings on a particular hill: laboring can reduce efficiency. If assistance is insufficient, first select a lower mechanical gear and reduce load. There is no load sensing, temperature control or drivetrain-life guarantee."],
+      bands: [[1,4],[5,7],[8,9]],
+      usage: [
+        ["Лёгкая и умеренная помощь для педалирования. На крутом участке этих ступеней может не хватить.", "Light to moderate assistance for pedaling. These levels may be insufficient on a steep section."],
+        ["Добавляй помощь по потребности, сохраняя подходящую механическую передачу и свободное вращение педалей.", "Add assistance as needed while keeping a suitable mechanical gear and comfortable pedaling."],
+        ["Максимум этого экономичного шаблона. Это не обещание меньшего нагрева или прежней скорости.", "The top of this economy template. It promises neither less heat nor unchanged speed."],
+      ],
+      cap: 14, current: [0,22,35,48,60,70,78,86,93,100], speed: [0,100,100,100,100,100,100,100,100,100],
+      start: 10, ramp: 5, pulses: 4, keep: 50, decay: 5,
     },
   ];
   function apply(original, id) {

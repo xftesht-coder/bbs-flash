@@ -10,6 +10,10 @@ globalThis.BBSRideGarage = (() => {
     profileCode: ["Профиль", "Profile"],
     newProfiles: ["Новинки", "New profiles"], fresh: ["Новый", "New"],
     pasGuide: ["Как пользоваться уровнями PAS", "Using PAS levels"],
+    pasShared: ["PAS — уровень помощи, не механическая передача. Стартовый ток и темп нарастания общие для всех уровней: отдельно настроить резкий старт только на PAS 5–9 нельзя.", "PAS is an assistance level, not a mechanical gear. Start current and ramp settings are shared across levels: a separate sharp launch on PAS 5–9 cannot be configured."],
+    pasFixed: ["В черновике закреплён PAS {level}. Переключатель дисплея не сможет выбирать всю таблицу; проверь «Назначенный уровень помощи» после чтения мотора.", "Your draft fixes PAS at level {level}. The display cannot select the whole table; check Designated Assist after reading the motor."],
+    pasTable: ["Все девять ступеней после выбора", "All nine levels after selection"],
+    pasLevel: ["Уровень", "Level"], pasAmps: ["Потолок, А", "Ceiling, A"], pasSpeed: ["Предел скорости, %", "Speed limit, %"],
     pasMapping: ["Это 9 уровней контроллера. Соответствие кнопкам дисплея зависит от его настройки. Амперы — расчётные потолки, а не измеренный ток.", "These are the controller's 9 levels. Display button mapping depends on its configuration. Amps are calculated ceilings, not measured current."],
     actualCap: ["PAS 9 после выбора: {peak} А · общий лимит: {limit} А · потолок шаблона: {cap} А", "PAS 9 after selection: {peak} A · global limit: {limit} A · template ceiling: {cap} A"],
     limitedCap: ["Текущий общий лимит ниже потолка шаблона: профиль его не повысит.", "Your global limit is below the template ceiling: the profile will not raise it."],
@@ -277,6 +281,12 @@ globalThis.BBSRideGarage = (() => {
       const cap = el("p", t("actualCap").replace("{peak}", amps(9)).replace("{limit}", after.bas.LC).replace("{cap}", p.cap), "notice");
       cap.id = "rideActualCap"; detail.append(cap);
       if (after.bas.LC < p.cap) detail.append(el("p", t("limitedCap"), "muted"));
+      detail.append(el("p", t("pasShared"), "muted"));
+      if (after.pas.DA !== 255) {
+        const fixed = el("p", t("pasFixed").replace("{level}", after.pas.DA), "notice warning");
+        fixed.id = "rideFixedPas"; detail.append(fixed);
+      }
+      detail.append(pasGuide(p, after, amps));
       detail.append(el("h4", t("sevenTitle")), el("p", `${view.label} · ${profileName(before)}. ${t("compareHint")}`, "muted"));
       const metrics = el("div", undefined, "ride-comparison");
       for (const row of M.compare(before, after)) {
@@ -289,17 +299,31 @@ globalThis.BBSRideGarage = (() => {
       }
       detail.append(metrics, el("p", t("changesCount").replace("{n}", C.diff(before,after).length), "muted"), el("p", t("ceiling"), "muted"));
       detail.append(chart(before, after));
-      const guide = el("details"); guide.id = "ridePasGuide";
-      guide.append(el("summary", t("pasGuide")), el("p", t("pasMapping"), "muted"));
-      for (const [i, low, high, key] of [[0,1,3,"pasLow"],[1,4,6,"pasMid"],[2,7,9,"pasHigh"]]) {
-        const row = el("p");
-        row.append(el("strong", `PAS ${low}–${high} · ${amps(low)}–${amps(high)} ${t("amp")}`), el("span", " — " + (p.usage ? local(p.usage[i]) : t(key))));
-        guide.append(row);
-      }
-      detail.append(guide);
     } catch { detail.append(el("p", t("invalid"), "notice warning")); }
     detail.append(el("h4", t("effect")), el("p", local(p.description)), el("h4", t("compromise")), el("p", local(p.tradeoff)));
     detail.append(el("p", t("preserved"), "ride-preserved"));
+  }
+  function pasGuide(p, after, amps) {
+    const guide = el("details"); guide.id = "ridePasGuide";
+    guide.append(el("summary", t("pasGuide")), el("p", t("pasMapping"), "muted"));
+    (p.bands || [[1,3],[4,6],[7,9]]).forEach(([low,high], i) => {
+      const row = el("p");
+      row.append(el("strong", `PAS ${low}–${high} · ${amps(low)}–${amps(high)} ${t("amp")}`), el("span", " — " + (p.usage ? local(p.usage[i]) : t(["pasLow","pasMid","pasHigh"][i]))));
+      guide.append(row);
+    });
+    const table = el("table"); table.id = "ridePasTable";
+    table.append(el("caption", t("pasTable")));
+    const head = el("thead"), headings = el("tr"), body = el("tbody");
+    for (const key of ["pasLevel","pasAmps","pasSpeed"]) {
+      const cell = el("th", t(key)); cell.scope = "col"; headings.append(cell);
+    }
+    head.append(headings); table.append(head);
+    for (let level=1; level<=9; level++) {
+      const row = el("tr"), label = el("th", `PAS ${level}`); label.scope = "row";
+      row.append(label, el("td", amps(level)), el("td", String(after.bas.ALBP[level]))); body.append(row);
+    }
+    table.append(body); guide.append(table);
+    return guide;
   }
   function rideBrief(before, after) {
     const rows = Object.fromEntries(M.compare(before, after).map(row => [row.id, row]));

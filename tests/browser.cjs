@@ -844,7 +844,7 @@ async function toPanel(page, id) {
       const card=page.locator('.ride-card').filter({has:page.locator('[data-ride="forward"]')});
       const value=(id,side)=>card.locator(`[data-metric="${id}"] .trait-${side}`).getAttribute('data-value');
       assert.equal(await page.locator('#rideBaseline').getAttribute('data-basis'),'demo');
-      assert.equal(await page.locator('.ride-trait').count(),15*7);
+      assert.equal(await page.locator('.ride-trait').count(),17*7);
       assert.equal(await value('pickup','before'),'10'); assert.equal(await value('pickup','after'),'20');
       assert.equal(await value('peak','before'),'18'); assert.equal(await value('peak','after'),'18');
       const original=await page.locator('#pas-SC').inputValue();
@@ -871,7 +871,7 @@ async function toPanel(page, id) {
       await toPanel(page,'basic'); await page.locator('#bas-LC').fill('18'); await toPanel(page,'presets');
       await page.locator('#language').selectOption('en');
       assert.ok(!/[А-Яа-яЁё]/.test(await page.locator('#panel-presets').innerText()));
-      await page.locator('#language').selectOption('ru'); assert.equal(await page.locator('.ride-trait').count(),105);
+      await page.locator('#language').selectOption('ru'); assert.equal(await page.locator('.ride-trait').count(),119);
       assert.deepEqual(await page.evaluate(()=>__motor.sent),[]);
       await context.close();
     });
@@ -1161,8 +1161,8 @@ async function toPanel(page, id) {
       const { page, context } = await newPage();
       await mock(page); await ready(page);
       await page.locator("#startBrowse").click();
-      assert.equal(await page.locator("#rideCards article").count(), 15);
-      assert.equal(await page.locator('[data-filter="all"]').textContent(), "Все 15");
+      assert.equal(await page.locator("#rideCards article").count(), 17);
+      assert.equal(await page.locator('[data-filter="all"]').textContent(), "Все 17");
       assert.equal(await page.locator("#sim-ah").inputValue(), "19.2");
       const before = await page.locator("#ALC-1").inputValue();
       await page.locator('[data-ride="economy"]').click();
@@ -1170,7 +1170,7 @@ async function toPanel(page, id) {
       assert.equal(await page.locator("#ALC-1").inputValue(), before);
       await page.locator("#rideReviewCancel").click();
       assert.equal(await page.locator("#ALC-1").inputValue(), before);
-      for (const id of ["acceleration","climb","technical","touring","training","economy","smooth","city","park","trail","city-sport","trail-flow","loose-ground","forward","speed"]) {
+      for (const id of ["acceleration","climb","technical","touring","training","economy","smooth","city","park","trail","city-sport","trail-flow","loose-ground","bread-run","bread-eco","forward","speed"]) {
         await page.locator(`[data-ride="${id}"]`).click();
         await page.locator("#ridePreview").click();
         await page.locator("#rideReviewApply").click();
@@ -1182,15 +1182,15 @@ async function toPanel(page, id) {
       assert.equal(await page.locator("#ALBP-1").inputValue(), "65");
       assert.equal(await page.locator("#garageUndo").isDisabled(), true);
       await page.locator('[data-filter="calm"]').click();
-      assert.equal(await page.locator("#rideCards article").count(), 4);
+      assert.equal(await page.locator("#rideCards article").count(), 5);
       await page.locator('[data-filter="all"]').click();
       await page.locator('[data-filter="active"]').click();
       assert.equal(await page.locator("#rideCards article").count(), 7);
       await page.locator('[data-filter="daily"]').click();
-      assert.equal(await page.locator("#rideCards article").count(), 4);
+      assert.equal(await page.locator("#rideCards article").count(), 5);
       await page.locator('[data-filter="all"]').click();
       await page.locator("#language").selectOption("en");
-      assert.equal(await page.locator('[data-filter="all"]').textContent(), "All 15");
+      assert.equal(await page.locator('[data-filter="all"]').textContent(), "All 17");
       await page.locator('[data-ride="acceleration"]').click();
       assert.equal(await page.locator("#rideDetail h3").textContent(), "Come on! Acceleration");
       await page.locator("#language").selectOption("ru");
@@ -1208,12 +1208,15 @@ async function toPanel(page, id) {
       await page.locator("#bas-LC").fill("24"); await page.locator("#bas-LC").dispatchEvent("change");
       await toPanel(page,"presets");
       await page.locator('[data-filter="new"]').click();
-      assert.equal(await page.locator("#rideCards article").count(),3);
-      for(const [id,peak] of [["city-sport","21,84"],["trail-flow","19,92"],["loose-ground","13,92"]]) {
+      assert.equal(await page.locator("#rideCards article").count(),2);
+      for(const [id,peak] of [["bread-run","18"],["bread-eco","13,92"]]) {
         await page.locator(`[data-ride="${id}"]`).click();
         assert.ok((await page.locator("#rideActualCap").textContent()).includes(peak));
         await page.locator("#ridePasGuide summary").click();
         assert.equal(await page.locator("#ridePasGuide strong").count(),3);
+        assert.match(await page.locator("#ridePasGuide strong").first().textContent(),/PAS 1–4/);
+        assert.equal(await page.locator("#ridePasTable tbody tr").count(),9);
+        assert.deepEqual(await page.locator("#ridePasTable tbody td:last-child").allTextContents(),Array(9).fill("100"));
         assert.match(await page.locator("#ridePasGuide").textContent(),/Соответствие кнопкам дисплея/);
       }
       await page.locator("#language").selectOption("en");
@@ -1230,6 +1233,36 @@ async function toPanel(page, id) {
       await toPanel(page,"presets"); assert.equal(await page.locator("#rideActualCap").count(),0);
       assert.equal(await page.locator("#ridePreview").count(),0);
       assert.deepEqual(await page.evaluate(()=>__motor.sent),[]);
+      await context.close();
+    });
+    await check("hill profile warns about fixed PAS and completes verified legacy writes for both variants", async () => {
+      const {page,context}=await newPage();
+      const cap=require("./fixtures/legacy-rx.json"), hex=s=>s.split(" ").map(b=>parseInt(b,16));
+      const initial={81:require("./fixtures/szz9-general-capture.json").chunks.flat(),82:hex(cap.ownerBasic),83:hex(cap.ownerPAS),84:hex(cap.ownerThrottle)};
+      await mock(page,{initial,format:"legacy"}); await ready(page); await connectRead(page);
+      await toPanel(page,"pas");
+      await page.locator("#pas-DA").selectOption("4");
+      await toPanel(page,"presets"); await page.locator('[data-ride="bread-run"]').click();
+      assert.match(await page.locator("#rideFixedPas").textContent(),/PAS 4/);
+      await page.locator("#language").selectOption("en");
+      assert.match(await page.locator("#rideFixedPas").textContent(),/level 4/);
+      await page.locator("#language").selectOption("ru");
+      await toPanel(page,"pas"); await page.locator("#pas-DA").selectOption("255");
+      await toPanel(page,"presets"); assert.equal(await page.locator("#rideFixedPas").count(),0);
+      await toPanel(page,"connection"); await page.locator("#bench").check();
+      for(const [id,sc,ssm,sdn,cd,kc] of [["bread-run",12,4,3,6,60],["bread-eco",10,5,4,5,50]]) {
+        await toPanel(page,"presets"); await page.locator(`[data-ride="${id}"]`).click();
+        await page.locator("#ridePreview").click(); await page.locator("#rideReviewApply").click();
+        await toPanel(page,"connection"); await page.locator("#writeAll").click();
+        await page.waitForFunction(()=>document.getElementById("writeDialog").open);
+        await page.locator("#confirmSafety").check(); await page.locator("#confirmWrite").click();
+        await page.waitForFunction(()=>document.getElementById("status").textContent.includes("подтверждена"));
+        assert.equal(await page.locator("#bas-LC").inputValue(),"24");
+        assert.deepEqual(await page.evaluate(()=>__motor.frames[83].slice(2,-1)),[3,255,255,sc,ssm,sdn,255,20,cd,0,kc]);
+        assert.deepEqual(await page.evaluate(()=>__motor.frames[84]),initial[84]);
+        assert.equal(await page.locator("#backupEl").isDisabled(),false);
+      }
+      assert.deepEqual(await page.evaluate(()=>__motor.sent.filter(f=>f[0]===22).map(f=>f[1])),[82,83,82,83]);
       await context.close();
     });
     await check("named drafts persist across reload, are escaped, download and load through review", async () => {
