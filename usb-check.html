@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+  <title>BBS Flash · Проверка USB</title>
+  <link rel="icon" href="./assets/icon.svg" />
+  <link rel="stylesheet" href="./src/styles.css?v=3.5.0" />
+  <link rel="stylesheet" href="./src/usb-check.css?v=1" />
+  <script defer src="./src/usb-check.js?v=1"></script>
+</head>
+<body>
+  <main class="usb-check">
+    <header><a href="./bbs-flash.html">BBS // FLASH</a><label><span data-text="language">Язык</span> <select id="language"><option value="ru">RU</option><option value="en">EN</option></select></label></header>
+    <h1 data-text="title">Проверка USB-кабеля</h1>
+    <p data-text="intro">Первый шаг для Android + OTG. Эта страница определяет USB-кабель; она не настраивает мотор.</p>
+    <ol><li data-text="step1">Открой эту страницу в Chrome на телефоне.</li><li data-text="step2">Подключи USB-кабель программирования к телефону через OTG. Мотор подключать не нужно.</li><li data-text="step3">Нажми кнопку ниже, выбери свой кабель и разреши браузеру доступ.</li></ol>
+    <p id="capability" class="notice"></p>
+    <button id="inspect" class="primary" data-text="inspect" disabled>Определить USB-кабель</button>
+    <p id="status" role="status" aria-live="polite"></p>
+    <section id="result" hidden>
+      <h2 data-text="resultTitle">Данные для подключения</h2>
+      <label for="report" data-text="reportLabel">Скопируй этот текст и пришли в чат</label>
+      <textarea id="report" rows="7" readonly spellcheck="false"></textarea>
+      <button id="selectReport" data-text="selectReport">Выделить текст</button>
+      <p data-text="resultHelp">VID/PID помогут выбрать драйвер. Обнаружение кабеля ещё не подтверждает возможность чтения и записи мотора.</p>
+    </section>
+    <details><summary data-text="trouble">Кабеля нет в списке?</summary><p data-text="troubleHelp">Проверь OTG в настройках телефона, адаптер с передачей данных и разъёмы. Закрой приложения, которые используют USB. Если список пуст, сообщи об этом вместе с моделью телефона и версией браузера.</p></details>
+    <p class="muted" data-text="privacy">Страница не открывает UART, не отправляет команды кабелю и не загружает данные на сервер. Серийный номер USB не собирается. Наличие WebUSB — не подтверждение поддержки конкретного кабеля.</p>
+  </main>
+</body>
+</html>

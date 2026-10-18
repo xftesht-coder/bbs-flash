@@ -62,3 +62,7 @@ python -m http.server 8765
 ## English
 
 A local Bafang UART settings workbench with `.el` import/export, PAS templates, A/B comparison, range estimates and verified backups. The owner reported a verified write and a ride with Full ahead on 3.4.2; 3.5.0 changes have software test coverage. Physical restore remains unconfirmed. Writes default to off and require explicit opt-in plus the exact HZXT SZZ9 / HW 1.1 / FW 2.0.1.1 / 48 V / maximum 25 A configuration. Unknown controllers are read-only. There is no CAN support, firmware flashing, live telemetry or cloud profile upload. See [Safety](docs/SAFETY.md), [Protocol](docs/PROTOCOL.md) and [Roadmap](ROADMAP.md).
+
+## Android + OTG
+
+[Проверка USB-кабеля](usb-check.html) показывает VID/PID на телефоне без команд мотору. Она нужна для выбора USB-драйвера; мобильная запись пока не реализована. [Подробности](docs/MOBILE.md).

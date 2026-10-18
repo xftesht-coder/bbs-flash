@@ -11,7 +11,7 @@ test("one canonical landing page; legacy URL redirects and current app is linked
   assert.match(read("index.html"), /href="\.\/bbs-flash.html"/);
 });
 test("release pages reference existing local assets and have no inline script or stale production domains", () => {
-  for (const file of ["index.html", "landing.html", "bbs-flash.html"]) {
+  for (const file of ["index.html", "landing.html", "bbs-flash.html", "usb-check.html"]) {
     const html = read(file);
     for (const match of html.matchAll(/(?:src|href)="(\.\/[^"?#]+)(?:[?#][^"]*)?"/g))
       assert.ok(

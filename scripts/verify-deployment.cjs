@@ -11,6 +11,9 @@ const files = [
   "index.html",
   "landing.html",
   "bbs-flash.html",
+  "usb-check.html",
+  "src/usb-check.js",
+  "src/usb-check.css",
   "src/core.js",
   "src/storage.js",
   "src/app.js",
@@ -145,6 +148,12 @@ const attempts = Number(process.env.BBS_DEPLOY_ATTEMPTS || 24),
       )
     )
       throw Error("Mobile overflow");
+    await page.goto(base + "usb-check.html");
+    await page.waitForFunction(() => document.getElementById("capability").textContent.length > 0);
+    if ((await page.locator("#report").inputValue()) !== "") throw Error("USB check must not inspect devices automatically");
+    await page.locator("#language").selectOption("en");
+    if ((await page.locator("h1").textContent()) !== "USB cable check") throw Error("USB check translation missing");
+    if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)) throw Error("USB check mobile overflow");
     if (errors.length) throw Error(errors.join("\n"));
   } finally {
     await browser.close();
