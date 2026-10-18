@@ -46,7 +46,7 @@ async function ready(page) {
 }
 async function mock(page, { unknown = false, initial = frames, format = "additive" } = {}) {
   await page.addInitScript(
-    ({ initial, unknown, format }) => {
+    ({ initial, unknown, format, androidBridge }) => {
       const checksum = (bytes, reading = false) => [
         ...bytes,
         (bytes.reduce((n, b) => (n + b) % 256, 0) + (reading && format === "legacy" ? 258 - bytes[1] : 0)) % 256,
@@ -101,8 +101,29 @@ async function mock(page, { unknown = false, initial = frames, format = "additiv
         configurable: true,
       });
       window.__motor = motor;
+      if (androidBridge) {
+        let reader, writer, token;
+        const emit = message => window.BBSAndroid.onmessage({data:JSON.stringify(message)});
+        window.BBSAndroid = {postMessage: async raw => {
+          const m=JSON.parse(raw);
+          try {
+            let result=null;
+            if(m.op==='choose') {token=crypto.randomUUID();result={token,vendorId:0x1a86,productId:0x7523};}
+            else if(m.op==='open') {
+              await port.open();reader=port.readable.getReader();writer=port.writable.getWriter();
+              const session=token,currentReader=reader;
+              (async()=>{try{while(session===token){const {done,value}=await currentReader.read();if(done)break;emit({event:'data',token:session,bytes:[...value]});}}catch{emit({event:'disconnected',token:session});}})();
+            } else if(m.op==='write') await writer.write(Uint8Array.from(m.bytes));
+            else if(m.op==='close') {token=null;await reader?.cancel();await port.close();}
+            else if(m.op==='save') window.__androidSaved={name:m.name,data:m.data};
+            emit({id:m.id,result});
+          }catch(e){emit({id:m.id,error:e.message});}
+        }};
+        // Init script executes before the document/CSP; production loads a local script.
+        (0,eval)(androidBridge);
+      }
     },
-    { initial, unknown, format },
+    { initial, unknown, format, androidBridge: process.env.BBS_TEST_ANDROID ? fs.readFileSync(path.join(root,'android/bridge/android-bridge.js'),'utf8') : null },
   );
 }
 async function connectRead(page) {

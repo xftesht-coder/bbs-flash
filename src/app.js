@@ -520,6 +520,16 @@
     verifiedWrite = false,
     nextSetup = { panel: "connection", target: "connect" },
     lastStatus = null;
+  if (window.BBSNative?.platform === "android") {
+    TEXT.connectHelp = [
+      "Android · USB OTG. Подключи кабель программирования Bafang UART через переходник USB-C OTG и выбери его кнопкой «Подключить». CAN не поддерживается. При сворачивании приложения соединение закрывается.",
+      "Android · USB OTG. Attach a Bafang UART programming cable through a USB-C OTG adapter, then tap Connect to select it. CAN is not supported. Leaving the app closes the connection.",
+    ];
+    TEXT.serialOk = ["USB OTG готов. Android запросит разрешение после выбора кабеля. Если кабель не найден, проверь OTG в настройках телефона.", "USB OTG ready. Android requests permission after cable selection. If no cable is found, check your phone's OTG setting."];
+    TEXT.storageReady = ["Хранилище готово. Резервные копии сохраняются и проверяются в приложении.", "Storage ready. Backups are saved and verified in the app."];
+    TEXT.backupHelp = ["Копия хранится в приложении. Сохрани её отдельно: удаление приложения или очистка его данных удалит локальные копии. После системного проводника подключись и считай мотор заново.", "The backup is stored in the app. Save a separate file: uninstalling or clearing app data removes local backups. After using the system file picker, reconnect and read the motor again."];
+    TEXT.savedBackup = ["Два чтения совпали. Исходные данные и .el сохранены и проверены в хранилище приложения.", "Two reads matched. Original raw data and .el were saved and verified in app storage."];
+  }
   const t = (k) => (TEXT[k] ? TEXT[k][lang === "en" ? 1 : 0] : k);
   const initial = {
     bas: {

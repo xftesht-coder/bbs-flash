@@ -12,3 +12,9 @@ playwright-report/
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+android/.gradle/
+android/**/build/
+android/local.properties
+*.jks
+*.keystore
+*.apk.idsig
