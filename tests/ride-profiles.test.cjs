@@ -6,8 +6,8 @@ const C = require("../src/core.js");
 const R = require("../src/ride-profiles.js");
 const { profile } = require("./helpers.cjs");
 
-test("all fifteen ride modes preserve hardware, PAS0 and throttle, and respect current ceilings", () => {
-  assert.equal(R.profiles.length, 15);
+test("all seventeen ride modes preserve hardware, PAS0 and throttle, and respect current ceilings", () => {
+  assert.equal(R.profiles.length, 17);
   for (const amps of Array.from({length:30}, (_,i) => i + 1)) {
     const before = structuredClone(profile);
     before.bas.LC = amps; before.bas.LBP = 40; before.bas.WD = 4;
@@ -36,7 +36,7 @@ test("all fifteen ride modes preserve hardware, PAS0 and throttle, and respect c
 
 test("new modes have distinct purposes and floor-rounded ceilings at the owner's current limit", () => {
   const base = structuredClone(profile); base.bas.LC = 24;
-  assert.deepEqual(R.profiles.filter(p => p.fresh).map(p => p.id), ["city-sport", "trail-flow", "loose-ground"]);
+  assert.deepEqual(R.profiles.filter(p => p.fresh).map(p => p.id), ["bread-run", "bread-eco"]);
   for (const [id,peak] of [["city-sport",21.84],["trail-flow",19.92],["loose-ground",13.92]]) {
     const p = R.apply(base,id);
     assert.ok(Math.abs(p.bas.LC*p.bas.ALC[9]/100-peak)<1e-9);
@@ -53,6 +53,29 @@ test("new modes have distinct purposes and floor-rounded ceilings at the owner's
   assert.ok(flow.pas.SDN<trail.pas.SDN);
   assert.ok(flow.pas.SC<trail.pas.SC);
   assert.deepEqual(flow.bas.ALBP.slice(1),Array(9).fill(100));
+});
+
+test("hill commute bands cover nine levels with one shared start and no extra speed caps", () => {
+  const base=structuredClone(profile); base.bas.LC=24;
+  const balanced=R.apply(base,"bread-run"), eco=R.apply(base,"bread-eco");
+  assert.deepEqual(balanced.bas.ALC.slice(1),[18,28,39,48,54,60,66,70,75]);
+  assert.deepEqual(eco.bas.ALC.slice(1),[12,20,28,35,40,45,50,54,58]);
+  assert.deepEqual([balanced.pas.SC,balanced.pas.SSM,balanced.pas.SDN,balanced.pas.KC],[12,4,3,60]);
+  assert.deepEqual([eco.pas.SC,eco.pas.SSM,eco.pas.SDN,eco.pas.KC],[10,5,4,50]);
+  for(let amps=1;amps<=30;amps++) {
+    base.bas.LC=amps;
+    const a=R.apply(base,"bread-run"), b=R.apply(base,"bread-eco");
+    for(let level=1;level<=9;level++) assert.ok(b.bas.ALC[level]<=a.bas.ALC[level], `economy must not exceed balance at ${amps} A / PAS ${level}`);
+  }
+  for(const id of ["bread-run","bread-eco"]) {
+    const spec=R.profiles.find(p=>p.id===id), actual=R.apply(base,id);
+    assert.deepEqual(spec.bands,[[1,4],[5,7],[8,9]]);
+    assert.deepEqual(spec.bands.flatMap(([a,b])=>Array.from({length:b-a+1},(_,i)=>a+i)),[1,2,3,4,5,6,7,8,9]);
+    assert.equal(spec.usage.length,spec.bands.length);
+    assert.deepEqual(actual.bas.ALBP.slice(1),Array(9).fill(100));
+    assert.equal(actual.pas.SL,base.pas.SL);
+    assert.deepEqual(actual.thr,base.thr);
+  }
 });
 
 test("specialist modes offer distinct assistance without promising extra global current", () => {

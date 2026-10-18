@@ -1,3 +1,7 @@
+# Verification of 3.5.0
+
+55 Node tests and 40 browser scenarios. Two hill-commute templates preserve hardware limits, throttle and stop timing. Independent expected PAS percentages at 24 A verify floor rounding. Both profiles pass backup/write/readback replay against the owner legacy UART capture; fixed PAS warnings translate and clear correctly. Nine-row guidance displays current ceilings and relative speed limits without device traffic. All 17 profiles are checked at every integer limit from 1–30 A. Previous fifteen numerical templates are unchanged. No new tune has physical ride or thermal validation.
+
 # Verification of 3.4.9
 
 54 Node tests and 39 browser scenarios. All 15 profiles preserve hardware settings for every integer current limit from 1 through 30 A. New profiles have distinct numeric signatures; actual PAS ceilings include floor rounding. New-filter, bilingual PAS guide, live current changes, invalid input and zero UART traffic are covered in the browser. Deployment requires 15 cards and 105 comparison rows. New tunes have software coverage only; the original twelve numeric definitions are unchanged.

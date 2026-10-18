@@ -120,19 +120,21 @@ const attempts = Number(process.env.BBS_DEPLOY_ATTEMPTS || 24),
       throw Error("Missing source acknowledgement");
     await page.locator("#closeGuide").click();
     await page.locator('[data-panel="presets"]').click();
-    if ((await page.locator("#rideCards article").count()) !== 15) throw Error("Ride catalogue missing");
-    if ((await page.locator(".ride-trait").count()) !== 105) throw Error("Seven-value profile comparison missing");
+    if ((await page.locator("#rideCards article").count()) !== 17) throw Error("Ride catalogue missing");
+    if ((await page.locator(".ride-trait").count()) !== 119) throw Error("Seven-value profile comparison missing");
     if ((await page.locator("#rideBaseline").getAttribute("data-basis")) !== "demo") throw Error("Demo values mistaken for motor settings");
     await page.locator('[data-ride="forward"]').click();
     await page.locator("#ridePreview").click();
     await page.locator("#rideReviewCancel").click();
     if ((await page.locator("#bas-LC").inputValue()) !== "18") throw Error("Preview mutated draft");
     await page.locator('[data-filter="new"]').click();
-    if ((await page.locator("#rideCards article").count()) !== 3) throw Error("New ride filter missing");
-    await page.locator('[data-ride="loose-ground"]').click();
+    if ((await page.locator("#rideCards article").count()) !== 2) throw Error("New ride filter missing");
+    await page.locator('[data-ride="bread-eco"]').click();
     if (!(await page.locator("#rideActualCap").textContent()).includes("13,86")) throw Error("Actual current ceiling missing");
     await page.locator("#ridePasGuide summary").click();
     if ((await page.locator("#ridePasGuide strong").count()) !== 3) throw Error("PAS usage guide missing");
+    if ((await page.locator("#ridePasTable tbody tr").count()) !== 9) throw Error("Nine-level PAS table missing");
+    if (!(await page.locator("#ridePasGuide strong").first().textContent()).includes("PAS 1–4")) throw Error("Hill assistance bands missing");
     await page.locator("#language").selectOption("en");
     if ((await page.locator("html").getAttribute("lang")) !== "en")
       throw Error("Language failed");
