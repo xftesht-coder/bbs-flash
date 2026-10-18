@@ -1,0 +1,13 @@
+BBS Flash Android includes usb-serial-for-android 3.11.0.
+Source: https://github.com/mik3y/usb-serial-for-android
+
+Copyright 2011-2013 Google Inc.
+Copyright 2013 Mike Wakerly
+
+Licensed under the MIT License (see usb-serial-LICENSE.txt alongside this file).
+
+AndroidX Core and WebKit are licensed under the Apache License, Version 2.0.
+https://www.apache.org/licenses/LICENSE-2.0
+Android Open Source Project / Google LLC and contributors.
+
+The original website credits and Russo One font license are bundled separately.

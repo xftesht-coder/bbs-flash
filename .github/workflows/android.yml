@@ -1,0 +1,44 @@
+name: Android OTG preview
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: node --test android/tests/bridge.test.cjs
+      - name: Build and check native app
+        run: |
+          export JAVA_HOME="$JAVA_HOME_17_X64"
+          bash android/gradlew -p android assembleDebug testDebugUnitTest lintDebug --console=plain
+      - run: npx playwright install --with-deps chromium
+      - name: USB bridge with simulated controller
+        env:
+          BBS_TEST_ANDROID: '1'
+        run: |
+          BBS_BROWSER_FILTER='mock serial: all 3' node tests/browser.cjs
+          BBS_BROWSER_FILTER='hill profile warns' node tests/browser.cjs
+          BBS_BROWSER_FILTER='corrupt response' node tests/browser.cjs
+          BBS_BROWSER_FILTER='ACK without persistence' node tests/browser.cjs
+      - name: Verify published APK checksum
+        working-directory: downloads
+        run: sha256sum -c bbs-flash-android-0.1.0-preview.apk.sha256
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: android-build-evidence
+          path: |
+            android/app/build/reports/
+            android/app/build/outputs/apk/debug/*.apk

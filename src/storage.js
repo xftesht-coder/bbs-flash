@@ -14,7 +14,9 @@
       clearTimeout(timer);
       resolve(db);
     };
-    const timer = setTimeout(() => finish(null), 4000);
+    // First Android WebView launch can spend several seconds creating its profile.
+    // Remain read-only until the real database opens; never fall back for backups.
+    const timer = setTimeout(() => finish(null), root.BBSNative?.platform === "android" ? 15000 : 4000);
     try {
       request = indexedDB.open("bbsflash-release", 2);
     } catch {
