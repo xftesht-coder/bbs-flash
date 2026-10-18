@@ -23,7 +23,7 @@ if (mailReady) {
   };
 }
 const accounts = createAccountService({filename,origin,secret:env.BBS_ACCOUNT_SECRET,privacyUrl:env.BBS_PRIVACY_URL || null,sendCode});
-const files = new Set(["index.html","bbs-flash.html","landing.html","privacy.html","terms.html","assets/icon.svg","assets/RussoOne-Regular.ttf","assets/OFL-RussoOne.txt","assets/BBSTool.zip"]);
+const files = new Set(["index.html","bbs-flash.html","landing.html","usb-check.html","privacy.html","terms.html","assets/icon.svg","assets/RussoOne-Regular.ttf","assets/OFL-RussoOne.txt","assets/BBSTool.zip"]);
 const types = {".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".svg":"image/svg+xml",".ttf":"font/ttf",".txt":"text/plain; charset=utf-8",".zip":"application/zip"};
 const server = http.createServer(async (req,res)=>{
   let pathname;

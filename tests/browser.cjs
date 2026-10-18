@@ -1391,6 +1391,43 @@ async function toPanel(page, id) {
       const {page,context}=await newPage();await page.addInitScript(()=>Object.defineProperty(window,'indexedDB',{get(){throw Error('denied');}}));await page.goto(base+'/bbs-flash.html');await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
       assert.match(await page.locator('#accountMessage').innerText(),/недоступно/);await page.locator('#accountTab-bike').click();assert.equal(await page.locator('#accountSave').isDisabled(),true);await page.locator('#accountTab-library').click();assert.equal(await page.locator('#accountExport').isDisabled(),true);await context.close();
     });
+    await check("USB check only requests descriptors after a click, never opens a device and handles denial/disconnect",async()=>{
+      const {page,context}=await newPage({viewport:{width:360,height:800}});
+      await page.addInitScript(()=>{
+        window.__usbCalls=0;window.__usbMode="success";
+        const device={vendorId:0x1a86,productId:0x7523,productName:'<img src=x onerror=alert(1)>',manufacturerName:'test\nUSB',get serialNumber(){throw Error('Serial number must not be collected');},open(){throw Error('No device open allowed');},claimInterface(){throw Error('No claiming allowed');},controlTransferOut(){throw Error('No transfer allowed');}};
+        window.__usbDevice=device;
+        const usb=new EventTarget(); usb.requestDevice=async options=>{__usbCalls++;if(options.filters.length!==0)throw Error('Unexpected filter');if(__usbMode!=="success")throw new DOMException('test',__usbMode);return device;};
+        Object.defineProperty(navigator,'usb',{value:usb,configurable:true});
+      });
+      await page.goto(base+'/usb-check.html');
+      assert.equal(await page.evaluate(()=>__usbCalls),0);
+      await page.locator('#inspect').click();await page.waitForFunction(()=>!document.getElementById('result').hidden);
+      const report=await page.locator('#report').inputValue();
+      assert.match(report,/VID: 1A86\nPID: 7523/);assert.match(report,/Manufacturer: test USB/);
+      assert.equal(await page.locator('#result img').count(),0);
+      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+      await page.locator('#selectReport').click();assert.equal(await page.locator('#report').evaluate(n=>n.selectionEnd-n.selectionStart),report.length);
+      await page.locator('#language').selectOption('en');assert.equal(await page.locator('h1').textContent(),'USB cable check');
+      await page.evaluate(()=>{const e=new Event('disconnect');e.device=__usbDevice;navigator.usb.dispatchEvent(e);});
+      assert.match(await page.locator('#status').textContent(),/disconnected/);
+      for(const [mode,message] of [['NotFoundError',/cancelled/],['SecurityError',/denied/],['NetworkError',/Unable/]]){
+        await page.evaluate(mode=>__usbMode=mode,mode);await page.locator('#inspect').click();
+        await page.waitForFunction(()=>!document.getElementById('inspect').disabled);
+        assert.match(await page.locator('#status').textContent(),message);assert.equal(await page.locator('#report').inputValue(),'');
+        assert.equal(await page.locator('#result').isVisible(),false);
+      }
+      await context.close();
+    });
+    await check("USB check explains unavailable API and remains usable in Russian on a narrow phone",async()=>{
+      const {page,context}=await newPage({viewport:{width:320,height:740}});
+      await page.addInitScript(()=>Object.defineProperty(navigator,'usb',{value:undefined,configurable:true}));
+      await page.goto(base+'/usb-check.html');assert.equal(await page.locator('#inspect').isDisabled(),true);
+      assert.match(await page.locator('#capability').textContent(),/недоступен/);
+      await page.locator('summary').click();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+      await page.screenshot({path:path.join(output,'usb-check-mobile.png'),fullPage:true});
+      await context.close();
+    });
     assert.deepEqual(errors, [], "Browser console/runtime errors");
     console.log(
       `PASS ${results.length} browser scenarios; no console/runtime errors`,
