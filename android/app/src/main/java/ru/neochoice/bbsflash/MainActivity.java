@@ -8,6 +8,7 @@ import android.os.*;
 import android.util.Base64;
 import android.view.*;
 import android.webkit.*;
+import android.widget.FrameLayout;
 import androidx.core.content.ContextCompat;
 import androidx.webkit.*;
 import com.hoho.android.usbserial.driver.*;
@@ -37,6 +38,7 @@ public final class MainActivity extends Activity {
     private AlertDialog chooser;
     private ValueCallback<Uri[]> fileCallback;
     private boolean registered, destroyed;
+    private volatile boolean foreground;
     private String permissionAction;
 
     private final BroadcastReceiver receiver=new BroadcastReceiver() {
@@ -66,9 +68,13 @@ public final class MainActivity extends Activity {
         registered=true;
         web=new WebView(this);
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
-        setContentView(web);
+        FrameLayout container=new FrameLayout(this);
+        container.setBackgroundColor(0xffe8e8ed);
+        container.addView(web,new FrameLayout.LayoutParams(-1,-1));
+        setContentView(container);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
         // Android 15 edge-to-edge: keep controls outside status/navigation bars.
-        web.setOnApplyWindowInsetsListener((view,insets)->{
+        container.setOnApplyWindowInsetsListener((view,insets)->{
             view.setPadding(insets.getSystemWindowInsetLeft(),insets.getSystemWindowInsetTop(),insets.getSystemWindowInsetRight(),insets.getSystemWindowInsetBottom());
             return insets;
         });
@@ -153,7 +159,7 @@ public final class MainActivity extends Activity {
                 if(token==null || !token.equals(session)){result(id,null,"Подключись заново");return;}
                 commands.execute(()->{
                     try {
-                        if(!session.equals(token))throw new IOException("Сеанс закрыт");
+                        if(!foreground || !session.equals(token))throw new IOException("Сеанс закрыт");
                         if(op.equals("open"))open(session);
                         else {
                             byte[] bytes=BridgePolicy.bytes(request.getJSONArray("bytes"));
@@ -189,6 +195,7 @@ public final class MainActivity extends Activity {
     }
     private void finishChoice() {
         if(chooseId==null || selected==null)return;
+        if(!foreground){cancelChoice("Приложение свёрнуто. Подключись заново.");return;}
         token=UUID.randomUUID().toString();UsbDevice d=selected.getDriver().getDevice();
         try {result(chooseId,new JSONObject().put("token",token).put("vendorId",d.getVendorId()).put("productId",d.getProductId()),null);}catch(JSONException ignored){}
         chooseId=null;permissionDevice=null;
@@ -252,7 +259,8 @@ public final class MainActivity extends Activity {
             files.execute(()->{try(OutputStream out=getContentResolver().openOutputStream(uri,"wt")){if(out==null)throw new IOException("Файл недоступен");out.write(bytes);out.flush();result(id,null,null);}catch(Exception e){result(id,null,"Ошибка сохранения: "+e.getMessage());}});
         }
     }
-    @Override protected void onStop(){super.onStop();if(permissionDevice==null){cancelChoice("Приложение свёрнуто");disconnect("Приложение свёрнуто. Считай мотор заново.");}}
+    @Override protected void onStart(){super.onStart();foreground=true;}
+    @Override protected void onStop(){foreground=false;super.onStop();if(permissionDevice==null)cancelChoice("Приложение свёрнуто");disconnect("Приложение свёрнуто. Считай мотор заново.");}
     @Override public void onBackPressed(){
         new AlertDialog.Builder(this).setTitle("Закрыть BBS Flash?").setMessage("Соединение с мотором будет закрыто.").setPositiveButton("Закрыть",(d,w)->finish()).setNegativeButton("Остаться",null).show();
     }
