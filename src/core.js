@@ -518,12 +518,13 @@
       void this.close();
     }
     receive(bytes) {
+      if (!bytes.length) return;
       this.onLog("RX", bytes);
       if (this.closed || !this.pending) return;
       this.buffer.push(...bytes);
       const p = this.pending;
       try {
-        if (this.buffer[0] !== p.block) throw new Fault("UNEXPECTED_BLOCK");
+        if (this.buffer[0] !== p.block) throw new Fault("UNEXPECTED_BLOCK", `expected ${p.block.toString(16)}, received ${this.buffer[0].toString(16)}`);
         if (this.buffer.length < 2) return;
         if (p.mode === "read") {
           if (this.buffer[1] !== LENGTH[p.block]) throw new Fault("FRAME");

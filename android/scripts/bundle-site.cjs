@@ -6,11 +6,12 @@ const files=['bbs-flash.html','index.html',...fs.readdirSync(path.join(root,'src
 const manifest={webVersion:require('../../package.json').version,files:{}};
 for(const file of files){
   let bytes=fs.readFileSync(path.join(root,file));
-  if(file.endsWith('.html')) bytes=Buffer.from(bytes.toString().replace('<script defer', '<script defer src="./android-bridge.js"></script>\n    <script defer').replace("object-src 'none';", "object-src 'none'; frame-src 'none';"));
+  if(file.endsWith('.html')) bytes=Buffer.from(bytes.toString().replace(/<script defer src="\.\/src\/(?:access-demo|account-model|account)\.js[^\"]*"><\/script>/g,'').replace('<script defer', '<link rel="stylesheet" href="./android-diagnostics.css">\n    <script defer src="./android-bridge.js"></script>\n    <script defer src="./android-diagnostics.js"></script>\n    <script defer src="./android-compatibility.js"></script>\n    <script defer').replace("object-src 'none';", "object-src 'none'; frame-src 'none';"));
   const dest=path.join(out,file);fs.mkdirSync(path.dirname(dest),{recursive:true});fs.writeFileSync(dest,bytes);
   manifest.files[file]=crypto.createHash('sha256').update(bytes).digest('hex');
 }
 fs.copyFileSync(path.join(root,'android/bridge/android-bridge.js'),path.join(out,'android-bridge.js'));
+for(const name of ['android-diagnostics.js','android-diagnostics.css','android-compatibility.js']){fs.copyFileSync(path.join(root,'android/bridge',name),path.join(out,name));manifest.files[name]=crypto.createHash('sha256').update(fs.readFileSync(path.join(out,name))).digest('hex');}
 manifest.files['android-bridge.js']=crypto.createHash('sha256').update(fs.readFileSync(path.join(out,'android-bridge.js'))).digest('hex');
 fs.writeFileSync(path.join(out,'bundle-manifest.json'),JSON.stringify(manifest,null,2));
 console.log(`Bundled website ${manifest.webVersion}: ${Object.keys(manifest.files).length} local assets`);

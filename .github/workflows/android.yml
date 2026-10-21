@@ -18,7 +18,7 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: node --test android/tests/bridge.test.cjs
+      - run: node --test android/tests/bridge.test.cjs tests/android-capture.test.cjs
       - name: Build and check native app
         run: |
           export JAVA_HOME="$JAVA_HOME_17_X64"
@@ -34,7 +34,9 @@ jobs:
           BBS_BROWSER_FILTER='ACK without persistence' node tests/browser.cjs
       - name: Verify published APK checksum
         working-directory: downloads
-        run: sha256sum -c bbs-flash-android-0.1.0-preview.apk.sha256
+        run: |
+          sha256sum -c bbs-flash-android-0.1.0-preview.apk.sha256
+          sha256sum -c bbs-flash-android-0.3.0-rc1.apk.sha256
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:

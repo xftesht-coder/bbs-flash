@@ -1,14 +1,16 @@
 plugins { id 'com.android.application' }
 android {
     namespace 'ru.neochoice.bbsflash'
-    compileSdk 35
+    compileSdk 36
     buildFeatures { buildConfig true }
     defaultConfig {
         applicationId 'ru.neochoice.bbsflash.preview'
         minSdk 26
-        targetSdk 35
-        versionCode 1
-        versionName '0.1.0-preview'
+        targetSdk 36
+        versionCode 3
+        buildConfigField 'boolean', 'DIAGNOSTICS_UPLOAD', 'false'
+        versionName '0.3.0-rc1'
+        testInstrumentationRunner 'ru.neochoice.bbsflash.HistoryInstrumentation'
     }
     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
     buildTypes { release { minifyEnabled false } }
@@ -25,7 +27,7 @@ dependencies {
 tasks.register('bundleSite', Exec) {
     workingDir rootProject.projectDir.parentFile
     commandLine 'node', 'android/scripts/bundle-site.cjs'
-    inputs.files(fileTree('../../src'), fileTree('../../assets'), file('../../package.json'), file('../../docs/CREDITS.md'), file('../../bbs-flash.html'), file('../../index.html'), file('../bridge/android-bridge.js'), file('../scripts/bundle-site.cjs'), fileTree('..') { include '*.txt' })
+    inputs.files(fileTree('../../src'), fileTree('../../assets'), file('../../package.json'), file('../../docs/CREDITS.md'), file('../../bbs-flash.html'), file('../../index.html'), fileTree('../bridge'), file('../scripts/bundle-site.cjs'), fileTree('..') { include '*.txt' })
     outputs.dir(layout.buildDirectory.dir('generated/assets'))
 }
 tasks.named('preBuild').configure { dependsOn('bundleSite') }
