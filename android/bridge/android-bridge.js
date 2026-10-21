@@ -4,14 +4,14 @@
   if (!window.BBSAndroid?.postMessage) return;
   const pending = new Map(), serial = new EventTarget();
   const prefix = crypto.randomUUID();
-  let sequence = 0, active = null, choosing = false;
+  let sequence = 0, active = null, choosing = false, transactionBusy = false, historyId = null;
   function rpc(op, args = {}, timeout = 10000) {
     return new Promise((resolve, reject) => {
       const id = prefix + ':' + (++sequence);
       const timer = setTimeout(() => {
         pending.delete(id);
         reject(new Error('Android: время ожидания истекло. Подключись заново.'));
-        if (op !== 'save') {
+        if (['choose','open','write','busy'].includes(op)) {
           active?.lost('Связь с Android прервана');
           BBSAndroid.postMessage(JSON.stringify({id: prefix + ':cancel', op: 'close'}));
         }
@@ -42,6 +42,7 @@
   class AndroidPort extends EventTarget {
     constructor(info) {super();this.token=info.token;this.info=info;this.opened=false;}
     getInfo() {return {usbVendorId:this.info.vendorId,usbProductId:this.info.productId};}
+    getDiagnostics() {return {driver:this.info.driver,androidApi:this.info.androidApi,appVersion:this.info.appVersion,readMode:this.info.readMode,...this.getInfo()};}
     async open(options) {
       if (this.opened || active !== this) throw Error('Подключись заново');
       if (options.baudRate !== 1200 || options.dataBits !== 8 || options.stopBits !== 1 || options.parity !== 'none' || options.flowControl !== 'none') throw Error('Поддерживается только Bafang UART 1200 8N1');
@@ -73,12 +74,21 @@
   serial.requestPort=async()=>{
     if (choosing || active) throw Error('Сначала отключи текущий кабель');
     choosing=true;
-    try {const info=await rpc('choose',{},120000);active=new AndroidPort(info);return active;}
+    try {const info=await rpc('choose',{},120000);historyId=info.historyId;active=new AndroidPort(info);return active;}
     finally {choosing=false;}
   };
   serial.getPorts=async()=>active?[active]:[];
   Object.defineProperty(navigator,'serial',{value:serial,configurable:true});
-  Object.defineProperty(window,'BBSNative',{value:Object.freeze({platform:'android',version:'0.1.0-preview'})});
+  Object.defineProperty(window,'BBSNative',{value:Object.freeze({platform:'android',version:'0.3.0-rc1',
+    setBusy(value){transactionBusy=!!value;globalThis.document?.dispatchEvent?.(new Event('bbs-native-busy'));return rpc('busy',{value:transactionBusy});},
+    record(kind){if(historyId)rpc('record',{historyId,kind}).catch(()=>{});},
+    history:()=>rpc('history'),
+    compatibility:()=>rpc('compatibility'),
+    clearHistory:()=>rpc('historyClear'),
+    configureDiagnostics:config=>rpc('diagnosticsConfig',config),
+    sendDiagnostics:()=>rpc('diagnosticsSend',{},120000),
+    get busy(){return transactionBusy;},get connected(){return !!active;}
+  })});
 
   // Handle both attached and detached download anchors used by the existing UI.
   const blobs=new Map(),create=URL.createObjectURL.bind(URL),revoke=URL.revokeObjectURL.bind(URL);
@@ -88,9 +98,11 @@
   HTMLAnchorElement.prototype.click=function() {
     const blob=blobs.get(this.href);
     if (!this.download || !blob) return click.call(this);
+    if (transactionBusy) {alert('Дождись завершения чтения или записи. Сохранение сейчас прервёт подключение.');return;}
     const name=this.download;
     if (blob.size > 4*1024*1024) {alert('Файл больше 4 МБ. Сохрани меньший файл.');return;}
     blob.arrayBuffer().then(buffer=>{
+      if(transactionBusy)throw Error('Дождись завершения чтения или записи');
       let binary='';for(const b of new Uint8Array(buffer)) binary+=String.fromCharCode(b);
       return rpc('save',{name,mime:blob.type || 'application/octet-stream',data:btoa(binary)},120000);
     }).catch(e=>alert('Не удалось сохранить файл: '+e.message));

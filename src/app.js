@@ -319,8 +319,8 @@
       "Hardware settings or total current are changing. Check them against your battery/BMS, controller, wheel and throttle.",
     ],
     savedBackup: [
-      "Два чтения совпали. Исходные данные и .el сохранены и проверены в хранилище браузера.",
-      "Two reads matched. Original raw data and .el were saved and verified in browser storage.",
+      "Два чтения совпали. Исходные данные и .el сохранены и проверены в хранилище браузера. Чтобы скачать отдельную копию, отмени подтверждение и сохрани файл до начала записи.",
+      "Two reads matched. Original raw data and .el were saved and verified in browser storage. To download a separate copy, cancel this confirmation and save the file before starting a write.",
     ],
     confirmSafety: [
       "Я проверил изменения и совместимость батареи/контроллера; велосипед закреплён, ведущее колесо свободно, могу немедленно отключить питание.",
@@ -525,10 +525,12 @@
       "Android · USB OTG. Подключи кабель программирования Bafang UART через переходник USB-C OTG и выбери его кнопкой «Подключить». CAN не поддерживается. При сворачивании приложения соединение закрывается.",
       "Android · USB OTG. Attach a Bafang UART programming cable through a USB-C OTG adapter, then tap Connect to select it. CAN is not supported. Leaving the app closes the connection.",
     ];
-    TEXT.serialOk = ["USB OTG готов. Android запросит разрешение после выбора кабеля. Если кабель не найден, проверь OTG в настройках телефона.", "USB OTG ready. Android requests permission after cable selection. If no cable is found, check your phone's OTG setting."];
+    TEXT.serialOk = ["Доступен Android USB. Нажми «Подключить» и разреши доступ к кабелю. Связь с мотором подтверждается только после получения его данных.", "Android USB is available. Tap Connect and grant cable access. The motor connection is confirmed only after its data is received."];
+    TEXT.TIMEOUT = ["Ответ контроллера не получен за 5 секунд. Проверь питание мотора, OTG и соединения кабеля, затем подключись заново.", "No controller response within 5 seconds. Check motor power, OTG and cable connections, then reconnect."];
+    TEXT.UNEXPECTED_BLOCK = ["Начало UART-ответа не соответствует запросу. Возможны потеря данных или посторонние байты. Подключись заново; при повторе сохрани журнал и историю.", "The UART response header does not match the request. Data may be missing or unexpected. Reconnect; if it repeats, export the log and connection history."];
     TEXT.storageReady = ["Хранилище готово. Резервные копии сохраняются и проверяются в приложении.", "Storage ready. Backups are saved and verified in the app."];
     TEXT.backupHelp = ["Копия хранится в приложении. Сохрани её отдельно: удаление приложения или очистка его данных удалит локальные копии. После системного проводника подключись и считай мотор заново.", "The backup is stored in the app. Save a separate file: uninstalling or clearing app data removes local backups. After using the system file picker, reconnect and read the motor again."];
-    TEXT.savedBackup = ["Два чтения совпали. Исходные данные и .el сохранены и проверены в хранилище приложения.", "Two reads matched. Original raw data and .el were saved and verified in app storage."];
+    TEXT.savedBackup = ["Два чтения совпали. Исходные данные и .el сохранены и проверены в хранилище приложения. Чтобы скачать отдельную копию, отмени подтверждение и сохрани файл до начала записи. Проводник закрывает USB-сеанс — после сохранения подключись и считай мотор заново.", "Two reads matched. Original raw data and .el were saved and verified in app storage. To download a separate copy, cancel this confirmation and save the file before starting a write. The file picker closes USB: reconnect and read the motor again afterwards."];
   }
   const t = (k) => (TEXT[k] ? TEXT[k][lang === "en" ? 1 : 0] : k);
   const initial = {
@@ -857,18 +859,24 @@
     catch { return true; }
   }
   function setStatus(key, error = false, detail = "") {
+    if (lastStatus?.key !== key) window.BBSNative?.record?.(key);
     lastStatus = { key, error, detail };
     $("status").textContent = t(key) + (detail ? " · " + detail : "");
     $("status").classList.toggle("error", error);
   }
+  const reportedErrors = new WeakSet();
   function report(error) {
+    if(error && typeof error === "object") {
+      if(reportedErrors.has(error))return;
+      reportedErrors.add(error);
+    }
     const code = error.code || error.name;
     setStatus(
       TEXT[code] ? code : "invalid",
       true,
       error.detail || (!TEXT[code] ? error.message : ""),
     );
-    log("ERROR", error.code || error.message);
+    log("ERROR", (error.code || error.message) + (error.detail ? " · " + error.detail : ""));
   }
   const logs = [];
   function log(kind, data) {
@@ -978,7 +986,8 @@
         "[data-editable],#import,#export,#restore,#applyHistorical,#historicalPreset,#compare,#language,#theme",
       )
       .forEach((e) => (e.disabled = busy || (e.id === "restore" && !backup)));
-    $("backupEl").disabled = $("backupJson").disabled = !backup;
+    $("backupEl").disabled = $("backupJson").disabled = $("dialogDownload").disabled = busy || !backup;
+    $("exportLog").disabled = busy;
     $("source").textContent = t(source);
     $("storageStatus").textContent = t(
       storageReady ? "storageReady" : "storageUnavailable",
@@ -1179,6 +1188,9 @@
     }
   }
   function download(name, text, type = "text/plain") {
+    // Android's file picker backgrounds the app and closes its USB session.
+    // Guard direct callers too, including the pre-write confirmation dialog.
+    if (busy) return;
     const blob = new Blob([text], { type }),
       url = URL.createObjectURL(blob),
       a = node("a");
@@ -1228,10 +1240,12 @@
     setStatus("busy");
     refresh();
     try {
+      await window.BBSNative?.setBusy?.(true);
       await operation();
     } catch (error) {
       report(error);
     } finally {
+      try {await window.BBSNative?.setBusy?.(false);} catch {}
       busy = false;
       refresh();
     }
@@ -1292,6 +1306,7 @@
       session = null;
       $("bench").checked = false;
       const port = await navigator.serial.requestPort();
+      if(port.getDiagnostics)log("INFO",JSON.stringify(port.getDiagnostics()));
       session = new C.SerialSession(port, { onLog: log, onFault: lost });
       await session.open();
       setStatus("connected");

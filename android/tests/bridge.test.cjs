@@ -1,5 +1,15 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
 const code=fs.readFileSync(require('node:path').join(__dirname,'../bridge/android-bridge.js'),'utf8');
+test('busy guard requires native acknowledgment and history RPC exposes no credentials',async()=>{
+  const s=setup();let done=false;
+  const busy=s.context.BBSNative.setBusy(true).then(()=>done=true);
+  await Promise.resolve();assert.equal(done,false);assert.equal(s.context.BBSNative.busy,true);
+  assert.equal(s.messages.at(-1).op,'busy');s.answer(s.messages.at(-1));await busy;
+  const history=s.context.BBSNative.history();assert.equal(s.messages.at(-1).op,'history');
+  s.answer(s.messages.at(-1),{sessions:[],consent:false});assert.equal((await history).consent,false);
+  const idle=s.context.BBSNative.setBusy(false);s.answer(s.messages.at(-1));await idle;
+  assert.equal(s.context.BBSNative.busy,false);
+});
 function setup() {
   const messages=[],saves=[];
   class Anchor {click(){}}

@@ -775,6 +775,94 @@ async function toPanel(page, id) {
         await context.close();
       },
     );
+    await check("mock serial: file exports cannot interrupt reading or write confirmation", async () => {
+      const {page, context} = await newPage();
+      await mock(page); await ready(page); await connectRead(page);
+      await page.locator('#openAccount').click();
+      await page.waitForFunction(() => !document.getElementById('accountRefresh').disabled);
+      await page.locator('#accountClose').click();
+      let downloads = 0;
+      page.on("download", () => downloads++);
+      await page.evaluate(() => {
+        const save = BBSStore.saveBackup;
+        BBSStore.saveBackup = snapshot => new Promise((resolve, reject) => {
+          window.__releaseBackup = () => { BBSStore.saveBackup = save; save(snapshot).then(resolve, reject); };
+        });
+      });
+      await page.locator("#readAll").click();
+      await page.waitForFunction(() => typeof window.__releaseBackup === "function");
+      const assertExportsBlocked = async () => {
+        for (const id of ["backupEl", "backupJson", "dialogDownload", "exportLog"])
+          assert.equal(await page.locator("#" + id).isDisabled(), true, id);
+        // Calling the handlers directly must not bypass disabled controls.
+        await page.evaluate(() => {
+          for (const id of ["backupEl", "backupJson", "dialogDownload", "exportLog"])
+            document.getElementById(id).onclick();
+        });
+        if (process.env.BBS_TEST_ANDROID) {
+          await page.evaluate(async () => {
+            await document.getElementById('accountExport').onclick();
+            const a = document.createElement('a'), url = URL.createObjectURL(new Blob(['private archive']));
+            a.href = url; a.download = 'busy-archive.json'; a.click(); URL.revokeObjectURL(url);
+          });
+          assert.match(await page.locator('#accountMessage').textContent(), /Дождись завершения/);
+        }
+        assert.equal(await page.evaluate(() => window.__androidSaved), undefined);
+        assert.equal(downloads, 0);
+      };
+      await assertExportsBlocked();
+      await page.evaluate(() => window.__releaseBackup());
+      await page.waitForFunction(() => !document.getElementById("readAll").disabled);
+      await page.locator("#bench").check();
+      await toPanel(page, "basic"); await page.locator("#bas-LC").fill("17");
+      await toPanel(page, "connection"); await page.locator("#writeAll").click();
+      await page.waitForFunction(() => document.getElementById("writeDialog").open);
+      await assertExportsBlocked();
+      assert.equal(await page.evaluate(() => __motor.sent.filter(f => f[0] === 22).length), 0);
+      await page.locator("#cancelWrite").click();
+      await page.waitForFunction(() => !document.getElementById("backupEl").disabled);
+      // An idle session can still export its verified backup before any write.
+      if (process.env.BBS_TEST_ANDROID) {
+        await page.locator("#backupEl").click();
+        await page.waitForFunction(() => !!window.__androidSaved);
+        assert.match(await page.evaluate(() => atob(__androidSaved.data)), /\[Basic\]/);
+      } else {
+        const downloaded = page.waitForEvent("download");
+        await page.locator("#backupEl").click();
+        assert.match(fs.readFileSync(await (await downloaded).path(), "utf8"), /\[Basic\]/);
+      }
+      await context.close();
+    });
+    if (process.env.BBS_TEST_ANDROID) await check("Android busy guard acknowledgment precedes USB and failure sends no commands", async () => {
+      const {page, context} = await newPage(); await mock(page); await ready(page);
+      await page.evaluate(() => {
+        const send = BBSAndroid.postMessage.bind(BBSAndroid);
+        window.__bridgeOps = [];
+        BBSAndroid.postMessage = raw => {
+          const m = JSON.parse(raw); __bridgeOps.push(m.op);
+          if (m.op === 'busy' && m.value) {
+            window.__guardReply = error => BBSAndroid.onmessage({data: JSON.stringify({id:m.id,result:null,error})});
+          } else send(raw);
+        };
+      });
+      await page.locator('#connect').click();
+      await page.waitForFunction(() => typeof window.__guardReply === 'function');
+      assert.deepEqual(await page.evaluate(() => __bridgeOps), ['busy']);
+      assert.equal(await page.evaluate(() => __motor.sent.length), 0);
+      await page.evaluate(() => __guardReply('Native guard unavailable'));
+      await page.waitForFunction(() => !document.getElementById('connect').disabled);
+      assert.equal(await page.evaluate(() => __bridgeOps.includes('choose')), false);
+      assert.equal(await page.evaluate(() => __motor.sent.length), 0);
+      await page.evaluate(() => {delete window.__guardReply; __bridgeOps.length = 0;});
+      await page.locator('#connect').click();
+      await page.waitForFunction(() => typeof window.__guardReply === 'function');
+      assert.deepEqual(await page.evaluate(() => __bridgeOps), ['busy']);
+      await page.evaluate(() => __guardReply());
+      await page.waitForFunction(() => !document.getElementById('readAll').disabled);
+      assert.ok(await page.evaluate(() => __motor.sent.length > 0));
+      assert.equal(await page.evaluate(() => BBSNative.busy), false);
+      await context.close();
+    });
     await check(
       "mock serial: failed durable backup blocks every transmission",
       async () => {
@@ -1391,7 +1479,18 @@ async function toPanel(page, id) {
       const sent=await page.evaluate(()=>__motor.sent);await page.locator('#openAccount').click();await page.waitForFunction(()=>!document.getElementById('accountRefresh').disabled);
       assert.equal(await page.locator('#accountProfileCount').innerText(),'1');assert.equal(await page.locator('#accountBackupCount').innerText(),'1');
       await page.locator('#accountTab-library').click();assert.equal(await page.locator('#accountProfiles img').count(),0);assert.match(await page.locator('#accountProfiles').innerText(),/<img/);
-      const download=page.waitForEvent('download');await page.locator('#accountExport').click();const file=await(await download).path();const archive=JSON.parse(fs.readFileSync(file,'utf8'));assert.equal(archive.profiles.length,1);assert.equal(archive.controllerBackups.length,1);
+      let archive;
+      if (process.env.BBS_TEST_ANDROID) {
+        await page.locator('#accountExport').click();
+        await page.waitForFunction(() => !!window.__androidSaved);
+        archive = await page.evaluate(() => JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(__androidSaved.data), c => c.charCodeAt(0)))));
+        assert.equal(await page.evaluate(() => __androidSaved.name), 'bbs-flash-my-data.json');
+        assert.match(await page.locator('#accountMessage').innerText(), /Открыто сохранение архива/);
+      } else {
+        const download=page.waitForEvent('download');await page.locator('#accountExport').click();
+        archive=JSON.parse(fs.readFileSync(await(await download).path(),'utf8'));
+      }
+      assert.equal(archive.profiles.length,1);assert.equal(archive.controllerBackups.length,1);
       await page.locator('#accountTab-purchases').click();assert.match(await page.locator('#accountOrders').innerText(),/Покупок пока нет/);
       assert.deepEqual(await page.evaluate(()=>__motor.sent),sent);await context.close();
     });

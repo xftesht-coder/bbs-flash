@@ -26,6 +26,8 @@ globalThis.BBSAccount = (() => {
     emptyProfiles:["Пока нет сохранённых профилей. Выбери характер поездки и сохрани черновик в «Мой гараж».","No saved profiles yet. Choose a ride profile and save a draft in My garage."],
     emptyBackups:["Копии появятся после подключения и проверенного чтения мотора.","Backups appear after connecting and completing a verified motor read."],
     openGarage:["Открыть гараж профилей","Open profile garage"], export:["Скачать мои данные","Download my data"], exported:["Архив скачан: карточка, профили и копии этого браузера.","Archive downloaded: bike card, profiles and backups from this browser."],
+    exportOpened:["Открыто сохранение архива. Выбери папку и подтверди сохранение в проводнике.","Archive saving opened. Choose a folder and confirm saving in the file picker."],
+    exportBusy:["Дождись завершения чтения или записи перед сохранением архива.","Wait for reading or writing to finish before saving the archive."],
     purchaseTitle:["Один раз — и в твоём гараже","One purchase for your garage"], purchaseNote:["Готовим персональный бессрочный доступ по e-mail. Покупка будет привязана к пользователю, а не к велосипеду.","We are preparing personal lifetime access by email. The purchase will belong to the user, not the bike."],
     price:["Ориентир цены","Planned price"], priceValue:["299–499 ₽","RUB 299–499"], priceNote:["Цена и состав доступа пока не утверждены. Продажи ещё не открыты.","The final price and included features are not confirmed. Sales have not opened yet."],
     demoNotice:["Бессрочный демодоступ — пример будущего кабинета. Он не означает, что покупка оформлена.","Lifetime demo access previews the future account. It does not mean a purchase has been made."],
@@ -194,10 +196,12 @@ globalThis.BBSAccount = (() => {
     else location.href="./bbs-flash.html#presets";
   };
   $("accountExport").onclick=()=>action(async()=>{
+    if(window.BBSNative?.busy){message("exportBusy");return;}
     const [p,b]=await Promise.all([S.list("profiles"),S.list("backups")]);
+    if(window.BBSNative?.busy){message("exportBusy");return;}
     const account=remote?.user?{email:remote.user.email,access:remote.access,orders:remote.orders}:null;
     const data={format:"bbs-flash-account-export",version:1,exportedAt:new Date().toISOString(),account,card,profiles:p,controllerBackups:b};
-    const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"})),a=document.createElement("a");a.href=url;a.download="bbs-flash-my-data.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message("exported");
+    const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"})),a=document.createElement("a");a.href=url;a.download="bbs-flash-my-data.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message(window.BBSNative?.platform === "android" ? "exportOpened" : "exported");
   });
   function sync(next){lang=next;for(const host of [root,dialog])host.querySelectorAll("[data-a]").forEach(n=>n.textContent=t(n.dataset.a));dialog.querySelector("[role=tablist]").setAttribute("aria-label",t("account"));render();}
   select(tab);sync(lang);
